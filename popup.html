@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Document</title>
+        <link rel="stylesheet" href="css/popup.css">
+    </head>
+
+    <body>
+
+        <dingtalk>
+            <span class="title">钉钉助手
+                <a href="https://im.dingtalk.com" target="_blank" class="go-to-web-version">去网页版</a>
+            </span>
+        </dingtalk>
+
+        <tools>
+            <div class="tools auto-login">
+                <span>自动登录</span>
+                <switch-to-right></switch-to-right>
+            </div>
+            <div class="tools">
+                <span>钉钉全屏</span>
+                <switch id="dingtalk-full-screen"></switch>
+            </div>
+            <div class="tools">
+                <span>快速截屏</span>
+                <screen-shot>开始</screen-shot>
+            </div>
+        </tools>
+
+        <author>
+            @EvinK
+        </author>
+
+        <user-info-box class="">
+
+            <back-to-main></back-to-main>
+            <br/>
+
+            <div>
+                <span>手机号</span>
+                <input id='tel' type="tel"/>
+
+            </div>
+            <div>
+                <span>密码</span>
+                <input id='password' type="password"/>
+
+            </div>
+            <function-checkout>
+                <input id="user-info-save-check" type="checkbox" />
+                <span>我已知悉，此功能不会存储用户的账号和密码信息，任何导致本人账号被盗用的行为将和此插件无关。</span>
+            </function-checkout>
+            <confirm id='user-info-save-btn'>保存</confirm>
+        </user-info-box>
+
+        <script src="js/popup.js"></script>
+    </body>
+
+</html>

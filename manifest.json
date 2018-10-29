@@ -1,0 +1,39 @@
+{
+  "manifest_version": 2,
+  "name": "DingTalk-Assisstant",
+  "description": "",
+  "version": "1.0",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "http://im.dingtalk.com/",
+        "https://im.dingtalk.com/"
+      ],
+      "css": [
+        "css/content.css"
+      ],
+      "js": [
+        "js/content.js",
+        "libs/jquery-3.3.1.min.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "persistent": true,
+    "scripts": [
+      "js/background.js"
+    ]
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "tabs",
+    "background"
+  ]
+}
