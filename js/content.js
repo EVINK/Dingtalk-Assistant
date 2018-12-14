@@ -357,7 +357,7 @@ window.onload = () => {
                 // $(pwdInput).trigger("click");
                 setTimeout(() => {
                     $(btn).click()
-                }, 2000)
+                }, 100)
             })
         }
     }
