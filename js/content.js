@@ -133,13 +133,14 @@ chrome.runtime.onMessage.addListener(
     function (request, sender, sendResponse) {
         if (request.message == "on") {
             fullscrrenDingtalk()
-        }
-        else if (request.message == "off") {
+        } else if (request.message == "off") {
             rawDingtalk()
         } else if (request.message.indexOf("alert") > -1) {
             alert(request.message.substring(request.message.indexOf("alert:") + 6))
         }
-        sendResponse({ result: "success" })
+        sendResponse({
+            result: "success"
+        })
     });
 
 
@@ -154,8 +155,13 @@ function alert(tips) {
 }
 
 function generationPopWin(tips, callback) {
-    if (callback === void 0) { callback = null; }
-    var _a = generateErrorWindow("提示", tips), win = _a[0], back_win = _a[1], hasWin = _a[2];
+    if (callback === void 0) {
+        callback = null;
+    }
+    var _a = generateErrorWindow("提示", tips),
+        win = _a[0],
+        back_win = _a[1],
+        hasWin = _a[2];
     if (hasWin) {
         $(back_win).show();
         return;
@@ -175,6 +181,7 @@ function generationPopWin(tips, callback) {
         callback(confirm, cancel, win, back_win);
     }
 }
+
 function generateErrorWindow(p_title_error, p_tips) {
     var back_win = document.getElementById("back_win");
     var win, hasWin;
@@ -185,8 +192,7 @@ function generateErrorWindow(p_title_error, p_tips) {
         tips.innerHTML = p_tips;
         var win_1 = document.getElementById("win");
         hasWin = true;
-    }
-    else {
+    } else {
         var body = document.getElementById("body");
         if (!body)
             body = document.getElementsByTagName("body")[0];
@@ -216,6 +222,7 @@ function generateErrorWindow(p_title_error, p_tips) {
     }
     return [win, back_win, hasWin];
 }
+
 function generateBigWindow(p_title_error, url) {
     var body = document.getElementById("body");
     var back_win = document.createElement("div");
@@ -290,17 +297,17 @@ window.onload = () => {
                 }
             }
 
-            $(pwdInput).keydown((e) => {
-                console.log(e.keyCode);
-                // pwdInput.value = 1213232435
-            })
+
 
             if (!telInput || !pwdInput) {
                 return null
             }
 
+            setTimeout(() => {
+                console.log(window.angular);
+            }, 100)
+
             chrome.storage.local.get(null, (result) => {
-                console.log(result)
                 if (!result.tel)
                     return null
                 telInput.value = result.tel
@@ -310,6 +317,25 @@ window.onload = () => {
                 pwdInput.value = result.passwd
                 // $(btn).trigger("click");
                 console.log(btn);
+                let script = document.createElement('script')
+                script.innerHTML = ` const $scopePhone = angular.element(document.querySelector('phone-input>input')).scope()
+                const $scopePwd = angular.element(document.querySelector('input.password')).scope()
+                $scopePhone.$apply(() => {
+                    $scopePhone.phoneInput.telephone = $scopePhone.phone = document.querySelector('phone-input>input').value = ${result.tel}
+                    $scopePhone.phoneInput.triggerChange()
+                })
+                $scopePwd.$apply(() => {
+                    $scopePwd.passwordLogin.telephone = ${result.tel}
+                })
+
+                $scopePwd.$apply(() => {
+                    $scopePwd.passwordLogin.password = document.querySelector('input.password').value = '${result.passwd}'
+                    $scopePwd.passwordLogin.submitable = true
+                })`
+
+                setTimeout(() => {
+                    document.body.append(script)
+                }, 100)
 
                 // let e = new Event("keydown");
                 // // e.key = "a";    // just enter the char you want to send
@@ -329,9 +355,10 @@ window.onload = () => {
 
 
                 // $(pwdInput).trigger("click");
-                $(btn).click()
+                setTimeout(() => {
+                    $(btn).click()
+                }, 2000)
             })
         }
     }
 }
-
