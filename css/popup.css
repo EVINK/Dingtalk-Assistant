@@ -28,8 +28,9 @@ dingtalk .title .go-to-web-version {
 tools {
   display: block;
   position: relative;
-  top: 15pxabsolute left:50%;
-  -transform: translate3d(-50%, 0, 0);
+  top: 15px ;
+  left: 50%;
+  transform: translate3d(-50%, 0, 0);
 }
 .tools {
   display: flex;

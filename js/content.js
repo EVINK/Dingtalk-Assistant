@@ -280,18 +280,6 @@ window.onload = () => {
                     input.placeholder == "请输入密码") {
                     pwdInput = input
                     console.log(pwdInput);
-                    // let e = new Event("keydown");
-                    // e.key = "a";    // just enter the char you want to send
-                    // e.keyCode = e.key.charCodeAt(0);
-                    // e.keyCode = 65;
-                    // e.which = e.keyCode;
-                    // e.altKey = false;
-                    // e.ctrlKey = false;
-                    // e.shiftKey = false;
-                    // e.metaKey = false;
-                    // // e.bubbles = true;
-                    // pwdInput.dispatchEvent(e);
-                    // pwdInput.value = "a"
 
                     continue
                 }
@@ -337,24 +325,6 @@ window.onload = () => {
                     document.body.append(script)
                 }, 100)
 
-                // let e = new Event("keydown");
-                // // e.key = "a";    // just enter the char you want to send
-                // // e.keyCode = e.key.charCodeAt(0);
-                // e.keyCode = 8;
-                // e.which = e.keyCode;
-                // e.altKey = false;
-                // e.ctrlKey = false;
-                // e.shiftKey = false;
-                // e.metaKey = false;
-                // // e.bubbles = true;
-                // pwdInput.dispatchEvent(e);
-                // $(pwdInput).focus()
-                // var e = jQuery.Event("keydown");
-                // e.which = 65; // # Some key code value
-                // $(pwdInput).trigger(e);
-
-
-                // $(pwdInput).trigger("click");
                 setTimeout(() => {
                     $(btn).click()
                 }, 100)
