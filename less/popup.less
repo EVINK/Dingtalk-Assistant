@@ -36,8 +36,8 @@ dingtalk {
 tools {
     display: block; // width: 85%;
     position: relative;
-    top: 15px ;
-    left:50%;
+    top: 15px;
+    left: 50%;
     transform: translate3d(-50%, 0, 0);
 }
 
@@ -105,6 +105,10 @@ switch.on {
 switch.on.animation {
     animation: switch-slide-background-on .6s;
     animation-fill-mode: forwards;
+}
+
+#auto-login-switch {
+    display: none;
 }
 
 author {
@@ -206,8 +210,12 @@ user-info-box {
             display: inline-block;
             vertical-align: middle;
             width: 45px;
-            text-align: center;
+            text-align: right;
             user-select: none;
+        }
+        span.only-remeber-span {
+            text-align: left;
+            width: auto;
         }
         input {
             display: inline-block;
@@ -215,26 +223,30 @@ user-info-box {
             vertical-align: middle;
         }
     }
-}
-
-function-checkout {
-    width: 85%;
-    position: absolute;
-    left: 50%;
-    transform: translate3d(-50%, 0, 0);
-    margin: 0 0 20px 0;
-    user-select: none;
-    span {
-        font-size: .5rem;
-        vertical-align: middle;
-        color: rgb(78, 78, 78);
-    }
-    input {
-        vertical-align: middle;
-        cursor: pointer;
+    #only-remember {
+        outline: none;
+        width: auto;
+        margin-left: 12px;
     }
 }
 
+// function-checkout {
+//     width: 85%;
+//     position: absolute;
+//     left: 50%;
+//     transform: translate3d(-50%, 0, 0);
+//     margin: 0 0 20px 0;
+//     user-select: none;
+//     span {
+//         font-size: .5rem;
+//         vertical-align: middle;
+//         color: rgb(78, 78, 78);
+//     }
+//     input {
+//         vertical-align: middle;
+//         cursor: pointer;
+//     }
+// }
 confirm {
     display: inline-block;
     text-align: center;

@@ -21,14 +21,14 @@ dingtalk {
 }
 dingtalk .title .go-to-web-version {
   display: block;
-  font-size: .1rem;
+  font-size: 0.1rem;
   color: #0e3a47;
   text-decoration: none;
 }
 tools {
   display: block;
   position: relative;
-  top: 15px ;
+  top: 15px;
   left: 50%;
   transform: translate3d(-50%, 0, 0);
 }
@@ -89,11 +89,14 @@ switch.on.animation {
   animation: switch-slide-background-on 0.6s;
   animation-fill-mode: forwards;
 }
+#auto-login-switch {
+  display: none;
+}
 author {
   display: inline-block;
   width: 100%;
   text-align: center;
-  font-size: .1rem;
+  font-size: 0.1rem;
   position: fixed;
   bottom: 8px;
   color: #afafaf;
@@ -160,7 +163,7 @@ screen-shot {
   background: #cccccc;
   color: white;
   padding: 3px 0;
-  font-size: .1rem;
+  font-size: 0.1rem;
 }
 user-info-box {
   position: absolute;
@@ -182,30 +185,22 @@ user-info-box div span {
   display: inline-block;
   vertical-align: middle;
   width: 45px;
-  text-align: center;
+  text-align: right;
   user-select: none;
+}
+user-info-box div span.only-remeber-span {
+  text-align: left;
+  width: auto;
 }
 user-info-box div input {
   display: inline-block;
   width: 100px;
   vertical-align: middle;
 }
-function-checkout {
-  width: 85%;
-  position: absolute;
-  left: 50%;
-  transform: translate3d(-50%, 0, 0);
-  margin: 0 0 20px 0;
-  user-select: none;
-}
-function-checkout span {
-  font-size: .5rem;
-  vertical-align: middle;
-  color: #4e4e4e;
-}
-function-checkout input {
-  vertical-align: middle;
-  cursor: pointer;
+user-info-box #only-remember {
+  outline: none;
+  width: auto;
+  margin-left: 12px;
 }
 confirm {
   display: inline-block;
@@ -215,7 +210,7 @@ confirm {
   left: 50%;
   transform: translate3d(-50%, 0, 0);
   width: 50px;
-  font-size: .8rem;
+  font-size: 0.8rem;
   padding: 3px 0;
   border-radius: 5px;
   background: #038151;
@@ -235,11 +230,11 @@ back-to-main {
   left: 15px;
 }
 user-info-box.back-to-main {
-  animation: backToMain .6s;
+  animation: backToMain 0.6s;
   animation-fill-mode: forwards;
 }
 user-info-box.go-to-user {
-  animation: goToUserInfo .6s;
+  animation: goToUserInfo 0.6s;
   animation-fill-mode: forwards;
 }
 @keyframes backToMain {

@@ -17,6 +17,7 @@
         "css/content.css"
       ],
       "js": [
+        "js/general.js",
         "js/content.js"
       ],
       "run_at": "document_end",
@@ -26,6 +27,7 @@
   "background": {
     "persistent": true,
     "scripts": [
+      "/js/general.js",
       "js/background.js"
     ]
   },

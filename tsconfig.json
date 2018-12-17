@@ -1,11 +1,15 @@
 {
   "compilerOptions": {
-    "target": "es6",
+    "target": "es5",
     "module": "commonjs",
     "noImplicitAny": true,
-    "outDir": "",
+    "outDir": "./js/",
     "sourceMap": true,
     "removeComments": true,
+    "lib": [
+      "es2015",
+      "dom"
+    ]
   },
   "include": [
     "./ts/*.ts",
