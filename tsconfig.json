@@ -2,7 +2,12 @@
   "compilerOptions": {
     "target": "es6",
     "module": "commonjs",
-    "outDir": "./js",
-    "rootDir": "./ts",
-  }
+    "noImplicitAny": true,
+    "outDir": "",
+    "sourceMap": true,
+    "removeComments": true,
+  },
+  "include": [
+    "./ts/*.ts",
+  ],
 }
