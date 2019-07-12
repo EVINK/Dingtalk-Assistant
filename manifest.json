@@ -1,8 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "DingTalk-Assisstant",
-  "description": "",
-  "version": "0.0.1",
+  "name": "钉钉助手",
+  "description": "钉钉助手",
+  "version": "0.0.2",
+  "short_name": "dingding",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
@@ -18,12 +19,24 @@
         "http://im.dingtalk.com/",
         "https://im.dingtalk.com/"
       ],
+      "js": [
+        "js/utils.js",
+        "js/generalPage.js",
+        "js/dingTalkContent.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://*/*"
+      ],
       "css": [
         "css/content.css"
       ],
       "js": [
-        "js/general.js",
-        "js/content.js"
+        "js/utils.js",
+        "js/generalPage.js"
       ],
       "run_at": "document_end",
       "all_frames": true
@@ -32,7 +45,7 @@
   "background": {
     "persistent": true,
     "scripts": [
-      "/js/general.js",
+      "js/utils.js",
       "js/background.js"
     ]
   },
@@ -40,6 +53,7 @@
     "activeTab",
     "storage",
     "tabs",
-    "background"
+    "background",
+    "desktopCapture"
   ]
 }

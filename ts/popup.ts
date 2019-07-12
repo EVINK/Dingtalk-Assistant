@@ -15,23 +15,49 @@ let backToMain = document.querySelector('back-to-main');
     let fullscreen = await storage.get('fullscreen')
     if (fullscreen) {
         switchOfFullScreen.className = 'on'
-        sendMessage({ fullscreen: true })
+        sendMessage({fullscreen: true})
     }
 
     switchOfFullScreen.addEventListener('click', async () => {
         if (switchOfFullScreen.className == 'on animation' || switchOfFullScreen.className == 'on') {
             switchOfFullScreen.className = 'off animation'
-            sendMessage({ fullscreen: false })
-            storage.set({ fullscreen: false })
+            sendMessage({fullscreen: false})
+            storage.set({fullscreen: false})
         } else {
             switchOfFullScreen.className = 'on animation'
-            sendMessage({ fullscreen: true })
-            storage.set({ fullscreen: true })
+            console.log(0)
+            sendMessage({fullscreen: true})
+            console.log(1111111)
+            storage.set({fullscreen: true})
+            console.log(22222)
+            const data = await storage.get('fullscreen')
+            console.log(data)
         }
     })
 
-    screenShotBtn.addEventListener('click', () => {
+    screenShotBtn.addEventListener('click', async () => {
+        console.log('about to send msg')
         return sendMessage({ alert: '功能即将完成' })
+
+        console.log(chrome.runtime.id)
+        console.log(chrome.tabs)
+
+        // chrome.tabs.({}, (stream)=>{
+        //     console.log(stream)
+        // })
+
+        // 截图 (当前网页)
+        // chrome.tabs.captureVisibleTab(null, {}, function (image) {
+        //     console.log(image);
+        // });
+
+        // 录屏
+        // const thisPage = await getCurrentPage()
+        // chrome.desktopCapture.chooseDesktopMedia(['screen', 'window', 'tab'], thisPage, (streamId) => {
+        //     console.log(streamId)
+        // })
+
+        return
     })
 
     backToMain.addEventListener('click', () => {
@@ -46,7 +72,7 @@ let backToMain = document.querySelector('back-to-main');
         let tel: HTMLInputElement = document.querySelector('#tel')
         let passwd: HTMLInputElement = document.querySelector('#password')
         if (!tel.value || !passwd.value) {
-            return sendMessage({ alert: '手机号或者密码为空' })
+            return sendMessage({alert: '手机号或者密码为空'})
         }
         let onlyRememberCheck: HTMLInputElement = document.querySelector('#only-remember')
         let autoLogin = true
@@ -55,9 +81,9 @@ let backToMain = document.querySelector('back-to-main');
         }
 
         let passwordStr = window.btoa(passwd.value)
-        storage.set({ tel: tel.value, passwd: passwordStr, })
-        storage.set({ autoLogin })
-        return sendMessage({ alert: '保存成功, 下次重新登录时将生效' })
+        storage.set({tel: tel.value, passwd: passwordStr,})
+        storage.set({autoLogin})
+        return sendMessage({alert: '保存成功, 下次重新登录时将生效'})
     })
 
     let userTel = await storage.get('tel')
@@ -79,10 +105,10 @@ let backToMain = document.querySelector('back-to-main');
     autoLoginSwitch.addEventListener('click', async () => {
         if (autoLoginSwitch.className == 'on animation' || autoLoginSwitch.className == 'on') {
             autoLoginSwitch.className = 'off animation'
-            storage.set({ autoLogin: false })
+            storage.set({autoLogin: false})
         } else {
             autoLoginSwitch.className = 'on animation'
-            storage.set({ autoLogin: true })
+            storage.set({autoLogin: true})
         }
     })
 

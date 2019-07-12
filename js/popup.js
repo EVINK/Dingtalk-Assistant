@@ -41,7 +41,7 @@ var saveUserinfoBtn = document.querySelector('#user-info-save-btn');
 var backToMain = document.querySelector('back-to-main');
 (function event() {
     return __awaiter(this, void 0, void 0, function () {
-        var fullscreen, userTel, switchToUserinfo, autoLoginSwitch, autoLogin_1;
+        var fullscreen, userTel, switchToUserinfo, autoLoginSwitch, autoLogin;
         var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -53,23 +53,37 @@ var backToMain = document.querySelector('back-to-main');
                         sendMessage({ fullscreen: true });
                     }
                     switchOfFullScreen.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                        var data;
                         return __generator(this, function (_a) {
-                            if (switchOfFullScreen.className == 'on animation' || switchOfFullScreen.className == 'on') {
-                                switchOfFullScreen.className = 'off animation';
-                                sendMessage({ fullscreen: false });
-                                storage.set({ fullscreen: false });
+                            switch (_a.label) {
+                                case 0:
+                                    if (!(switchOfFullScreen.className == 'on animation' || switchOfFullScreen.className == 'on')) return [3, 1];
+                                    switchOfFullScreen.className = 'off animation';
+                                    sendMessage({ fullscreen: false });
+                                    storage.set({ fullscreen: false });
+                                    return [3, 3];
+                                case 1:
+                                    switchOfFullScreen.className = 'on animation';
+                                    console.log(0);
+                                    sendMessage({ fullscreen: true });
+                                    console.log(1111111);
+                                    storage.set({ fullscreen: true });
+                                    console.log(22222);
+                                    return [4, storage.get('fullscreen')];
+                                case 2:
+                                    data = _a.sent();
+                                    console.log(data);
+                                    _a.label = 3;
+                                case 3: return [2];
                             }
-                            else {
-                                switchOfFullScreen.className = 'on animation';
-                                sendMessage({ fullscreen: true });
-                                storage.set({ fullscreen: true });
-                            }
-                            return [2];
                         });
                     }); });
-                    screenShotBtn.addEventListener('click', function () {
-                        return sendMessage({ alert: '功能即将完成' });
-                    });
+                    screenShotBtn.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            console.log('about to send msg');
+                            return [2, sendMessage({ alert: '功能即将完成' })];
+                        });
+                    }); });
                     backToMain.addEventListener('click', function () {
                         userInfoBox.className = 'back-to-main';
                     });
@@ -101,8 +115,8 @@ var backToMain = document.querySelector('back-to-main');
                     autoLoginSwitch.style.display = 'block';
                     return [4, storage.get('autoLogin')];
                 case 3:
-                    autoLogin_1 = _a.sent();
-                    if (autoLogin_1 === true)
+                    autoLogin = _a.sent();
+                    if (autoLogin === true)
                         autoLoginSwitch.className = 'on';
                     switchToUserinfo.style.display = 'none';
                     return [3, 5];

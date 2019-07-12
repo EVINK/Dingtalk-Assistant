@@ -33,26 +33,48 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var _this = this;
-chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_this, void 0, void 0, function () {
-    var dtId;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4, storage.get('dtId')];
-            case 1:
-                dtId = _a.sent();
-                if (dtId == activeInfo.tabId) {
-                    sendMessage({ initDingTalkStyle: true });
-                }
-                return [2];
-        }
+var storage = new ((function () {
+    function class_1() {
+    }
+    class_1.prototype.set = function (data) {
+        return new Promise(function (resolve, reject) {
+            chrome.storage.local.set(data);
+        });
+    };
+    class_1.prototype.get = function (key) {
+        return new Promise(function (resolve, reject) {
+            chrome.storage.local.get(null, function (result) {
+                resolve(result[key]);
+            });
+        });
+    };
+    return class_1;
+}()))();
+var sendMessage = function (msg, callback) {
+    var _this = this;
+    return new Promise(function (solve, reject) { return __awaiter(_this, void 0, void 0, function () {
+        var thisPage;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4, getCurrentPage()];
+                case 1:
+                    thisPage = _a.sent();
+                    chrome.tabs.sendMessage(thisPage.id, { message: msg }, callback);
+                    return [2];
+            }
+        });
+    }); });
+};
+function getCurrentPage() {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2, new Promise(function (resolve) {
+                    return chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+                        var tab = tabs[0];
+                        resolve(tab);
+                    });
+                })];
+        });
     });
-}); });
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.storeDtId)
-        storage.set({ dtId: sender.tab.id });
-    sendResponse({
-        result: "success"
-    });
-});
-//# sourceMappingURL=background.js.map
+}
+//# sourceMappingURL=utils.js.map

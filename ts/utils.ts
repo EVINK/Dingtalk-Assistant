@@ -16,11 +16,21 @@ const storage = new (class {
 
 })()
 
-
 const sendMessage = function (msg: object, callback?: () => {}) {
-    return new Promise((solve, reject) => {
-        chrome.tabs.query({ active: true }, function (tabs) {
-            chrome.tabs.sendMessage(tabs[0].id, { message: msg }, callback);
-        });
+    return new Promise(async (solve, reject) => {
+        const thisPage = await getCurrentPage()
+        chrome.tabs.sendMessage(thisPage.id, {message: msg}, callback);
     })
+}
+
+
+async function getCurrentPage(): Promise<chrome.tabs.Tab> {
+    // @ts-ignore
+    return new Promise(resolve =>
+        chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+            const tab = tabs[0]
+            resolve(tab)
+        })
+    )
+
 }

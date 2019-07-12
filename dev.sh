@@ -19,7 +19,7 @@ tmux new-session -d -s $sessionName -n "DingTalk-Dev-Session" "$SHELL"
 t=$sessionName:"DingTalk-Dev-Session"
 # tmux split-window -vb -t $t "trap '' 2;node main.js;$SHELL"
 # watch server ts
-tmux split-window -h -t $t "trap '' 2;tsc --watch -p ./ -w;$SHELL"
+tmux split-window -h -t $t "trap '' 2;./node_modules/typescript/bin/tsc --watch -p ./ -w;$SHELL"
 # watch views less
 tmux split-window -h -t $t "trap '' 2;gulp watchLess;$SHELL"
 

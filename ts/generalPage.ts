@@ -1,46 +1,3 @@
-let alertWindowStyle = document.createElement('style')
-alertWindowStyle.id = 'alertWindowStyle'
-
-let dingTalkFullScreenStyle = document.createElement('style')
-dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
-
-let head = document.querySelector('head')
-head.append(alertWindowStyle)
-head.append(dingTalkFullScreenStyle)
-
-
-function genFullscrrenDingtalk() {
-    dingTalkFullScreenStyle.innerHTML = `
-                            #layout-main {
-                                width: 100%;
-                                height: 100%;
-                            }
-                            #body {
-                                height: 100%;
-                            }
-                            #layout-container {
-                                display: block;
-                            }
-    `
-
-}
-
-
-function genRawDingtalkStyle() {
-    dingTalkFullScreenStyle.innerHTML += `
-                            #layout-main {
-                                width: 1000px;
-                            }
-                            #body {
-                                height: 542px;
-                            }
-                            #layout-container {
-                                display: flex;
-                            }
-    `
-}
-
-
 function genAlertWindow() {
     alertWindowStyle.innerHTML += `
     /* js generateWindow */
@@ -230,107 +187,23 @@ function generateErrorWindow(titleStr: string, content: string) {
     return [win as HTMLDivElement, back_win, hasWin]
 }
 
-
-// window.onload = () => {
-// }
-
-
-async function autoLogin() {
-    // 拿到所有的btn
-    let btns: any = document.querySelectorAll('button')
-    for (let btn of btns) {
-        if (btn.type == 'submit' &&
-            btn.className == 'blue big ng-binding' &&
-            btn.innerText == '登录') {
-
-            let telInput: HTMLInputElement = null
-            let pwdInput: HTMLInputElement = null
-
-            // 拿到所有的input
-            let inputs: any = document.querySelectorAll('input')
-            for (let input of inputs) {
-                if (input.type == 'text' &&
-                    input.placeholder == '请输入手机号') {
-                    telInput = input
-                    continue
-                }
-                if (input.type == 'password' &&
-                    input.name == 'verification' &&
-                    input.placeholder == "请输入密码") {
-                    pwdInput = input
-                    continue
-                }
-            }
-
-            if (!telInput || !pwdInput) {
-                return console.error('telInput or pwdInput Not Found')
-            }
-
-            let telNum: string
-            let passwd: string
-            try {
-                telNum = await storage.get('tel') as string
-                passwd = await storage.get('passwd') as string
-                passwd = window.atob(passwd)
-            } catch (ex) {
-                return console.log(ex)
-            }
-            telInput.value = telNum
-            pwdInput.value = passwd
-
-            let autoLoginScript = document.createElement('script')
-
-            autoLoginScript.innerHTML = `
-            const $scopePhone = angular.element(document.querySelector('phone-input>input')).scope()
-            const $scopePwd = angular.element(document.querySelector('input.password')).scope()
-
-            $scopePhone.$apply(() => {
-                $scopePhone.phoneInput.telephone = $scopePhone.phone = document.querySelector('phone-input>input').value = ${telNum}
-                $scopePhone.phoneInput.triggerChange()
-            })
-
-            $scopePwd.$apply(() => {
-                $scopePwd.passwordLogin.telephone = ${telNum}
-            })
-
-            $scopePwd.$apply(() => {
-                $scopePwd.passwordLogin.password = document.querySelector('input.password').value = '${passwd}'
-                $scopePwd.passwordLogin.submitable = true
-            })`
-
-            let isAutoLogin = await storage.get('autoLogin')
-            setTimeout(() => {
-                document.body.append(autoLoginScript)
-                if (isAutoLogin) {
-                    btn.click()
-                }
-            }, 100)
-        }
-    }
-}
+let head: HTMLHeadElement = document.querySelector('head')
+let alertWindowStyle = document.createElement('style')
+alertWindowStyle.id = 'alertWindowStyle'
+head.appendChild(alertWindowStyle)
+console.log('init genral script');
 
 /**
  * init content
  */
 (async function init() {
-
-    if (await storage.get('fullscreen')) {
-        genFullscrrenDingtalk()
-    } else {
-        genRawDingtalkStyle()
-    }
-
     genAlertWindow()
-
     // event
     chrome.runtime.onMessage.addListener(
         function (request, sender, sendResponse) {
-            if (request.message.fullscreen === true)
-                return genFullscrrenDingtalk()
-            else if (request.message.fullscreen === false)
-                genRawDingtalkStyle()
-
-            else if (request.message.alert) {
+            console.log('on message on other page')
+            console.log(request.message)
+            if (request.message.alert) {
                 alert(request.message.alert)
             }
 
@@ -338,7 +211,5 @@ async function autoLogin() {
                 result: "success"
             })
         })
-
-    autoLogin()
 
 })()
