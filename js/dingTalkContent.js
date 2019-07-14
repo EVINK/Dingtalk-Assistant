@@ -59,56 +59,12 @@ function initDingTalkStyle() {
         });
     });
 }
-var canvas = document.createElement('canvas');
-var context = canvas.getContext('2d');
-var image = new Image();
-image.setAttribute("crossOrigin", 'Anonymous');
-function dom2svg() {
-    var dom = document.body;
-    dom = dom.cloneNode(true);
-    var im = Array.from(document.querySelectorAll('script'));
-    function removeScript(im) {
-        if (!im)
-            return;
-        im.innerHTML = '';
-        im.shift();
-        return removeScript(im);
-    }
-    removeScript(im);
-    var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    svg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-    svg.style.width = '100vw';
-    svg.style.height = '100vh';
-    svg.style.position = 'fixed';
-    svg.style.top = '0';
-    svg.style.left = '0';
-    svg.style.zIndex = '9999999999';
-    svg.innerHTML += "<foreignObject width=\"100%\" height=\"100%\"> " + dom.outerHTML + "</foreignObject>";
-    var xml = new XMLSerializer().serializeToString(svg);
-    var svg64 = btoa(unescape(encodeURIComponent(xml)));
-    var b64Start = 'data:image/svg+xml;base64,';
-    image.src = b64Start + svg64;
-    image.onload = function () {
-        context.clearRect(0, 0, image.width, image.height);
-        context.drawImage(image, 0, 0);
-    };
-    svg = image;
-    svg.style.width = '100vw';
-    svg.style.height = '100vh';
-    svg.style.position = 'fixed';
-    svg.style.top = '0';
-    svg.style.left = '0';
-    svg.style.zIndex = '9999999999';
-    document.body.appendChild(image);
-    document.body.appendChild(canvas);
-}
 (function init() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             initDingTalkStyle();
             chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                dom2svg();
-                if (request.message.fullscreen === true)
+                if (request.message.fullscreen)
                     return genFullscreenDingtalk();
                 else if (request.message.fullscreen === false)
                     genRawDingTalkStyle();

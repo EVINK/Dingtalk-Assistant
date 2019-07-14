@@ -42,6 +42,11 @@
       "all_frames": true
     }
   ],
+
+  "web_accessible_resources": [
+    "js/snapshot.js"
+  ],
+
   "background": {
     "persistent": true,
     "scripts": [

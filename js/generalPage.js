@@ -119,19 +119,60 @@ head.appendChild(alertWindowStyle);
 console.log('init genral script');
 (function init() {
     return __awaiter(this, void 0, void 0, function () {
+        var script, response, data;
         return __generator(this, function (_a) {
-            genAlertWindow();
-            chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                console.log('on message on other page');
-                console.log(request.message);
-                if (request.message.alert) {
-                    alert(request.message.alert);
-                }
-                sendResponse({
-                    result: "success"
-                });
-            });
-            return [2];
+            switch (_a.label) {
+                case 0:
+                    script = document.createElement('script');
+                    return [4, fetch(chrome.extension.getURL('js/snapshot.js'))];
+                case 1:
+                    response = _a.sent();
+                    return [4, response.text()];
+                case 2:
+                    data = _a.sent();
+                    script.innerText = data;
+                    console.log(script.innerText);
+                    head.append(script);
+                    script.onload = function () {
+                        console.log(1111111);
+                        new Snapshot();
+                    };
+                    genAlertWindow();
+                    chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+                        return __awaiter(this, void 0, void 0, function () {
+                            var script_1, response_1, data_1;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        console.log('on message on other page');
+                                        console.log(request.message);
+                                        if (!request.message.alert) return [3, 1];
+                                        alert(request.message.alert);
+                                        return [3, 4];
+                                    case 1:
+                                        if (!request.message.snapshot) return [3, 4];
+                                        script_1 = document.createElement('script');
+                                        return [4, fetch(chrome.extension.getURL('js/snapshot.js'))];
+                                    case 2:
+                                        response_1 = _a.sent();
+                                        return [4, response_1.text()];
+                                    case 3:
+                                        data_1 = _a.sent();
+                                        script_1.innerText = data_1;
+                                        document.body.append(script_1);
+                                        new Snapshot();
+                                        _a.label = 4;
+                                    case 4:
+                                        sendResponse({
+                                            result: "success"
+                                        });
+                                        return [2];
+                                }
+                            });
+                        });
+                    });
+                    return [2];
+            }
         });
     });
 })();
