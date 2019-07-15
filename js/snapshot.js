@@ -1,3 +1,4 @@
+var disable = chrome.browserAction.disable;
 var Snapshot = (function () {
     function Snapshot() {
         this.isClickBegun = false;
@@ -11,35 +12,44 @@ var Snapshot = (function () {
         var left = data.left;
         var width = data.width;
         var height = data.height;
-        if (!top)
+        if (!top) {
             top = 0;
-        if (!left)
+        }
+        if (!left) {
             left = 0;
-        var realWidth, realHeight;
-        if (!width)
+        }
+        var realWidth;
+        var realHeight;
+        if (!width) {
             realWidth = '100vw';
-        else
+        }
+        else {
             realWidth = width + "px";
-        if (!height)
+        }
+        if (!height) {
             realHeight = document.body.clientHeight + "px";
-        else
+        }
+        else {
             realHeight = height + "px";
+        }
         return "\n            margin: 0;\n            padding: 0;\n            position: fixed;\n            top: " + top + "px;\n            left: " + left + "px;\n            width: " + realWidth + ";\n            height: " + realHeight + ";\n            background: #0000008f;\n            z-index: " + Snapshot.highestZIndex + ";\n            ";
     };
     Snapshot.prototype.genBgCover = function () {
         if (!this.previewBox) {
             var element = document.getElementById(Snapshot.bgCoverId);
-            if (element)
+            if (element) {
                 return element;
-            element = document.createElement("div");
+            }
+            element = document.createElement('div');
             element.id = Snapshot.bgCoverId;
             element.setAttribute('style', "\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100vw;\n            height: " + document.body.clientHeight + "px;\n            background: #0000008f;\n            z-index: " + (Snapshot.highestZIndex + 2) + ";\n            cursor: crosshair;\n            ");
             Snapshot.father.append(element);
             this.cover = element;
         }
         else {
-            if (this.cover.style.background)
+            if (this.cover.style.background) {
                 this.cover.style.removeProperty('background');
+            }
             var coverLeftId = Snapshot.bgCoverId + "-left";
             var coverRightId = Snapshot.bgCoverId + "-right";
             var coverTopId = Snapshot.bgCoverId + "-top";
@@ -89,13 +99,12 @@ var Snapshot = (function () {
             }));
         }
     };
-    ;
     Snapshot.prototype.genPreviewBox = function (x, y) {
         this.previewBox = document.createElement('div');
         this.previewBox.setAttribute('startX', x.toString());
         this.previewBox.setAttribute('startY', y.toString());
         this.previewBox.setAttribute('id', 'dt-preview');
-        this.previewBox.setAttribute('style', "\n        width: 1px;\n        height: 1px;    \n        border: 2px dashed gray;\n        background: transparent;\n        position: fixed;\n        top: " + y + "px;\n        left: " + x + "px;\n        z-index: " + (Snapshot.highestZIndex + 1) + ";\n        cursor: move;\n        ");
+        this.previewBox.setAttribute('style', "\n        width: 1px;\n        height: 1px;\n        border: 2px dashed gray;\n        background: transparent;\n        position: fixed;\n        top: " + y + "px;\n        left: " + x + "px;\n        z-index: " + (Snapshot.highestZIndex + 1) + ";\n        cursor: move;\n        ");
         Snapshot.father.append(this.previewBox);
         this.statusBar = document.createElement('div');
         this.previewBox.append(this.statusBar);
@@ -157,15 +166,17 @@ var Snapshot = (function () {
                     _this.previewBox.setAttribute('mouseDown', '1');
                 };
                 _this.previewBox.onmousemove = function (e) {
-                    if (_this.previewBox.getAttribute('mouseDown') !== '1')
+                    if (_this.previewBox.getAttribute('mouseDown') !== '1') {
                         return;
+                    }
                     var startX = parseInt(_this.previewBox.getAttribute('startX'));
                     var startY = parseInt(_this.previewBox.getAttribute('startY'));
                     var mode = 'move';
                     var offsetX = parseInt(_this.previewBox.getAttribute('mouseDownX'));
                     var offsetY = parseInt(_this.previewBox.getAttribute('mouseDownY'));
-                    if (!offsetX || !offsetY)
+                    if (!offsetX || !offsetY) {
                         return;
+                    }
                     if (mode === 'move') {
                         var leftOffset = startX + e.pageX - offsetX;
                         var topOffset = startY + e.pageY - offsetY;
@@ -180,8 +191,9 @@ var Snapshot = (function () {
                     _this.previewBox.setAttribute('mouseDown', '0');
                     var offsetX = parseInt(_this.previewBox.getAttribute('mouseDownX'));
                     var offsetY = parseInt(_this.previewBox.getAttribute('mouseDownY'));
-                    if (!offsetX || !offsetY)
+                    if (!offsetX || !offsetY) {
                         return;
+                    }
                     var startX = parseInt(_this.previewBox.getAttribute('startX'));
                     var startY = parseInt(_this.previewBox.getAttribute('startY'));
                     var leftOffset = startX + e.pageX - offsetX;

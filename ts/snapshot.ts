@@ -1,3 +1,5 @@
+import disable = chrome.browserAction.disable;
+
 class Snapshot {
 
     private static bgCoverId: string = 'bgCover'
@@ -24,19 +26,29 @@ class Snapshot {
 
     }
 
-
     private genCoverStyle(data: { top?: number, left?: number, width?: number, height?: number }) {
         let top = data.top
         let left = data.left
-        let width = data.width
-        let height = data.height
-        if (!top) top = 0
-        if (!left) left = 0
-        let realWidth: string, realHeight: string;
-        if (!width) realWidth = '100vw'
-        else realWidth = `${width}px`
-        if (!height) realHeight = `${document.body.clientHeight}px`
-        else realHeight = `${height}px`
+        const width = data.width
+        const height = data.height
+        if (!top) {
+            top = 0
+        }
+        if (!left) {
+            left = 0
+        }
+        let realWidth: string
+        let realHeight: string
+        if (!width) {
+            realWidth = '100vw'
+        } else {
+            realWidth = `${width}px`
+        }
+        if (!height) {
+            realHeight = `${document.body.clientHeight}px`
+        } else {
+            realHeight = `${height}px`
+        }
 
         return `
             margin: 0;
@@ -51,12 +63,13 @@ class Snapshot {
             `
     }
 
-
     private genBgCover() {
         if (!this.previewBox) {
             let element = document.getElementById(Snapshot.bgCoverId) as HTMLDivElement
-            if (element) return element
-            element = document.createElement("div") as HTMLDivElement
+            if (element) {
+                return element
+            }
+            element = document.createElement('div') as HTMLDivElement
             element.id = Snapshot.bgCoverId
             element.setAttribute('style',
                 `
@@ -72,7 +85,9 @@ class Snapshot {
             Snapshot.father.append(element)
             this.cover = element
         } else {
-            if (this.cover.style.background) this.cover.style.removeProperty('background')
+            if (this.cover.style.background) {
+                this.cover.style.removeProperty('background')
+            }
 
             const coverLeftId = `${Snapshot.bgCoverId}-left`
             const coverRightId = `${Snapshot.bgCoverId}-right`
@@ -126,9 +141,8 @@ class Snapshot {
                 width: document.body.clientWidth - this.previewBox.offsetLeft - rightWidth,
             }))
 
-
         }
-    };
+    }
 
     private genPreviewBox(x: number, y: number) {
         this.previewBox = document.createElement('div') as HTMLDivElement
@@ -138,7 +152,7 @@ class Snapshot {
         this.previewBox.setAttribute('id', 'dt-preview')
         this.previewBox.setAttribute('style', `
         width: 1px;
-        height: 1px;    
+        height: 1px;
         border: 2px dashed gray;
         background: transparent;
         position: fixed;
@@ -166,7 +180,6 @@ class Snapshot {
         `)
         this.statusBar.innerText = '(1, 1)'
 
-
         this.previewBoxToolsBar = document.createElement('div') as HTMLDivElement
         this.previewBox.append(this.previewBoxToolsBar)
         this.previewBoxToolsBar.setAttribute('style', `
@@ -182,14 +195,11 @@ class Snapshot {
         border-radius: 10px;
         `)
 
-
     }
-
 
     private event() {
 
         if (this.cover) {
-
 
             this.cover.addEventListener('mousedown', (e: MouseEvent) => {
 
@@ -198,7 +208,6 @@ class Snapshot {
                     this.genPreviewBox(e.pageX, e.pageY)
                     this.genBgCover()
                 }
-
 
             })
 
@@ -228,7 +237,6 @@ class Snapshot {
                         this.statusBar.innerText = `(${Math.abs(offsetX)}, ${Math.abs(offsetY)})`
                     }
 
-
                     this.genBgCover()
 
                 }
@@ -242,7 +250,6 @@ class Snapshot {
                 const offsetX = e.pageX - x
                 const offsetY = e.pageY - y
 
-
                 if (offsetX < 0) {
                     this.previewBox.setAttribute('startX', e.pageX.toString())
                 }
@@ -254,8 +261,8 @@ class Snapshot {
                 this.isClickBegun = false
                 this.cover.remove()
 
-
                 // event
+                // tslint:disable-next-line
                 this.previewBox.onmousedown = (e: MouseEvent) => {
                     // console.log('mounsedown')
                     this.previewBox.setAttribute('mouseDownX', e.pageX.toString())
@@ -263,16 +270,17 @@ class Snapshot {
                     this.previewBox.setAttribute('mouseDown', '1')
                 }
 
-
                 this.previewBox.onmousemove = (e: MouseEvent) => {
-                    if (this.previewBox.getAttribute('mouseDown') !== '1') return
+                    if (this.previewBox.getAttribute('mouseDown') !== '1') {
+                        return
+                    }
 
                     // console.log(this.previewBox.getAttribute('mouseDown'))
 
                     const startX = parseInt(this.previewBox.getAttribute('startX'))
                     const startY = parseInt(this.previewBox.getAttribute('startY'))
 
-                    let mode = 'move'
+                    const mode = 'move'
                     // if (Math.round(e.pageY / 10) === Math.round(startY / 10)) {
                     //     // this.previewBox.style.cursor = 'ns-resize'
                     //     // mode = 'resize'
@@ -283,8 +291,9 @@ class Snapshot {
 
                     const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'))
                     const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'))
-                    if (!offsetX || !offsetY) return
-
+                    if (!offsetX || !offsetY) {
+                        return
+                    }
 
                     // 窗体移动
                     if (mode === 'move') {
@@ -308,16 +317,16 @@ class Snapshot {
                         // this.genBgCover()
                     }
 
-
                 }
-
 
                 this.previewBox.onmouseup = (e: MouseEvent) => {
                     this.previewBox.setAttribute('mouseDown', '0')
                     // 更新 startX startY
                     const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'))
                     const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'))
-                    if (!offsetX || !offsetY) return
+                    if (!offsetX || !offsetY) {
+                        return
+                    }
 
                     const startX = parseInt(this.previewBox.getAttribute('startX'))
                     const startY = parseInt(this.previewBox.getAttribute('startY'))
@@ -337,17 +346,13 @@ class Snapshot {
                     this.previewBox.setAttribute('mouseDown', '0')
                 }
 
-
             }
-
 
         }
 
     }
 
-
     private destroySnapshot() {
     }
-
 
 }
