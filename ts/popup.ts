@@ -36,11 +36,11 @@ let backToMain = document.querySelector('back-to-main');
     })
 
     screenShotBtn.addEventListener('click', async () => {
-        console.log('about to send msg')
-        return sendMessage({ alert: '功能即将完成' })
+        // console.log('about to send msg')
+        // return sendMessage({ alert: '功能即将完成' })
 
-        console.log(chrome.runtime.id)
-        console.log(chrome.tabs)
+        // console.log(chrome.runtime.id)
+        // console.log(chrome.tabs)
 
         // chrome.tabs.({}, (stream)=>{
         //     console.log(stream)
@@ -56,6 +56,8 @@ let backToMain = document.querySelector('back-to-main');
         // chrome.desktopCapture.chooseDesktopMedia(['screen', 'window', 'tab'], thisPage, (streamId) => {
         //     console.log(streamId)
         // })
+
+        sendMessage({snapshot: true})
 
         return
     })

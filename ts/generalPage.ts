@@ -197,14 +197,32 @@ console.log('init genral script');
  * init content
  */
 (async function init() {
+    const script = document.createElement('script')
+    const response = await fetch(chrome.extension.getURL('js/snapshot.js'))
+    const data = await response.text()
+    script.innerText = data
+    console.log(script.innerText)
+    head.append(script)
+    script.onload = () => {
+        console.log(1111111)
+        new Snapshot()
+    }
+
     genAlertWindow()
     // event
     chrome.runtime.onMessage.addListener(
-        function (request, sender, sendResponse) {
+        async function (request, sender, sendResponse) {
             console.log('on message on other page')
             console.log(request.message)
             if (request.message.alert) {
                 alert(request.message.alert)
+            }else if (request.message.snapshot) {
+                const script = document.createElement('script')
+                const response = await fetch(chrome.extension.getURL('js/snapshot.js'))
+                const data = await response.text()
+                script.innerText = data
+                document.body.append(script)
+                new Snapshot()
             }
 
             sendResponse({
