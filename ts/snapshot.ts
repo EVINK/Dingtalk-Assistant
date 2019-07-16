@@ -1,5 +1,3 @@
-import disable = chrome.browserAction.disable;
-
 class Snapshot {
 
     private static bgCoverId: string = 'bgCover'
