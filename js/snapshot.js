@@ -1,4 +1,3 @@
-var disable = chrome.browserAction.disable;
 var Snapshot = (function () {
     function Snapshot() {
         this.isClickBegun = false;

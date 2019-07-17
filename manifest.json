@@ -59,6 +59,8 @@
     "storage",
     "tabs",
     "background",
-    "desktopCapture"
+    "desktopCapture",
+    "cookies",
+    "https://dingtalk.com/"
   ]
 }

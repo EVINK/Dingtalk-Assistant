@@ -41,7 +41,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
             case 0: return [4, storage.get('dtId')];
             case 1:
                 dtId = _a.sent();
-                if (dtId == activeInfo.tabId) {
+                if (dtId === activeInfo.tabId) {
                     sendMessage({ initDingTalkStyle: true });
                 }
                 return [2];
@@ -49,10 +49,51 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
     });
 }); });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.storeDtId)
+    if (message.storeDtId) {
         storage.set({ dtId: sender.tab.id });
+    }
     sendResponse({
-        result: "success"
+        result: 'success'
     });
+});
+function setCookiesToDingTalk(key, value) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2, new Promise(function (resolve, reject) {
+                    chrome.cookies.set({
+                        url: 'https://dingtalk.com',
+                        name: key,
+                        value: value,
+                        domain: 'dingtalk.com'
+                    }, function (cookie) {
+                        resolve(cookie);
+                    });
+                })];
+        });
+    });
+}
+chrome.cookies.set({
+    url: 'https://dingtalk.com',
+    name: 'EvinK',
+    value: 'handsome',
+    domain: 'dingtalk.com'
+}, function (cookie) {
+    console.log(cookie);
+});
+chrome.cookies.set({
+    url: 'https://dingtalk.com',
+    name: 'deviceid',
+    value: '10955752-AE22-4F9A-BDF7-C01259234CCF',
+    domain: 'dingtalk.com'
+}, function (cookie) {
+    console.log(cookie);
+});
+chrome.cookies.set({
+    url: 'https://dingtalk.com',
+    name: 'deviceid_exist',
+    value: 'true',
+    domain: 'dingtalk.com'
+}, function (cookie) {
+    console.log(cookie);
 });
 //# sourceMappingURL=background.js.map

@@ -19,7 +19,6 @@ function genFullscreenDingtalk() {
 
 }
 
-
 function genRawDingTalkStyle() {
     dingTalkFullScreenStyle.innerHTML += `
                             #layout-main {
