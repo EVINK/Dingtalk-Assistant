@@ -61,6 +61,7 @@
     "background",
     "desktopCapture",
     "cookies",
-    "https://dingtalk.com/"
+    "https://dingtalk.com/",
+    "https://*.aliapp.org/"
   ]
 }
