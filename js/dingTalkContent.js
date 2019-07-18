@@ -42,6 +42,10 @@ function genFullscreenDingtalk() {
 function genRawDingTalkStyle() {
     dingTalkFullScreenStyle.innerHTML += "\n                            #layout-main {\n                                width: 1000px;\n                            }\n                            #body {\n                                height: 542px;\n                            }\n                            #layout-container {\n                                display: flex;\n                            }\n    ";
 }
+var script = "\nvar loginStatusKeep = setInterval(function () {\n    window.sessionStorage.setItem('EvinK', 'Handsome');\n    window.sessionStorage.setItem('wk_device_id', '4c903cc83a1f42e6b6b4ae9bbf46b958');\n    var wkToken = window.sessionStorage.getItem('wk_token');\n    if (!wkToken) {\n        return clearInterval(loginStatusKeep)\n    }\n    wkToken = JSON.parse(wkToken);\n    if (wkToken.isAutoLogin) {\n        return clearInterval(loginStatusKeep)\n    }\n    wkToken.isAutoLogin = true;\n    console.log(JSON.stringify(wkToken));\n    window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n}, 1000)\n";
+var s = document.createElement('script');
+s.innerHTML += script;
+document.body.appendChild(s);
 function initDingTalkStyle() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -64,15 +68,17 @@ function initDingTalkStyle() {
         return __generator(this, function (_a) {
             initDingTalkStyle();
             chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                if (request.message.fullscreen)
+                if (request.message.fullscreen) {
                     return genFullscreenDingtalk();
-                else if (request.message.fullscreen === false)
+                }
+                else if (request.message.fullscreen === false) {
                     genRawDingTalkStyle();
+                }
                 else if (request.message.initDingTalkStyle) {
                     initDingTalkStyle();
                 }
                 sendResponse({
-                    result: "success"
+                    result: 'success'
                 });
             });
             chrome.runtime.sendMessage({ storeDtId: true });

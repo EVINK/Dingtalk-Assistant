@@ -80,8 +80,7 @@ var backToMain = document.querySelector('back-to-main');
                     }); });
                     screenShotBtn.addEventListener('click', function () { return __awaiter(_this, void 0, void 0, function () {
                         return __generator(this, function (_a) {
-                            sendMessage({ snapshot: true });
-                            return [2];
+                            return [2, sendMessage({ alert: '功能即将完成' })];
                         });
                     }); });
                     backToMain.addEventListener('click', function () {

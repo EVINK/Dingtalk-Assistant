@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "钉钉助手",
   "description": "钉钉助手",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "short_name": "dingding",
   "icons": {
     "16": "icon.png",
@@ -59,9 +59,6 @@
     "storage",
     "tabs",
     "background",
-    "desktopCapture",
-    "cookies",
-    "https://dingtalk.com/",
-    "https://*.aliapp.org/"
+    "desktopCapture"
   ]
 }
