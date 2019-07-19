@@ -94,7 +94,7 @@ var DingTalkContent = (function () {
     };
     DingTalkContent.checkLSPStatus = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var scriptID, content, script;
+            var scriptID, content, script, loopLSPStatus_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0: return [4, StorageArea.get('loginStatusPersistence')];
@@ -104,11 +104,21 @@ var DingTalkContent = (function () {
                         scriptID = 'LSPScript-of-EVINK';
                         if (document.querySelector("#" + scriptID))
                             return [2];
-                        content = "\n            var loginStatusKeep = setInterval(function () {\n            window.sessionStorage.setItem('EvinK', 'Handsome');\n            window.sessionStorage.setItem('wk_device_id', '4c903cc83a1f42e6b6b4ae9bbf46b958');\n            var wkToken = window.sessionStorage.getItem('wk_token');\n            if (!wkToken) {\n                return clearInterval(loginStatusKeep)\n            }\n            wkToken = JSON.parse(wkToken);\n            if (wkToken.isAutoLogin) {\n                return clearInterval(loginStatusKeep)\n            }\n            wkToken.isAutoLogin = true;\n            console.log(JSON.stringify(wkToken));\n            window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n        }, 1000)\n        ";
+                        content = "\n            var loginStatusKeep = setInterval(function () {\n                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {\n                    var element = document.createElement('div');\n                    element.id = 'LSPScript-finished-EvinK';\n                    document.body.appendChild(element);\n                    return clearInterval(loginStatusKeep); \n                }\n                var wkToken = window.sessionStorage.getItem('wk_token');\n                if (!wkToken) return;\n                wkToken = JSON.parse(wkToken);\n                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);\n                if (wkToken.isAutoLogin) {\n                    window.sessionStorage.setItem('EvinK', 'Handsome');\n                    return location.reload();\n                }\n                wkToken.isAutoLogin = true;\n                // console.log(JSON.stringify(wkToken));\n                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n            }, 1000)\n        ";
                         script = document.createElement('script');
                         script.id = scriptID;
                         script.innerHTML += content;
                         document.body.appendChild(script);
+                        return [4, StorageArea.get('loginStatusPersistence')];
+                    case 2:
+                        if (_a.sent()) {
+                            loopLSPStatus_1 = setInterval(function () {
+                                if (document.querySelector('#LSPScript-finished-EvinK')) {
+                                    generaPageContent.genBubbleMsg('登录状态已保存');
+                                    return clearInterval(loopLSPStatus_1);
+                                }
+                            }, 1000);
+                        }
                         return [2];
                 }
             });

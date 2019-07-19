@@ -78,25 +78,38 @@ class DingTalkContent {
         if (document.querySelector(`#${scriptID}`)) return
         const content = `
             var loginStatusKeep = setInterval(function () {
-            window.sessionStorage.setItem('EvinK', 'Handsome');
-            window.sessionStorage.setItem('wk_device_id', '4c903cc83a1f42e6b6b4ae9bbf46b958');
-            var wkToken = window.sessionStorage.getItem('wk_token');
-            if (!wkToken) {
-                return clearInterval(loginStatusKeep)
-            }
-            wkToken = JSON.parse(wkToken);
-            if (wkToken.isAutoLogin) {
-                return clearInterval(loginStatusKeep)
-            }
-            wkToken.isAutoLogin = true;
-            console.log(JSON.stringify(wkToken));
-            window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));
-        }, 1000)
+                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {
+                    var element = document.createElement('div');
+                    element.id = 'LSPScript-finished-EvinK';
+                    document.body.appendChild(element);
+                    return clearInterval(loginStatusKeep); 
+                }
+                var wkToken = window.sessionStorage.getItem('wk_token');
+                if (!wkToken) return;
+                wkToken = JSON.parse(wkToken);
+                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);
+                if (wkToken.isAutoLogin) {
+                    window.sessionStorage.setItem('EvinK', 'Handsome');
+                    return location.reload();
+                }
+                wkToken.isAutoLogin = true;
+                // console.log(JSON.stringify(wkToken));
+                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));
+            }, 1000)
         `
         const script = document.createElement('script')
         script.id = scriptID
         script.innerHTML += content
         document.body.appendChild(script)
+        // notification
+        if (await StorageArea.get('loginStatusPersistence')) {
+            const loopLSPStatus = setInterval(() => {
+                if (document.querySelector('#LSPScript-finished-EvinK')) {
+                    generaPageContent.genBubbleMsg('登录状态已保存')
+                    return clearInterval(loopLSPStatus)
+                }
+            }, 1000)
+        }
     }
 }
 
