@@ -38,11 +38,12 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
     var dtId;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4, storage.get('dtId')];
+            case 0: return [4, StorageArea.get('dtId')];
             case 1:
                 dtId = _a.sent();
                 if (dtId === activeInfo.tabId) {
                     sendMessage({ initDingTalkStyle: true });
+                    sendMessage({ checkLSPStatus: true });
                 }
                 return [2];
         }
@@ -50,7 +51,7 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
 }); });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.storeDtId) {
-        storage.set({ dtId: sender.tab.id });
+        StorageArea.set({ dtId: sender.tab.id });
     }
     sendResponse({
         result: 'success'

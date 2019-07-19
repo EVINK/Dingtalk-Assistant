@@ -1,20 +1,18 @@
-const storage = new (class {
+class StorageArea {
 
-    set(data: object) {
-        return new Promise((resolve, reject) => {
-            chrome.storage.local.set(data)
-        })
+    public static set(data: object) {
+        chrome.storage.local.set(data)
     }
 
-    get(key: string) {
-        return new Promise((resolve, reject) => {
+    public static get(key: string) {
+        return new Promise((resolve) => {
             chrome.storage.local.get(null, (result) => {
                 resolve(result[key])
             })
         })
     }
+}
 
-})()
 
 const sendMessage = function (msg: object, callback?: () => {}) {
     return new Promise(async (solve, reject) => {

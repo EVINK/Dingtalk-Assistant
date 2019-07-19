@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "钉钉助手",
-  "description": "钉钉助手",
+  "description": "全屏模式、登录持久化、新消息提醒……一款开源的办公效率工具",
   "version": "1.0.0",
   "short_name": "dingding",
   "icons": {
@@ -20,9 +20,9 @@
         "https://im.dingtalk.com/"
       ],
       "js": [
-        "js/utils.js",
-        "js/generalPage.js",
-        "js/dingTalkContent.js"
+        "scripts/utils.js",
+        "scripts/generalPageContent.js",
+        "scripts/dingTalkContent.js"
       ],
       "run_at": "document_end",
       "all_frames": true
@@ -32,26 +32,24 @@
         "*://*/*"
       ],
       "css": [
-        "css/content.css"
+        "styles/content.css"
       ],
       "js": [
-        "js/utils.js",
-        "js/generalPage.js"
+        "scripts/utils.js",
+        "scripts/generalPageContent.js"
       ],
       "run_at": "document_end",
       "all_frames": true
     }
   ],
-
   "web_accessible_resources": [
-    "js/snapshot.js"
+    "scripts/snapshot.js"
   ],
-
   "background": {
     "persistent": true,
     "scripts": [
-      "js/utils.js",
-      "js/background.js"
+      "scripts/utils.js",
+      "scripts/background.js"
     ]
   },
   "permissions": [
@@ -60,5 +58,6 @@
     "tabs",
     "background",
     "desktopCapture"
-  ]
+  ],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

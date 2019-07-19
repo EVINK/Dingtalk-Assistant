@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Tab Page</title>
+    <script src="scripts/vue-dev.js"></script>
+    <link rel="stylesheet" href="styles/popup.css">
+</head>
+<body>
+<div id="app">
+    <div id="dingtalk">
+            <span class="title">钉钉助手
+                <a href="https://im.dingtalk.com" target="_blank" class="go-to-web-version">去网页版</a>
+            </span>
+    </div>
+
+    <div id="tools">
+        <div class="tools auto-login">
+            <span>登录保持</span>
+            <div v-if="loginStatusPersistence && !lspSwitchAnimation"
+                 @click="notKeepLoginStatus"
+                 class="switch on"></div>
+            <div v-else-if="!loginStatusPersistence && !lspSwitchAnimation"
+                 @click="keepLoginStatus"
+                 class="switch"></div>
+            <div v-else-if="loginStatusPersistence && lspSwitchAnimation"
+                 @click="notKeepLoginStatus"
+                 class="switch on animation"></div>
+            <div v-else-if="!loginStatusPersistence && lspSwitchAnimation"
+                 @click="keepLoginStatus"
+                 class="switch off animation"></div>
+
+        </div>
+        <div class="tools">
+            <span>钉钉全屏</span>
+            <div v-if="fullScreen && !fsSwitchAnimation"
+                 @click="offFullScreen"
+                 class="switch on"></div>
+            <div v-else-if="!fullScreen && !fsSwitchAnimation"
+                 @click="onFullScreen"
+                 class="switch"></div>
+            <div v-if="fullScreen && fsSwitchAnimation"
+                 @click="offFullScreen"
+                 class="switch on animation"></div>
+            <div v-else-if="!fullScreen && fsSwitchAnimation"
+                 @click="onFullScreen"
+                 class="switch off animation"></div>
+        </div>
+        <div class="tools">
+            <span>快速截屏</span>
+            <div id="screen-shot"
+                 @click="snapshot"
+            >开始
+            </div>
+        </div>
+    </div>
+
+    <div :class="{dark: menuOn && menuClicked}"></div>
+    <div :class="{menu:true, on: menuOn && menuClicked, off: !menuOn && menuClicked}">
+        <div @click="clickMenu" class="img-wrapper">
+            <img v-if="menuOn" src="assets/imgs/menu-white.svg"/>
+            <img v-else src="assets/imgs/menu.svg"/>
+        </div>
+
+        <ul>
+            <li>
+                <span><a>通知</a></span>
+            </li>
+            <li>
+                <span><a>设置</a></span>
+            </li>
+            <li id="author">
+                <span><a>@EvinK</a></span>
+            </li>
+        </ul>
+
+        <div class="version-info">v{{version}}</div>
+    </div>
+
+</div>
+<script src="scripts/utils.js"></script>
+<script src="scripts/popup.js"></script>
+</body>
+</html>

@@ -33,23 +33,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var storage = new ((function () {
-    function class_1() {
+var StorageArea = (function () {
+    function StorageArea() {
     }
-    class_1.prototype.set = function (data) {
-        return new Promise(function (resolve, reject) {
-            chrome.storage.local.set(data);
-        });
+    StorageArea.set = function (data) {
+        chrome.storage.local.set(data);
     };
-    class_1.prototype.get = function (key) {
-        return new Promise(function (resolve, reject) {
+    StorageArea.get = function (key) {
+        return new Promise(function (resolve) {
             chrome.storage.local.get(null, function (result) {
                 resolve(result[key]);
             });
         });
     };
-    return class_1;
-}()))();
+    return StorageArea;
+}());
 var sendMessage = function (msg, callback) {
     var _this = this;
     return new Promise(function (solve, reject) { return __awaiter(_this, void 0, void 0, function () {
