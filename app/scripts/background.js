@@ -53,6 +53,11 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
     if (message.storeDtId) {
         StorageArea.set({ dtId: sender.tab.id });
     }
+    else if (message.snapshot) {
+        chrome.tabs.captureVisibleTab(null, {}, function (image) {
+            sendMessage({ snapshot: image });
+        });
+    }
     sendResponse({
         result: 'success'
     });

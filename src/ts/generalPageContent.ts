@@ -24,13 +24,26 @@ class GeneralPageContent {
                 } else if (request.message.bubble) {
                     self.genBubbleMsg(request.message.bubble as string)
                 } else if (request.message.snapshot) {
-                    // TODO
+                    self.createSnapshot(request.message.snapshot)
                 }
 
                 sendResponse({
-                    result: "success"
+                    result: 'success'
                 })
             })
+        // shortcut of snapshot
+        document.onkeydown = (e) => {
+            let isCtrlPressed = false
+            let isAltPressed = false
+            if (e.ctrlKey) isCtrlPressed = true
+            if (e.altKey) isAltPressed = true
+            if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
+                // 兼容mac
+                if (isCtrlPressed && isAltPressed) {
+                    chrome.runtime.sendMessage({snapshot: true})
+                }
+            }
+        }
     }
 
     private genAlertWindow() {
@@ -179,8 +192,8 @@ class GeneralPageContent {
                 flex-flow: column;
                 justify-content: center;
                 text-align: left;
-                text-indent: 20px;
                 color: white;
+                padding: 0 20px;
             }
             
             .bubble-EvinK.bubble-on {
@@ -299,6 +312,28 @@ class GeneralPageContent {
         bubble.style.top = `${bubbleLength * 65}px`
         bubbleChild.innerText = `通知: ${msg}`
         bubble.classList.add(bubbleOnClass)
+    }
+
+    private createSnapshot(imageData: string) {
+        const img = new Image()
+        img.src = imageData
+        img.onload = () => {
+            const imgCanvas = document.createElement('canvas') as HTMLCanvasElement
+            imgCanvas.style.position = 'fixed'
+            imgCanvas.style.top = '0'
+            imgCanvas.style.left = '0'
+            imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString()
+            imgCanvas.width = img.width
+            imgCanvas.height = img.height
+
+            const dpr = window.devicePixelRatio || 1
+            const ctx = imgCanvas.getContext('2d')
+            ctx.drawImage(img, 0, 0, img.width * dpr, img.height * dpr)
+
+            new Snapshot(imgCanvas)
+        }
+
+
     }
 
 }

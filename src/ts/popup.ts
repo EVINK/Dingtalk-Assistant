@@ -42,9 +42,8 @@ new Vue({
             this.menuClicked = true
         },
         snapshot() {
-            // console.log('about to send msg')
             // return sendMessage({ alert: '功能即将完成' })
-            return sendMessage({bubble: '功能即将完成'})
+            // return sendMessage({bubble: '功能即将完成'})
 
             // console.log(chrome.runtime.id)
             // console.log(chrome.tabs)
@@ -54,9 +53,9 @@ new Vue({
             // })
 
             // 截图 (当前网页)
-            // chrome.tabs.captureVisibleTab(null, {}, function (image) {
-            //     console.log(image);
-            // });
+            return chrome.tabs.captureVisibleTab(null, {}, function (image) {
+                sendMessage({snapshot: image})
+            })
 
             // 录屏
             // const thisPage = await getCurrentPage()
@@ -64,9 +63,8 @@ new Vue({
             //     console.log(streamId)
             // })
 
-            // sendMessage({snapshot: true})
 
-            // return
+
         },
     },
     async mounted() {

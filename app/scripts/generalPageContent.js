@@ -54,17 +54,31 @@ var GeneralPageContent = (function () {
                         self.genBubbleMsg(request.message.bubble);
                     }
                     else if (request.message.snapshot) {
+                        self.createSnapshot(request.message.snapshot);
                     }
                     sendResponse({
-                        result: "success"
+                        result: 'success'
                     });
                     return [2];
                 });
             });
         });
+        document.onkeydown = function (e) {
+            var isCtrlPressed = false;
+            var isAltPressed = false;
+            if (e.ctrlKey)
+                isCtrlPressed = true;
+            if (e.altKey)
+                isAltPressed = true;
+            if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
+                if (isCtrlPressed && isAltPressed) {
+                    chrome.runtime.sendMessage({ snapshot: true });
+                }
+            }
+        };
     }
     GeneralPageContent.prototype.genAlertWindow = function () {
-        this.alertWindowStyle.innerHTML += "\n            ::-webkit-scrollbar {\n                width: 5px;\n                height: 3px;\n            }\n        \n            ::-webkit-scrollbar-track-piece {\n                background-color: white;\n            }\n        \n            ::-webkit-scrollbar-thumb {\n                height: 50px;\n                background-color: #3173FD;\n                border-radius: 3px;\n            }\n        \n            /* js generateWindow */\n        \n            .win {\n                background: black;\n            }\n        \n            #back_win,\n            .back_win {\n                height: 100vh;\n                width: 100vw;\n                background: rgba(0, 0, 0, 0.8);\n                position: fixed;\n                top: 0;\n                z-index: " + GeneralPageContent.highestZIndex + ";\n                display: none;\n                text-align: center;\n            }\n        \n            #win,\n            .win {\n                height: 80%;\n                width: 70%;\n                background: white;\n                position: relative;\n                top: 50%;\n                display: inline-block;\n                text-align: center;\n            }\n        \n            #win {\n                top: 35%;\n                left: 50%;\n                width: 300px;\n                max-height: 200px;\n                border-radius: 5px;\n                transform: translate3D(-50%, -35%, 0);\n                display: flex;\n                flex-flow: column;\n                justify-content: space-between;\n            }\n        \n            #p_title_error {\n                margin: 0 auto;\n                color: #484545;\n                height: auto;\n                text-align: center;\n                border-bottom: 1px solid #cfcfcf;\n                width: 70%;\n                line-height: 35px;\n            }\n        \n            #p_tips {\n                display: block;\n                text-align: center;\n                color: black;\n                height: auto;\n                padding: 2px 40px;\n                line-height: 25px;\n                overflow-y: scroll;\n                overflow-x: hidden;\n            }\n        \n            #btn_div {\n                width: 100%;\n                display: flex;\n                flex-flow: row;\n                justify-content: center;\n                align-items: center;\n            }\n        \n            #win_confirm,\n            #win_cancel {\n                display: inline;\n                width: 50px;\n                height: 33px;\n                border-radius: 2px;\n                border: none;\n                margin: 0 10px 0 10px;\n                font-family: \u5FAE\u8F6F\u96C5\u9ED1;\n                cursor: pointer;\n            }\n        \n            #win_confirm {\n                color: white;\n                background: #279a50;\n                margin: 15px 0;\n                white-space: nowrap;\n            }\n        \n            #win_confirm:hover {\n                background: #218344;\n            }\n            \n            \n            @keyframes bubble-on {\n                0% {\n                    \n                }\n                7% {\n                   right: -10px;\n                }\n                92% {\n                   right: -10px;\n                }\n                100% {\n                   right: -100%; \n                }\n            }\n            \n            #bubbleWin-EvinK {\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                align-items: center;\n            }\n            \n            .bubble-EvinK {\n                position: fixed;\n                top: 0;\n                right: -100%;\n                z-index: 2147483645;\n                width: 300px;\n                height: 60px;\n                background: #000000a6;\n                border-radius: 10px;\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                text-align: left;\n                text-indent: 20px;\n                color: white;\n            }\n            \n            .bubble-EvinK.bubble-on {\n                animation: bubble-on " + GeneralPageContent.bubbleTime + "s;\n            }\n        ";
+        this.alertWindowStyle.innerHTML += "\n            ::-webkit-scrollbar {\n                width: 5px;\n                height: 3px;\n            }\n        \n            ::-webkit-scrollbar-track-piece {\n                background-color: white;\n            }\n        \n            ::-webkit-scrollbar-thumb {\n                height: 50px;\n                background-color: #3173FD;\n                border-radius: 3px;\n            }\n        \n            /* js generateWindow */\n        \n            .win {\n                background: black;\n            }\n        \n            #back_win,\n            .back_win {\n                height: 100vh;\n                width: 100vw;\n                background: rgba(0, 0, 0, 0.8);\n                position: fixed;\n                top: 0;\n                z-index: " + GeneralPageContent.highestZIndex + ";\n                display: none;\n                text-align: center;\n            }\n        \n            #win,\n            .win {\n                height: 80%;\n                width: 70%;\n                background: white;\n                position: relative;\n                top: 50%;\n                display: inline-block;\n                text-align: center;\n            }\n        \n            #win {\n                top: 35%;\n                left: 50%;\n                width: 300px;\n                max-height: 200px;\n                border-radius: 5px;\n                transform: translate3D(-50%, -35%, 0);\n                display: flex;\n                flex-flow: column;\n                justify-content: space-between;\n            }\n        \n            #p_title_error {\n                margin: 0 auto;\n                color: #484545;\n                height: auto;\n                text-align: center;\n                border-bottom: 1px solid #cfcfcf;\n                width: 70%;\n                line-height: 35px;\n            }\n        \n            #p_tips {\n                display: block;\n                text-align: center;\n                color: black;\n                height: auto;\n                padding: 2px 40px;\n                line-height: 25px;\n                overflow-y: scroll;\n                overflow-x: hidden;\n            }\n        \n            #btn_div {\n                width: 100%;\n                display: flex;\n                flex-flow: row;\n                justify-content: center;\n                align-items: center;\n            }\n        \n            #win_confirm,\n            #win_cancel {\n                display: inline;\n                width: 50px;\n                height: 33px;\n                border-radius: 2px;\n                border: none;\n                margin: 0 10px 0 10px;\n                font-family: \u5FAE\u8F6F\u96C5\u9ED1;\n                cursor: pointer;\n            }\n        \n            #win_confirm {\n                color: white;\n                background: #279a50;\n                margin: 15px 0;\n                white-space: nowrap;\n            }\n        \n            #win_confirm:hover {\n                background: #218344;\n            }\n            \n            \n            @keyframes bubble-on {\n                0% {\n                    \n                }\n                7% {\n                   right: -10px;\n                }\n                92% {\n                   right: -10px;\n                }\n                100% {\n                   right: -100%; \n                }\n            }\n            \n            #bubbleWin-EvinK {\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                align-items: center;\n            }\n            \n            .bubble-EvinK {\n                position: fixed;\n                top: 0;\n                right: -100%;\n                z-index: 2147483645;\n                width: 300px;\n                height: 60px;\n                background: #000000a6;\n                border-radius: 10px;\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                text-align: left;\n                color: white;\n                padding: 0 20px;\n            }\n            \n            .bubble-EvinK.bubble-on {\n                animation: bubble-on " + GeneralPageContent.bubbleTime + "s;\n            }\n        ";
     };
     GeneralPageContent.alert = function (msg) {
         GeneralPageContent.generationPopWin(msg, function (confirmBtn, cancelBtn, win, back_win) {
@@ -156,6 +170,23 @@ var GeneralPageContent = (function () {
         bubble.style.top = bubbleLength * 65 + "px";
         bubbleChild.innerText = "\u901A\u77E5: " + msg;
         bubble.classList.add(bubbleOnClass);
+    };
+    GeneralPageContent.prototype.createSnapshot = function (imageData) {
+        var img = new Image();
+        img.src = imageData;
+        img.onload = function () {
+            var imgCanvas = document.createElement('canvas');
+            imgCanvas.style.position = 'fixed';
+            imgCanvas.style.top = '0';
+            imgCanvas.style.left = '0';
+            imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
+            imgCanvas.width = img.width;
+            imgCanvas.height = img.height;
+            var dpr = window.devicePixelRatio || 1;
+            var ctx = imgCanvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, img.width * dpr, img.height * dpr);
+            new Snapshot(imgCanvas);
+        };
     };
     GeneralPageContent.highestZIndex = 2147483645;
     GeneralPageContent.bubbleTime = 5;

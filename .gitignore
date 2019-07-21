@@ -2,3 +2,7 @@ node_modules/
 .vscode/
 *.log
 .idea/
+.DS_Store
+app.crx
+app.zip
+app.pem

@@ -21,6 +21,7 @@
       ],
       "js": [
         "scripts/utils.js",
+        "scripts/snapshot.js",
         "scripts/generalPageContent.js",
         "scripts/dingTalkContent.js"
       ],
@@ -29,13 +30,14 @@
     },
     {
       "matches": [
-        "*://*/*"
+        "<all_urls>"
       ],
       "css": [
         "styles/content.css"
       ],
       "js": [
         "scripts/utils.js",
+        "scripts/snapshot.js",
         "scripts/generalPageContent.js"
       ],
       "run_at": "document_end",
@@ -43,7 +45,7 @@
     }
   ],
   "web_accessible_resources": [
-    "scripts/snapshot.js"
+    "assets/imgs/*"
   ],
   "background": {
     "persistent": true,
@@ -53,6 +55,7 @@
     ]
   },
   "permissions": [
+    "<all_urls>",
     "activeTab",
     "storage",
     "tabs",

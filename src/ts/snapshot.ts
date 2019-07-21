@@ -1,9 +1,9 @@
 class Snapshot {
 
-    private static bgCoverId: string = 'bgCover'
+    private static bgCoverId: string = 'bgCover-snapshot-EvinK'
     private static highestZIndex: number = 2147483645
-    private static father = document.createElement('div') as HTMLDivElement
 
+    private father = document.createElement('div') as HTMLDivElement
     private cover: HTMLDivElement
     private coverLeft: HTMLDivElement
     private coverRight: HTMLDivElement
@@ -14,11 +14,16 @@ class Snapshot {
     private statusBar: HTMLDivElement
     private previewBoxToolsBar: HTMLDivElement
 
+    private canvas: HTMLCanvasElement;
+
     private isClickBegun = false
 
-    public constructor() {
-        console.log('init snapshot js')
-        document.body.append(Snapshot.father)
+    public constructor(canvas: HTMLCanvasElement) {
+        this.father.id = 'snapshot-unique-of-this-window-EvinK'
+        if (document.getElementById(this.father.id)) return
+        this.canvas = canvas
+        this.father.appendChild(this.canvas)
+        document.body.append(this.father)
         this.genBgCover()
         this.event()
 
@@ -80,7 +85,7 @@ class Snapshot {
             z-index: ${Snapshot.highestZIndex + 2};
             cursor: crosshair;
             `)
-            Snapshot.father.append(element)
+            this.father.append(element)
             this.cover = element
         } else {
             if (this.cover.style.background) {
@@ -99,23 +104,23 @@ class Snapshot {
             if (!this.coverLeft) {
                 this.coverLeft = document.createElement('div') as HTMLDivElement
                 this.coverLeft.id = coverLeftId
-                Snapshot.father.append(this.coverLeft)
+                this.father.append(this.coverLeft)
             }
             if (!this.coverRight) {
                 this.coverRight = document.createElement('div') as HTMLDivElement
                 this.coverRight.id = coverRightId
-                Snapshot.father.append(this.coverRight)
+                this.father.append(this.coverRight)
             }
             if (!this.coverTop) {
                 this.coverTop = document.createElement('div') as HTMLDivElement
                 this.coverTop.id = coverTopId
-                Snapshot.father.append(this.coverTop)
+                this.father.append(this.coverTop)
             }
 
             if (!this.coverBottom) {
                 this.coverBottom = document.createElement('div') as HTMLDivElement
                 this.coverBottom.id = coverBottomId
-                Snapshot.father.append(this.coverBottom)
+                this.father.append(this.coverBottom)
             }
 
             const rightWidth = document.body.clientWidth - this.previewBox.offsetLeft - this.previewBox.offsetWidth
@@ -159,7 +164,7 @@ class Snapshot {
         z-index: ${Snapshot.highestZIndex + 1};
         cursor: move;
         `)
-        Snapshot.father.append(this.previewBox)
+        this.father.append(this.previewBox)
 
         this.statusBar = document.createElement('div')
         this.previewBox.append(this.statusBar)
@@ -185,13 +190,101 @@ class Snapshot {
         bottom: -35px;
         right: 0;
         display: block;
-        min-width: 200px;
-        width: 70%;
+        min-width: 75px;
         height: 35px;
         background: black;
         color: white;
         border-radius: 10px;
         `)
+        // generate tools
+        this.previewBoxToolsBar.innerHTML += `
+        <style>
+          ul#tools-of-toolsBar-EvinK {
+            display: flex;
+            flex-flow: row;
+            justify-content: flex-end;
+            align-items: center;
+            cursor: default;
+            width: 90%;
+            height: 100%;
+            list-style: none;
+            /* some site will interference this style */
+            /* so there is a duplicate mention */
+            margin: 0;
+            padding: 0;
+          }
+          ul#tools-of-toolsBar-EvinK li {
+            cursor: pointer;
+          }
+          ul#tools-of-toolsBar-EvinK li img{
+            width: 30px;
+          }
+        </style>
+        `
+        const toolsList = document.createElement('ul') as HTMLUListElement
+        toolsList.id = 'tools-of-toolsBar-EvinK'
+        this.previewBoxToolsBar.appendChild(toolsList)
+        toolsList.onmousemove = (e => e.cancelBubble = true)
+        toolsList.onmouseup = (e => e.cancelBubble = true)
+        toolsList.onmousedown = (e => e.cancelBubble = true)
+
+
+        let li = document.createElement('li')
+        toolsList.appendChild(li)
+        let img = new Image()
+        li.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/download.svg')
+        li.onclick = () => {
+            const startX = parseInt(this.previewBox.getAttribute('startX'))
+            const startY = parseInt(this.previewBox.getAttribute('startY'))
+            const endX = startX + this.previewBox.clientWidth
+            const endY = startY + this.previewBox.clientHeight
+
+            const canvas = Snapshot.cropCanvas(this.canvas, {x: startX, y: startY}, {x: endX, y: endY})
+
+            canvas.toBlob((blob => {
+                const url = window.URL
+                const a = document.createElement('a')
+                a.download = `${new Date().getTime()}.png`
+                a.href = url.createObjectURL(blob)
+                a.dataset.downloadurl = ['png', a.download, a.href].join(':')
+                // console.log(a.dataset.downloadurl)
+                a.click()
+                this.destroySnapshot()
+
+                generaPageContent.genBubbleMsg('已保存图片')
+            }))
+
+        }
+
+        li = document.createElement('li')
+        toolsList.appendChild(li)
+        img = new Image()
+        li.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/ok.svg')
+        li.onclick = () => {
+            const startX = parseInt(this.previewBox.getAttribute('startX'))
+            const startY = parseInt(this.previewBox.getAttribute('startY'))
+            const endX = startX + this.previewBox.clientWidth
+            const endY = startY + this.previewBox.clientHeight
+
+            const canvas = Snapshot.cropCanvas(this.canvas, {x: startX, y: startY}, {x: endX, y: endY})
+            const data = canvas.toDataURL('image/png')
+            const img = new Image()
+            this.father.appendChild(img)
+            img.src = data
+
+            const range = document.createRange()
+            const selection = document.getSelection()
+            range.selectNode(img)
+            selection.removeAllRanges()
+            selection.addRange(range)
+            document.execCommand('copy')
+            this.destroySnapshot()
+
+            generaPageContent.genBubbleMsg('图片已复制')
+            setTimeout(() => generaPageContent.genBubbleMsg('注意,在富文本编辑器中才能粘贴哦'), 500)
+        }
 
     }
 
@@ -217,15 +310,12 @@ class Snapshot {
                     const offsetX = e.pageX - x
                     const offsetY = e.pageY - y
 
-                    let pattern = 0
 
                     if (offsetX < 0) {
                         this.previewBox.style.left = `${x - Math.abs(offsetX)}px`
-                        pattern += 1
                     }
                     if (offsetY < 0) {
                         this.previewBox.style.top = `${y - Math.abs(offsetY)}px`
-                        pattern += 1
                     }
 
                     this.previewBox.style.width = `${Math.abs(offsetX)}px`
@@ -262,7 +352,6 @@ class Snapshot {
                 // event
                 // tslint:disable-next-line
                 this.previewBox.onmousedown = (e: MouseEvent) => {
-                    // console.log('mounsedown')
                     this.previewBox.setAttribute('mouseDownX', e.pageX.toString())
                     this.previewBox.setAttribute('mouseDownY', e.pageY.toString())
                     this.previewBox.setAttribute('mouseDown', '1')
@@ -273,19 +362,11 @@ class Snapshot {
                         return
                     }
 
-                    // console.log(this.previewBox.getAttribute('mouseDown'))
-
                     const startX = parseInt(this.previewBox.getAttribute('startX'))
                     const startY = parseInt(this.previewBox.getAttribute('startY'))
 
                     const mode = 'move'
-                    // if (Math.round(e.pageY / 10) === Math.round(startY / 10)) {
-                    //     // this.previewBox.style.cursor = 'ns-resize'
-                    //     // mode = 'resize'
-                    // } else {
-                    //     this.previewBox.style.cursor = 'move'
-                    //     mode = 'move'
-                    // }
+
 
                     const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'))
                     const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'))
@@ -303,16 +384,7 @@ class Snapshot {
 
                         this.genBgCover()
                     } else if (mode === 'resize') {
-                        // const height =  startY + e.pageY - offsetY
-                        //
-                        // this.previewBox.style.top = `${e.pageY}px`
-                        // this.previewBox.style.left = `${e.pageX}px`
-                        // this.previewBox.style.height = `${height}px`
-                        // // this.previewBox.style.height
-                        //
-                        //
-                        //
-                        // this.genBgCover()
+                        // TODO
                     }
 
                 }
@@ -350,7 +422,34 @@ class Snapshot {
 
     }
 
+    private static cropCanvas(canvas: HTMLCanvasElement, start: { x: number, y: number }, end: { x: number, y: number }) {
+        const ctx = canvas.getContext('2d')
+        const imageData = ctx.getImageData(start.x, start.y, end.x, end.y)
+
+        const newCanvas = document.createElement('canvas')
+        const dpr = window.devicePixelRatio || 1
+        newCanvas.width = (end.x - start.x) * dpr
+        newCanvas.height = (end.y - start.y) * dpr
+        const newCtx = newCanvas.getContext('2d')
+
+        newCtx.putImageData(imageData, 0, 0)
+        return newCanvas
+    }
+
     private destroySnapshot() {
+        const id = this.father.id
+        this.father.remove()
+
+        // fuck iframe!!!
+        try {
+            document.querySelectorAll('iframe').forEach(item => {
+                const element = item.contentWindow.document.getElementById(id)
+                if (element) element.remove()
+            })
+        } catch (e) {
+            console.error(e)
+        }
+
     }
 
 }

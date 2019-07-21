@@ -75,7 +75,9 @@ new Vue({
             this.menuClicked = true;
         },
         snapshot: function () {
-            return sendMessage({ bubble: '功能即将完成' });
+            return chrome.tabs.captureVisibleTab(null, {}, function (image) {
+                sendMessage({ snapshot: image });
+            });
         },
     },
     mounted: function () {

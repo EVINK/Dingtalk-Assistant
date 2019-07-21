@@ -1,0 +1,11 @@
+{
+  "semicolon": [
+    true,
+    "never"
+  ],
+  "quotemark": [
+    true,
+    "single",
+    "avoid-template"
+  ]
+}
