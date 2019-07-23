@@ -174,17 +174,16 @@ var GeneralPageContent = (function () {
     GeneralPageContent.prototype.createSnapshot = function (imageData) {
         var img = new Image();
         img.src = imageData;
-        img.style.width = document.body.clientWidth + "px";
-        img.style.height = '100vh';
-        document.body.appendChild(img);
         img.onload = function () {
             var imgCanvas = document.createElement('canvas');
+            imgCanvas.width = img.width;
+            imgCanvas.height = img.height;
             imgCanvas.style.position = 'fixed';
             imgCanvas.style.top = '0';
             imgCanvas.style.left = '0';
             imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
-            imgCanvas.width = img.width;
-            imgCanvas.height = img.height;
+            imgCanvas.style.width = document.body.clientWidth + "px";
+            imgCanvas.style.height = '100vh';
             var ctx = imgCanvas.getContext('2d');
             ctx.drawImage(img, 0, 0, img.width, img.height);
             new Snapshot(imgCanvas);
