@@ -296,7 +296,7 @@ class Snapshot {
 
                 if (!this.isClickBegun) {
                     this.isClickBegun = true
-                    this.genPreviewBox(e.pageX, e.pageY)
+                    this.genPreviewBox(e.offsetX, e.offsetY)
                     this.genBgCover()
                 }
 
@@ -307,8 +307,8 @@ class Snapshot {
                     const x = parseInt(this.previewBox.getAttribute('startX'))
                     const y = parseInt(this.previewBox.getAttribute('startY'))
 
-                    const offsetX = e.pageX - x
-                    const offsetY = e.pageY - y
+                    const offsetX = e.offsetX - x
+                    const offsetY = e.offsetY - y
 
 
                     if (offsetX < 0) {
@@ -335,15 +335,21 @@ class Snapshot {
                 const x = parseInt(this.previewBox.getAttribute('startX'))
                 const y = parseInt(this.previewBox.getAttribute('startY'))
 
-                const offsetX = e.pageX - x
-                const offsetY = e.pageY - y
+                console.log(e.offsetX, x)
+                console.log(e.offsetY, y)
+
+                const offsetX = e.offsetX - x
+                const offsetY = e.offsetY - y
 
                 if (offsetX < 0) {
-                    this.previewBox.setAttribute('startX', e.pageX.toString())
+                    this.previewBox.setAttribute('startX', e.offsetX.toString())
                 }
                 if (offsetY < 0) {
-                    this.previewBox.setAttribute('startY', e.pageY.toString())
+                    this.previewBox.setAttribute('startY', e.offsetY.toString())
                 }
+
+                console.log('startX', this.previewBox.getAttribute('startX'))
+                console.log('startY', this.previewBox.getAttribute('startY'))
 
                 // 移除cover
                 this.isClickBegun = false
@@ -352,8 +358,8 @@ class Snapshot {
                 // event
                 // tslint:disable-next-line
                 this.previewBox.onmousedown = (e: MouseEvent) => {
-                    this.previewBox.setAttribute('mouseDownX', e.pageX.toString())
-                    this.previewBox.setAttribute('mouseDownY', e.pageY.toString())
+                    this.previewBox.setAttribute('mouseDownX', e.offsetX.toString())
+                    this.previewBox.setAttribute('mouseDownY', e.offsetY.toString())
                     this.previewBox.setAttribute('mouseDown', '1')
                 }
 
@@ -376,13 +382,16 @@ class Snapshot {
 
                     // 窗体移动
                     if (mode === 'move') {
-                        const leftOffset = startX + e.pageX - offsetX
-                        const topOffset = startY + e.pageY - offsetY
+                        const leftOffset = startX + e.offsetX - offsetX
+                        const topOffset = startY + e.offsetY - offsetY
+
+                        console.log('top', startY, topOffset)
+                        console.log('left', startX, leftOffset)
 
                         this.previewBox.style.top = `${topOffset}px`
                         this.previewBox.style.left = `${leftOffset}px`
-
                         this.genBgCover()
+
                     } else if (mode === 'resize') {
                         // TODO
                     }
@@ -401,8 +410,8 @@ class Snapshot {
                     const startX = parseInt(this.previewBox.getAttribute('startX'))
                     const startY = parseInt(this.previewBox.getAttribute('startY'))
 
-                    const leftOffset = startX + e.pageX - offsetX
-                    const topOffset = startY + e.pageY - offsetY
+                    const leftOffset = startX + e.offsetX - offsetX
+                    const topOffset = startY + e.offsetY - offsetY
 
                     this.previewBox.setAttribute('startX', leftOffset.toString())
                     this.previewBox.setAttribute('startY', topOffset.toString())
@@ -427,9 +436,9 @@ class Snapshot {
         const imageData = ctx.getImageData(start.x, start.y, end.x, end.y)
 
         const newCanvas = document.createElement('canvas')
-        const dpr = window.devicePixelRatio || 1
-        newCanvas.width = (end.x - start.x) * dpr
-        newCanvas.height = (end.y - start.y) * dpr
+        // const dpr = window.devicePixelRatio || 1
+        newCanvas.width = end.x - start.x
+        newCanvas.height = end.y - start.y
         const newCtx = newCanvas.getContext('2d')
 
         newCtx.putImageData(imageData, 0, 0)

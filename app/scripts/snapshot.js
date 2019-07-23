@@ -179,7 +179,7 @@ var Snapshot = (function () {
             this.cover.addEventListener('mousedown', function (e) {
                 if (!_this.isClickBegun) {
                     _this.isClickBegun = true;
-                    _this.genPreviewBox(e.pageX, e.pageY);
+                    _this.genPreviewBox(e.offsetX, e.offsetY);
                     _this.genBgCover();
                 }
             });
@@ -187,8 +187,8 @@ var Snapshot = (function () {
                 if (_this.previewBox && _this.isClickBegun) {
                     var x = parseInt(_this.previewBox.getAttribute('startX'));
                     var y = parseInt(_this.previewBox.getAttribute('startY'));
-                    var offsetX = e.pageX - x;
-                    var offsetY = e.pageY - y;
+                    var offsetX = e.offsetX - x;
+                    var offsetY = e.offsetY - y;
                     if (offsetX < 0) {
                         _this.previewBox.style.left = x - Math.abs(offsetX) + "px";
                     }
@@ -206,19 +206,23 @@ var Snapshot = (function () {
             this.cover.onmouseup = function (e) {
                 var x = parseInt(_this.previewBox.getAttribute('startX'));
                 var y = parseInt(_this.previewBox.getAttribute('startY'));
-                var offsetX = e.pageX - x;
-                var offsetY = e.pageY - y;
+                console.log(e.offsetX, x);
+                console.log(e.offsetY, y);
+                var offsetX = e.offsetX - x;
+                var offsetY = e.offsetY - y;
                 if (offsetX < 0) {
-                    _this.previewBox.setAttribute('startX', e.pageX.toString());
+                    _this.previewBox.setAttribute('startX', e.offsetX.toString());
                 }
                 if (offsetY < 0) {
-                    _this.previewBox.setAttribute('startY', e.pageY.toString());
+                    _this.previewBox.setAttribute('startY', e.offsetY.toString());
                 }
+                console.log('startX', _this.previewBox.getAttribute('startX'));
+                console.log('startY', _this.previewBox.getAttribute('startY'));
                 _this.isClickBegun = false;
                 _this.cover.remove();
                 _this.previewBox.onmousedown = function (e) {
-                    _this.previewBox.setAttribute('mouseDownX', e.pageX.toString());
-                    _this.previewBox.setAttribute('mouseDownY', e.pageY.toString());
+                    _this.previewBox.setAttribute('mouseDownX', e.offsetX.toString());
+                    _this.previewBox.setAttribute('mouseDownY', e.offsetY.toString());
                     _this.previewBox.setAttribute('mouseDown', '1');
                 };
                 _this.previewBox.onmousemove = function (e) {
@@ -234,8 +238,10 @@ var Snapshot = (function () {
                         return;
                     }
                     if (mode === 'move') {
-                        var leftOffset = startX + e.pageX - offsetX;
-                        var topOffset = startY + e.pageY - offsetY;
+                        var leftOffset = startX + e.offsetX - offsetX;
+                        var topOffset = startY + e.offsetY - offsetY;
+                        console.log('top', startY, topOffset);
+                        console.log('left', startX, leftOffset);
                         _this.previewBox.style.top = topOffset + "px";
                         _this.previewBox.style.left = leftOffset + "px";
                         _this.genBgCover();
@@ -252,8 +258,8 @@ var Snapshot = (function () {
                     }
                     var startX = parseInt(_this.previewBox.getAttribute('startX'));
                     var startY = parseInt(_this.previewBox.getAttribute('startY'));
-                    var leftOffset = startX + e.pageX - offsetX;
-                    var topOffset = startY + e.pageY - offsetY;
+                    var leftOffset = startX + e.offsetX - offsetX;
+                    var topOffset = startY + e.offsetY - offsetY;
                     _this.previewBox.setAttribute('startX', leftOffset.toString());
                     _this.previewBox.setAttribute('startY', topOffset.toString());
                 };
@@ -270,9 +276,8 @@ var Snapshot = (function () {
         var ctx = canvas.getContext('2d');
         var imageData = ctx.getImageData(start.x, start.y, end.x, end.y);
         var newCanvas = document.createElement('canvas');
-        var dpr = window.devicePixelRatio || 1;
-        newCanvas.width = (end.x - start.x) * dpr;
-        newCanvas.height = (end.y - start.y) * dpr;
+        newCanvas.width = end.x - start.x;
+        newCanvas.height = end.y - start.y;
         var newCtx = newCanvas.getContext('2d');
         newCtx.putImageData(imageData, 0, 0);
         return newCanvas;

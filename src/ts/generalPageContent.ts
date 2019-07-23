@@ -317,6 +317,9 @@ class GeneralPageContent {
     private createSnapshot(imageData: string) {
         const img = new Image()
         img.src = imageData
+        img.style.width = `${document.body.clientWidth}px`
+        img.style.height = '100vh'
+        document.body.appendChild(img)
         img.onload = () => {
             const imgCanvas = document.createElement('canvas') as HTMLCanvasElement
             imgCanvas.style.position = 'fixed'
@@ -326,9 +329,8 @@ class GeneralPageContent {
             imgCanvas.width = img.width
             imgCanvas.height = img.height
 
-            const dpr = window.devicePixelRatio || 1
             const ctx = imgCanvas.getContext('2d')
-            ctx.drawImage(img, 0, 0, img.width * dpr, img.height * dpr)
+            ctx.drawImage(img, 0, 0, img.width, img.height)
 
             new Snapshot(imgCanvas)
         }

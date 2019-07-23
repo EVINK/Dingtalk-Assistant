@@ -174,6 +174,9 @@ var GeneralPageContent = (function () {
     GeneralPageContent.prototype.createSnapshot = function (imageData) {
         var img = new Image();
         img.src = imageData;
+        img.style.width = document.body.clientWidth + "px";
+        img.style.height = '100vh';
+        document.body.appendChild(img);
         img.onload = function () {
             var imgCanvas = document.createElement('canvas');
             imgCanvas.style.position = 'fixed';
@@ -182,9 +185,8 @@ var GeneralPageContent = (function () {
             imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
             imgCanvas.width = img.width;
             imgCanvas.height = img.height;
-            var dpr = window.devicePixelRatio || 1;
             var ctx = imgCanvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, img.width * dpr, img.height * dpr);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
             new Snapshot(imgCanvas);
         };
     };
