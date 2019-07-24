@@ -24,13 +24,13 @@ var Snapshot = (function () {
         }
         var realWidth;
         var realHeight;
-        if (!width) {
+        if (width === undefined || width === null) {
             realWidth = '100vw';
         }
         else {
             realWidth = width + "px";
         }
-        if (!height) {
+        if (height === undefined || height === null) {
             realHeight = document.body.clientHeight + "px";
         }
         else {
@@ -162,6 +162,8 @@ var Snapshot = (function () {
             var img = new Image();
             _this.father.appendChild(img);
             img.src = data;
+            var dpr = window.devicePixelRatio || 1;
+            img.style.transform = "scale(" + (2 - dpr) + ")";
             var range = document.createRange();
             var selection = document.getSelection();
             range.selectNode(img);
@@ -179,7 +181,7 @@ var Snapshot = (function () {
             this.cover.addEventListener('mousedown', function (e) {
                 if (!_this.isClickBegun) {
                     _this.isClickBegun = true;
-                    _this.genPreviewBox(e.pageX, e.pageY);
+                    _this.genPreviewBox(e.offsetX, e.offsetY);
                     _this.genBgCover();
                 }
             });
@@ -187,8 +189,8 @@ var Snapshot = (function () {
                 if (_this.previewBox && _this.isClickBegun) {
                     var x = parseInt(_this.previewBox.getAttribute('startX'));
                     var y = parseInt(_this.previewBox.getAttribute('startY'));
-                    var offsetX = e.pageX - x;
-                    var offsetY = e.pageY - y;
+                    var offsetX = e.offsetX - x;
+                    var offsetY = e.offsetY - y;
                     if (offsetX < 0) {
                         _this.previewBox.style.left = x - Math.abs(offsetX) + "px";
                     }
@@ -198,7 +200,7 @@ var Snapshot = (function () {
                     _this.previewBox.style.width = Math.abs(offsetX) + "px";
                     _this.previewBox.style.height = Math.abs(offsetY) + "px";
                     if (_this.statusBar) {
-                        _this.statusBar.innerText = "(" + Math.abs(offsetX) + ", " + Math.abs(offsetY) + ")";
+                        _this.statusBar.innerText = "(" + Math.abs(e.offsetX) + ", " + Math.abs(e.offsetY) + ")";
                     }
                     _this.genBgCover();
                 }
@@ -206,19 +208,19 @@ var Snapshot = (function () {
             this.cover.onmouseup = function (e) {
                 var x = parseInt(_this.previewBox.getAttribute('startX'));
                 var y = parseInt(_this.previewBox.getAttribute('startY'));
-                var offsetX = e.pageX - x;
-                var offsetY = e.pageY - y;
+                var offsetX = e.offsetX - x;
+                var offsetY = e.offsetY - y;
                 if (offsetX < 0) {
-                    _this.previewBox.setAttribute('startX', e.pageX.toString());
+                    _this.previewBox.setAttribute('startX', e.offsetX.toString());
                 }
                 if (offsetY < 0) {
-                    _this.previewBox.setAttribute('startY', e.pageY.toString());
+                    _this.previewBox.setAttribute('startY', e.offsetY.toString());
                 }
                 _this.isClickBegun = false;
                 _this.cover.remove();
                 _this.previewBox.onmousedown = function (e) {
-                    _this.previewBox.setAttribute('mouseDownX', e.pageX.toString());
-                    _this.previewBox.setAttribute('mouseDownY', e.pageY.toString());
+                    _this.previewBox.setAttribute('mouseDownX', e.offsetX.toString());
+                    _this.previewBox.setAttribute('mouseDownY', e.offsetY.toString());
                     _this.previewBox.setAttribute('mouseDown', '1');
                 };
                 _this.previewBox.onmousemove = function (e) {
@@ -234,11 +236,14 @@ var Snapshot = (function () {
                         return;
                     }
                     if (mode === 'move') {
-                        var leftOffset = startX + e.pageX - offsetX;
-                        var topOffset = startY + e.pageY - offsetY;
+                        var leftOffset = startX + e.offsetX - offsetX;
+                        var topOffset = startY + e.offsetY - offsetY;
                         _this.previewBox.style.top = topOffset + "px";
                         _this.previewBox.style.left = leftOffset + "px";
                         _this.genBgCover();
+                        _this.previewBox.setAttribute('startX', leftOffset.toString());
+                        _this.previewBox.setAttribute('startY', topOffset.toString());
+                        _this.statusBar.innerText = "(" + Math.abs(leftOffset) + ", " + Math.abs(topOffset) + ")";
                     }
                     else if (mode === 'resize') {
                     }
@@ -252,8 +257,8 @@ var Snapshot = (function () {
                     }
                     var startX = parseInt(_this.previewBox.getAttribute('startX'));
                     var startY = parseInt(_this.previewBox.getAttribute('startY'));
-                    var leftOffset = startX + e.pageX - offsetX;
-                    var topOffset = startY + e.pageY - offsetY;
+                    var leftOffset = startX + e.offsetX - offsetX;
+                    var topOffset = startY + e.offsetY - offsetY;
                     _this.previewBox.setAttribute('startX', leftOffset.toString());
                     _this.previewBox.setAttribute('startY', topOffset.toString());
                 };
@@ -267,10 +272,10 @@ var Snapshot = (function () {
         }
     };
     Snapshot.cropCanvas = function (canvas, start, end) {
-        var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(start.x, start.y, end.x, end.y);
-        var newCanvas = document.createElement('canvas');
         var dpr = window.devicePixelRatio || 1;
+        var ctx = canvas.getContext('2d');
+        var imageData = ctx.getImageData(start.x * dpr, start.y * dpr, end.x * dpr, end.y * dpr);
+        var newCanvas = document.createElement('canvas');
         newCanvas.width = (end.x - start.x) * dpr;
         newCanvas.height = (end.y - start.y) * dpr;
         var newCtx = newCanvas.getContext('2d');

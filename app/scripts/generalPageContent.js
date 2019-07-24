@@ -176,15 +176,16 @@ var GeneralPageContent = (function () {
         img.src = imageData;
         img.onload = function () {
             var imgCanvas = document.createElement('canvas');
+            imgCanvas.width = img.width;
+            imgCanvas.height = img.height;
             imgCanvas.style.position = 'fixed';
             imgCanvas.style.top = '0';
             imgCanvas.style.left = '0';
             imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
-            imgCanvas.width = img.width;
-            imgCanvas.height = img.height;
-            var dpr = window.devicePixelRatio || 1;
+            imgCanvas.style.width = window.innerWidth + "px";
+            imgCanvas.style.height = '100vh';
             var ctx = imgCanvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, img.width * dpr, img.height * dpr);
+            ctx.drawImage(img, 0, 0, img.width, img.height);
             new Snapshot(imgCanvas);
         };
     };

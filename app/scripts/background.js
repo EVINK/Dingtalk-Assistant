@@ -62,4 +62,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
         result: 'success'
     });
 });
+chrome.commands.onCommand.addListener(function (shortcut) {
+    if (shortcut.includes("+M")) {
+        chrome.runtime.reload();
+    }
+});
 //# sourceMappingURL=background.js.map
