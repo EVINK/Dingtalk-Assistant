@@ -9,7 +9,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.storeDtId) {
         StorageArea.set({dtId: sender.tab.id})
-    }else if (message.snapshot) {
+    } else if (message.snapshot) {
         chrome.tabs.captureVisibleTab(null, {}, function (image) {
             sendMessage({snapshot: image})
         })
@@ -20,3 +20,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     })
 })
 
+// for dev
+chrome.commands.onCommand.addListener((shortcut) => {
+    // console.log('lets reload');
+    // console.log(shortcut);
+    if (shortcut.includes("+M")) {
+        chrome.runtime.reload();
+    }
+})

@@ -326,7 +326,7 @@ class GeneralPageContent {
             imgCanvas.style.top = '0'
             imgCanvas.style.left = '0'
             imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString()
-            imgCanvas.style.width = `${document.body.clientWidth}px`
+            imgCanvas.style.width = `${window.innerWidth}px`
             imgCanvas.style.height = '100vh'
 
             const ctx = imgCanvas.getContext('2d')

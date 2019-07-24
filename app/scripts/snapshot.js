@@ -24,13 +24,13 @@ var Snapshot = (function () {
         }
         var realWidth;
         var realHeight;
-        if (!width) {
+        if (width === undefined || width === null) {
             realWidth = '100vw';
         }
         else {
             realWidth = width + "px";
         }
-        if (!height) {
+        if (height === undefined || height === null) {
             realHeight = document.body.clientHeight + "px";
         }
         else {
@@ -162,6 +162,8 @@ var Snapshot = (function () {
             var img = new Image();
             _this.father.appendChild(img);
             img.src = data;
+            var dpr = window.devicePixelRatio || 1;
+            img.style.transform = "scale(" + (2 - dpr) + ")";
             var range = document.createRange();
             var selection = document.getSelection();
             range.selectNode(img);
@@ -198,7 +200,7 @@ var Snapshot = (function () {
                     _this.previewBox.style.width = Math.abs(offsetX) + "px";
                     _this.previewBox.style.height = Math.abs(offsetY) + "px";
                     if (_this.statusBar) {
-                        _this.statusBar.innerText = "(" + Math.abs(offsetX) + ", " + Math.abs(offsetY) + ")";
+                        _this.statusBar.innerText = "(" + Math.abs(e.offsetX) + ", " + Math.abs(e.offsetY) + ")";
                     }
                     _this.genBgCover();
                 }
@@ -206,8 +208,6 @@ var Snapshot = (function () {
             this.cover.onmouseup = function (e) {
                 var x = parseInt(_this.previewBox.getAttribute('startX'));
                 var y = parseInt(_this.previewBox.getAttribute('startY'));
-                console.log(e.offsetX, x);
-                console.log(e.offsetY, y);
                 var offsetX = e.offsetX - x;
                 var offsetY = e.offsetY - y;
                 if (offsetX < 0) {
@@ -216,8 +216,6 @@ var Snapshot = (function () {
                 if (offsetY < 0) {
                     _this.previewBox.setAttribute('startY', e.offsetY.toString());
                 }
-                console.log('startX', _this.previewBox.getAttribute('startX'));
-                console.log('startY', _this.previewBox.getAttribute('startY'));
                 _this.isClickBegun = false;
                 _this.cover.remove();
                 _this.previewBox.onmousedown = function (e) {
@@ -240,11 +238,12 @@ var Snapshot = (function () {
                     if (mode === 'move') {
                         var leftOffset = startX + e.offsetX - offsetX;
                         var topOffset = startY + e.offsetY - offsetY;
-                        console.log('top', startY, topOffset);
-                        console.log('left', startX, leftOffset);
                         _this.previewBox.style.top = topOffset + "px";
                         _this.previewBox.style.left = leftOffset + "px";
                         _this.genBgCover();
+                        _this.previewBox.setAttribute('startX', leftOffset.toString());
+                        _this.previewBox.setAttribute('startY', topOffset.toString());
+                        _this.statusBar.innerText = "(" + Math.abs(leftOffset) + ", " + Math.abs(topOffset) + ")";
                     }
                     else if (mode === 'resize') {
                     }
@@ -273,11 +272,12 @@ var Snapshot = (function () {
         }
     };
     Snapshot.cropCanvas = function (canvas, start, end) {
+        var dpr = window.devicePixelRatio || 1;
         var ctx = canvas.getContext('2d');
-        var imageData = ctx.getImageData(start.x, start.y, end.x, end.y);
+        var imageData = ctx.getImageData(start.x * dpr, start.y * dpr, end.x * dpr, end.y * dpr);
         var newCanvas = document.createElement('canvas');
-        newCanvas.width = end.x - start.x;
-        newCanvas.height = end.y - start.y;
+        newCanvas.width = (end.x - start.x) * dpr;
+        newCanvas.height = (end.y - start.y) * dpr;
         var newCtx = newCanvas.getContext('2d');
         newCtx.putImageData(imageData, 0, 0);
         return newCanvas;

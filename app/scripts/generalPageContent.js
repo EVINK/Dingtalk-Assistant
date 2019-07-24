@@ -182,7 +182,7 @@ var GeneralPageContent = (function () {
             imgCanvas.style.top = '0';
             imgCanvas.style.left = '0';
             imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
-            imgCanvas.style.width = document.body.clientWidth + "px";
+            imgCanvas.style.width = window.innerWidth + "px";
             imgCanvas.style.height = '100vh';
             var ctx = imgCanvas.getContext('2d');
             ctx.drawImage(img, 0, 0, img.width, img.height);

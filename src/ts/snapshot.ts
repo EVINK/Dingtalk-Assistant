@@ -42,12 +42,12 @@ class Snapshot {
         }
         let realWidth: string
         let realHeight: string
-        if (!width) {
+        if (width === undefined || width === null) {
             realWidth = '100vw'
         } else {
             realWidth = `${width}px`
         }
-        if (!height) {
+        if (height === undefined || height === null) {
             realHeight = `${document.body.clientHeight}px`
         } else {
             realHeight = `${height}px`
@@ -273,6 +273,8 @@ class Snapshot {
             const img = new Image()
             this.father.appendChild(img)
             img.src = data
+            const dpr = window.devicePixelRatio || 1
+            img.style.transform = `scale(${2 - dpr})`
 
             const range = document.createRange()
             const selection = document.getSelection()
@@ -322,7 +324,8 @@ class Snapshot {
                     this.previewBox.style.height = `${Math.abs(offsetY)}px`
 
                     if (this.statusBar) {
-                        this.statusBar.innerText = `(${Math.abs(offsetX)}, ${Math.abs(offsetY)})`
+                        // this.statusBar.innerText = `(${Math.abs(offsetX)}, ${Math.abs(offsetY)})`
+                        this.statusBar.innerText = `(${Math.abs(e.offsetX)}, ${Math.abs(e.offsetY)})`
                     }
 
                     this.genBgCover()
@@ -335,9 +338,6 @@ class Snapshot {
                 const x = parseInt(this.previewBox.getAttribute('startX'))
                 const y = parseInt(this.previewBox.getAttribute('startY'))
 
-                console.log(e.offsetX, x)
-                console.log(e.offsetY, y)
-
                 const offsetX = e.offsetX - x
                 const offsetY = e.offsetY - y
 
@@ -347,9 +347,6 @@ class Snapshot {
                 if (offsetY < 0) {
                     this.previewBox.setAttribute('startY', e.offsetY.toString())
                 }
-
-                console.log('startX', this.previewBox.getAttribute('startX'))
-                console.log('startY', this.previewBox.getAttribute('startY'))
 
                 // 移除cover
                 this.isClickBegun = false
@@ -373,7 +370,6 @@ class Snapshot {
 
                     const mode = 'move'
 
-
                     const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'))
                     const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'))
                     if (!offsetX || !offsetY) {
@@ -384,13 +380,14 @@ class Snapshot {
                     if (mode === 'move') {
                         const leftOffset = startX + e.offsetX - offsetX
                         const topOffset = startY + e.offsetY - offsetY
-
-                        console.log('top', startY, topOffset)
-                        console.log('left', startX, leftOffset)
-
                         this.previewBox.style.top = `${topOffset}px`
                         this.previewBox.style.left = `${leftOffset}px`
                         this.genBgCover()
+
+                        this.previewBox.setAttribute('startX', leftOffset.toString())
+                        this.previewBox.setAttribute('startY', topOffset.toString())
+
+                        this.statusBar.innerText = `(${Math.abs(leftOffset)}, ${Math.abs(topOffset)})`
 
                     } else if (mode === 'resize') {
                         // TODO
@@ -432,16 +429,21 @@ class Snapshot {
     }
 
     private static cropCanvas(canvas: HTMLCanvasElement, start: { x: number, y: number }, end: { x: number, y: number }) {
+        const dpr = window.devicePixelRatio || 1
+
         const ctx = canvas.getContext('2d')
-        const imageData = ctx.getImageData(start.x, start.y, end.x, end.y)
+        const imageData = ctx.getImageData(
+            start.x * dpr, start.y * dpr,
+            end.x * dpr, end.y * dpr,
+        )
 
         const newCanvas = document.createElement('canvas')
-        // const dpr = window.devicePixelRatio || 1
-        newCanvas.width = end.x - start.x
-        newCanvas.height = end.y - start.y
-        const newCtx = newCanvas.getContext('2d')
+        newCanvas.width = (end.x - start.x) * dpr
+        newCanvas.height = (end.y - start.y) * dpr
 
+        const newCtx = newCanvas.getContext('2d')
         newCtx.putImageData(imageData, 0, 0)
+
         return newCanvas
     }
 
