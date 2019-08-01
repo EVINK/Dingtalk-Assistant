@@ -32,6 +32,10 @@ class DingTalkContent {
 
         // 向background请求: 存放当前Tab的ID
         chrome.runtime.sendMessage({storeDtId: true})
+
+        window.onload = () => {
+            this.initMessageListener()
+        }
     }
 
     private genFullScreenDingTalk() {
@@ -111,6 +115,50 @@ class DingTalkContent {
             }, 1000)
         }
     }
+
+    private initMessageListener() {
+
+        const obs = new MutationObserver((mutations) => {
+            mutations.forEach((m) => {
+                if (m.type === 'characterData') {
+                    if (m.target.parentElement.className.indexOf('time')) return
+                    const msgBox = m.target.parentElement.parentElement.parentElement
+                    const name = msgBox.querySelector('.title-wrap.info .name-wrap p.name .name-title.ng-binding')
+                    const msg = msgBox.querySelector('.latest-msg-info .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
+                    return chrome.runtime.sendMessage({
+                        chromeNotification: {
+                            title: `钉钉 - ${name.textContent}`,
+                            message: msg.textContent
+                        }
+                    })
+                }
+
+                if ((m.target as HTMLElement).className === 'noti') {
+                    if ((m.target as HTMLElement).querySelector('.unread-num.ng-scope')) {
+                        let parent = m.target.parentElement.parentElement
+                        const msg = parent.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
+                        let name = parent.querySelector('.name-wrap .name-title.ng-binding')
+                        return chrome.runtime.sendMessage({
+                            chromeNotification: {
+                                title: `钉钉 - ${name.textContent}`,
+                                message: msg.textContent
+                            }
+                        })
+                    }
+                }
+            })
+
+        })
+        const config = {childList: true, subtree: true, characterData: true}
+        const targetNode = document.querySelector('#sub-menu-pannel')
+        obs.observe(targetNode, config)
+    }
+
 }
 
-new DingTalkContent()
+new DingTalkContent();
+
+
+
+
+

@@ -60,7 +60,8 @@
     "storage",
     "tabs",
     "background",
-    "desktopCapture"
+    "desktopCapture",
+    "notifications"
   ],
   "commands": {
     "Ctrl+M": {

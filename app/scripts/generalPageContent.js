@@ -157,14 +157,14 @@ var GeneralPageContent = (function () {
         return [win, back_win, hasWin];
     };
     GeneralPageContent.prototype.genBubbleMsg = function (msg) {
+        var closeBtn = new Image();
+        closeBtn.src = chrome.extension.getURL('assets/imgs/close.svg');
+        this.bubbleWin.appendChild(closeBtn);
         var bubble = document.createElement('div');
         bubble.classList.add('bubble-EvinK');
         var bubbleChild = document.createElement('p');
         bubble.appendChild(bubbleChild);
         this.bubbleWin.appendChild(bubble);
-        setTimeout(function () {
-            bubble.remove();
-        }, GeneralPageContent.bubbleTime * 1000);
         var bubbleOnClass = 'bubble-on';
         var bubbleLength = this.bubbleWin.querySelectorAll("." + bubbleOnClass).length;
         bubble.style.top = bubbleLength * 65 + "px";

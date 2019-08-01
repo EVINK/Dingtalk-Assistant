@@ -43,6 +43,7 @@ var DingTalkContent = (function () {
     DingTalkContent.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
             var self;
+            var _this = this;
             return __generator(this, function (_a) {
                 this.initDingTalkStyle();
                 DingTalkContent.checkLSPStatus();
@@ -65,6 +66,9 @@ var DingTalkContent = (function () {
                     });
                 });
                 chrome.runtime.sendMessage({ storeDtId: true });
+                window.onload = function () {
+                    _this.initMessageListener();
+                };
                 return [2];
             });
         });
@@ -123,6 +127,41 @@ var DingTalkContent = (function () {
                 }
             });
         });
+    };
+    DingTalkContent.prototype.initMessageListener = function () {
+        var obs = new MutationObserver(function (mutations) {
+            mutations.forEach(function (m) {
+                if (m.type === 'characterData') {
+                    if (m.target.parentElement.className.indexOf('time'))
+                        return;
+                    var msgBox = m.target.parentElement.parentElement.parentElement;
+                    var name_1 = msgBox.querySelector('.title-wrap.info .name-wrap p.name .name-title.ng-binding');
+                    var msg = msgBox.querySelector('.latest-msg-info .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
+                    return chrome.runtime.sendMessage({
+                        chromeNotification: {
+                            title: "\u9489\u9489 - " + name_1.textContent,
+                            message: msg.textContent
+                        }
+                    });
+                }
+                if (m.target.className === 'noti') {
+                    if (m.target.querySelector('.unread-num.ng-scope')) {
+                        var parent_1 = m.target.parentElement.parentElement;
+                        var msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
+                        var name_2 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
+                        return chrome.runtime.sendMessage({
+                            chromeNotification: {
+                                title: "\u9489\u9489 - " + name_2.textContent,
+                                message: msg.textContent
+                            }
+                        });
+                    }
+                }
+            });
+        });
+        var config = { childList: true, subtree: true, characterData: true };
+        var targetNode = document.querySelector('#sub-menu-pannel');
+        obs.observe(targetNode, config);
     };
     return DingTalkContent;
 }());
