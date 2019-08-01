@@ -299,14 +299,19 @@ class GeneralPageContent {
 
 
     public genBubbleMsg(msg: string) {
+        const closeBtn = new Image()
+        closeBtn.src = chrome.extension.getURL('assets/imgs/close.svg')
+        this.bubbleWin.appendChild(closeBtn)
+
         const bubble = document.createElement('div') as HTMLDivElement
         bubble.classList.add('bubble-EvinK')
         const bubbleChild = document.createElement('p') as HTMLParagraphElement
         bubble.appendChild(bubbleChild)
         this.bubbleWin.appendChild(bubble)
-        setTimeout(() => {
-            bubble.remove()
-        }, GeneralPageContent.bubbleTime * 1000)
+
+        // setTimeout(() => {
+        //     bubble.remove()
+        // }, GeneralPageContent.bubbleTime * 1000)
         const bubbleOnClass = 'bubble-on'
         const bubbleLength = this.bubbleWin.querySelectorAll(`.${bubbleOnClass}`).length
         bubble.style.top = `${bubbleLength * 65}px`
