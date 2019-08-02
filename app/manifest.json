@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "钉钉助手",
-  "description": "全屏模式、登录持久化、新消息提醒……一款开源的办公效率工具",
-  "version": "1.0.0",
+  "description": "一款网页版钉钉增强插件",
+  "version": "1.0.1",
   "short_name": "dingding",
   "icons": {
     "16": "icon.png",
@@ -63,14 +63,5 @@
     "desktopCapture",
     "notifications"
   ],
-  "commands": {
-    "Ctrl+M": {
-      "suggested_key": {
-        "default": "Ctrl+M",
-        "mac": "Command+M"
-      },
-      "description": "Ctrl+M"
-    }
-  },
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
