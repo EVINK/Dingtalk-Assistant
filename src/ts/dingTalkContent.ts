@@ -34,7 +34,8 @@ class DingTalkContent {
         chrome.runtime.sendMessage({storeDtId: true})
 
         window.onload = () => {
-            this.initMessageListener()
+            this.newMessageListener()
+            this.initMessageSelector()
         }
     }
 
@@ -116,35 +117,32 @@ class DingTalkContent {
         }
     }
 
-    private initMessageListener() {
+    private newMessageListener() {
+
+        function handleNotiClass(target: HTMLElement) {
+            if (target.querySelector('.unread-num.ng-scope')) {
+                const parent = target.parentElement.parentElement
+                const msg = parent.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
+                let name = parent.querySelector('.name-wrap .name-title.ng-binding')
+                return chrome.runtime.sendMessage({
+                    chromeNotification: {
+                        title: `钉钉 - ${name.textContent}`,
+                        message: msg.textContent
+                    }
+                })
+            }
+        }
 
         const obs = new MutationObserver((mutations) => {
             mutations.forEach((m) => {
                 if (m.type === 'characterData') {
-                    if (m.target.parentElement.className.indexOf('time')) return
-                    const msgBox = m.target.parentElement.parentElement.parentElement
-                    const name = msgBox.querySelector('.title-wrap.info .name-wrap p.name .name-title.ng-binding')
-                    const msg = msgBox.querySelector('.latest-msg-info .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
-                    return chrome.runtime.sendMessage({
-                        chromeNotification: {
-                            title: `钉钉 - ${name.textContent}`,
-                            message: msg.textContent
-                        }
-                    })
-                }
-
-                if ((m.target as HTMLElement).className === 'noti') {
-                    if ((m.target as HTMLElement).querySelector('.unread-num.ng-scope')) {
-                        let parent = m.target.parentElement.parentElement
-                        const msg = parent.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
-                        let name = parent.querySelector('.name-wrap .name-title.ng-binding')
-                        return chrome.runtime.sendMessage({
-                            chromeNotification: {
-                                title: `钉钉 - ${name.textContent}`,
-                                message: msg.textContent
-                            }
-                        })
+                    if (m.target.parentElement.className.indexOf('time') >= 0) return
+                    const notiBox = m.target.parentElement.parentElement.parentElement
+                    if (notiBox.className.indexOf('noti') >= 0) {
+                        return handleNotiClass(notiBox)
                     }
+                } else if ((m.target as HTMLElement).className.indexOf('noti') >= 0) {
+                    return handleNotiClass(m.target as HTMLElement)
                 }
             })
 
@@ -154,11 +152,52 @@ class DingTalkContent {
         obs.observe(targetNode, config)
     }
 
+    private initMessageSelector() {
+        const father = document.querySelector('#header')
+        const btnsArea = document.createElement('div')
+        btnsArea.classList.add('contact-selector-area-EVINK')
+        father.appendChild(btnsArea)
+        btnsArea.innerHTML += `
+        <style>
+        div.contact-selector-area-EVINK {
+        position: absolute;
+        top: 0;
+        left: 130px;
+        width: 100px;
+        height: 100%;
+        border: 1px solid;
+        }
+        </style>
+        `
+        const btn = document.createElement('a')
+        btn.textContent = '通知设置'
+        btnsArea.appendChild(btn)
+
+        btn.onclick = (e: Event) => {
+            let contacts = document.querySelectorAll(
+                '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item'
+            ) as any
+            if(!contacts) {
+                return sendMessage({bubble: '没有找到最近联系人'})
+            }
+            contacts = Array.from(contacts)
+            for(const node of contacts) {
+                const cover = document.createElement('div')
+                node.appendChild(cover)
+                cover.setAttribute('style', `
+                
+                `)
+                console.log(node)
+            }
+        }
+
+
+
+
+
+
+    }
+
 }
 
 new DingTalkContent();
-
-
-
-
-

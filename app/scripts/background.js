@@ -60,22 +60,39 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
         }
     });
 }); });
-chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) {
-    if (message.storeDtId) {
-        StorageArea.set({ dtId: sender.tab.id });
-    }
-    else if (message.snapshot) {
-        chrome.tabs.captureVisibleTab(null, {}, function (image) {
-            sendMessage({ snapshot: image });
-        });
-    }
-    else if (message.chromeNotification) {
-        sendChromeNotification(message.chromeNotification);
-    }
-    sendResponse({
-        result: 'success'
+var lastNotiId = '';
+chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { return __awaiter(_this, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!message.storeDtId) return [3, 1];
+                StorageArea.set({ dtId: sender.tab.id });
+                return [3, 6];
+            case 1:
+                if (!message.snapshot) return [3, 2];
+                chrome.tabs.captureVisibleTab(null, {}, function (image) {
+                    sendMessage({ snapshot: image });
+                });
+                return [3, 6];
+            case 2:
+                if (!message.chromeNotification) return [3, 6];
+                if (!lastNotiId) return [3, 4];
+                return [4, clearChromeNotification(lastNotiId)];
+            case 3:
+                _a.sent();
+                _a.label = 4;
+            case 4: return [4, sendChromeNotification(message.chromeNotification)];
+            case 5:
+                lastNotiId = _a.sent();
+                _a.label = 6;
+            case 6:
+                sendResponse({
+                    result: 'success'
+                });
+                return [2];
+        }
     });
-});
+}); });
 chrome.commands.onCommand.addListener(function (shortcut) {
     if (shortcut.includes("+M")) {
         chrome.runtime.reload();
@@ -92,6 +109,21 @@ function sendChromeNotification(data) {
                             return console.log(chrome.runtime.lastError.message);
                         resolve(nid);
                     });
+                })];
+        });
+    });
+}
+function clearChromeNotification(nid) {
+    return __awaiter(this, void 0, void 0, function () {
+        var _this = this;
+        return __generator(this, function (_a) {
+            return [2, new Promise(function (resolve, reject) {
+                    chrome.notifications.clear(lastNotiId, function (wasCleared) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            resolve(wasCleared);
+                            return [2];
+                        });
+                    }); });
                 })];
         });
     });

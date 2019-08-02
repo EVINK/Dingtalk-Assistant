@@ -67,7 +67,8 @@ var DingTalkContent = (function () {
                 });
                 chrome.runtime.sendMessage({ storeDtId: true });
                 window.onload = function () {
-                    _this.initMessageListener();
+                    _this.newMessageListener();
+                    _this.initMessageSelector();
                 };
                 return [2];
             });
@@ -128,40 +129,62 @@ var DingTalkContent = (function () {
             });
         });
     };
-    DingTalkContent.prototype.initMessageListener = function () {
+    DingTalkContent.prototype.newMessageListener = function () {
+        function handleNotiClass(target) {
+            if (target.querySelector('.unread-num.ng-scope')) {
+                var parent_1 = target.parentElement.parentElement;
+                var msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
+                var name_1 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
+                return chrome.runtime.sendMessage({
+                    chromeNotification: {
+                        title: "\u9489\u9489 - " + name_1.textContent,
+                        message: msg.textContent
+                    }
+                });
+            }
+        }
         var obs = new MutationObserver(function (mutations) {
             mutations.forEach(function (m) {
                 if (m.type === 'characterData') {
-                    if (m.target.parentElement.className.indexOf('time'))
+                    if (m.target.parentElement.className.indexOf('time') >= 0)
                         return;
-                    var msgBox = m.target.parentElement.parentElement.parentElement;
-                    var name_1 = msgBox.querySelector('.title-wrap.info .name-wrap p.name .name-title.ng-binding');
-                    var msg = msgBox.querySelector('.latest-msg-info .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
-                    return chrome.runtime.sendMessage({
-                        chromeNotification: {
-                            title: "\u9489\u9489 - " + name_1.textContent,
-                            message: msg.textContent
-                        }
-                    });
-                }
-                if (m.target.className === 'noti') {
-                    if (m.target.querySelector('.unread-num.ng-scope')) {
-                        var parent_1 = m.target.parentElement.parentElement;
-                        var msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
-                        var name_2 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
-                        return chrome.runtime.sendMessage({
-                            chromeNotification: {
-                                title: "\u9489\u9489 - " + name_2.textContent,
-                                message: msg.textContent
-                            }
-                        });
+                    var notiBox = m.target.parentElement.parentElement.parentElement;
+                    if (notiBox.className.indexOf('noti') >= 0) {
+                        return handleNotiClass(notiBox);
                     }
+                }
+                else if (m.target.className.indexOf('noti') >= 0) {
+                    return handleNotiClass(m.target);
                 }
             });
         });
         var config = { childList: true, subtree: true, characterData: true };
         var targetNode = document.querySelector('#sub-menu-pannel');
         obs.observe(targetNode, config);
+    };
+    DingTalkContent.prototype.initMessageSelector = function () {
+        var father = document.querySelector('#header');
+        var btnsArea = document.createElement('div');
+        btnsArea.classList.add('contact-selector-area-EVINK');
+        father.appendChild(btnsArea);
+        btnsArea.innerHTML += "\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        border: 1px solid;\n        }\n        </style>\n        ";
+        var btn = document.createElement('a');
+        btn.textContent = '通知设置';
+        btnsArea.appendChild(btn);
+        btn.onclick = function (e) {
+            var contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item');
+            if (!contacts) {
+                return sendMessage({ bubble: '没有找到最近联系人' });
+            }
+            contacts = Array.from(contacts);
+            for (var _i = 0, contacts_1 = contacts; _i < contacts_1.length; _i++) {
+                var node = contacts_1[_i];
+                var cover = document.createElement('div');
+                node.appendChild(cover);
+                cover.setAttribute('style', "\n                \n                ");
+                console.log(node);
+            }
+        };
     };
     return DingTalkContent;
 }());

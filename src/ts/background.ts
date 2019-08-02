@@ -6,7 +6,9 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     }
 })
 
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+let lastNotiId = ''
+
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.storeDtId) {
         StorageArea.set({dtId: sender.tab.id})
     } else if (message.snapshot) {
@@ -14,7 +16,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             sendMessage({snapshot: image})
         })
     } else if (message.chromeNotification) {
-        sendChromeNotification(message.chromeNotification)
+        if (lastNotiId) await clearChromeNotification(lastNotiId)
+        lastNotiId = await sendChromeNotification(message.chromeNotification)
     }
 
     sendResponse({
@@ -39,7 +42,7 @@ interface chromeNotificationOptions {
 }
 
 // chrome notification
-async function sendChromeNotification(data: chromeNotificationOptions) {
+async function sendChromeNotification(data: chromeNotificationOptions): Promise<string> {
     data.type = 'basic'
     data.iconUrl = chrome.extension.getURL('icon.png')
     return new Promise((resolve, reject) => {
@@ -47,6 +50,14 @@ async function sendChromeNotification(data: chromeNotificationOptions) {
             if (chrome.runtime.lastError)
                 return console.log(chrome.runtime.lastError.message)
             resolve(nid)
+        })
+    })
+}
+
+async function clearChromeNotification(nid: string) {
+    return new Promise((resolve, reject) => {
+        chrome.notifications.clear(lastNotiId, async (wasCleared: boolean) => {
+            resolve(wasCleared)
         })
     })
 }
