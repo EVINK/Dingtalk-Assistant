@@ -1,14 +1,14 @@
 {
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
-    "vue": "^2.6.10",
     "@types/chrome": "^0.0.75",
     "gulp": "^4.0.2",
     "gulp-less": "^4.0.1",
     "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
+    "gulp-uglify": "^3.0.2",
     "tslint": "^5.18.0",
-    "typescript": "^3.5.3"
+    "typescript": "^3.5.3",
+    "vue": "^2.6.10"
   }
 }

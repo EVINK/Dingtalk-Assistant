@@ -3,7 +3,7 @@
     "target": "es5",
     "module": "commonjs",
     "noImplicitAny": true,
-    "outDir": "./app/scripts/",
+    "outDir": "./src/js/",
     "sourceMap": true,
     "removeComments": true,
     "lib": [

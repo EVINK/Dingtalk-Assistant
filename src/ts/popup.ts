@@ -42,16 +42,6 @@ new Vue({
             this.menuClicked = true
         },
         snapshot() {
-            // return sendMessage({ alert: '功能即将完成' })
-            // return sendMessage({bubble: '功能即将完成'})
-
-            // console.log(chrome.runtime.id)
-            // console.log(chrome.tabs)
-
-            // chrome.tabs.({}, (stream)=>{
-            //     console.log(stream)
-            // })
-
             // 截图 (当前网页)
             return chrome.tabs.captureVisibleTab(null, {}, function (image) {
                 sendMessage({snapshot: image})
@@ -62,9 +52,9 @@ new Vue({
             // chrome.desktopCapture.chooseDesktopMedia(['screen', 'window', 'tab'], thisPage, (streamId) => {
             //     console.log(streamId)
             // })
-
-
-
+        },
+        openSettingPage() {
+            chrome.tabs.create({url: chrome.extension.getURL('setting.html')});
         },
     },
     async mounted() {
