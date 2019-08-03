@@ -1,6 +1,11 @@
 class DingTalkContent {
     private dingTalkFullScreenStyle = document.createElement('style')
 
+    private newMessageNotificationLock = false
+
+    private notificationBanListKey = 'newMessageBanList'
+    private globalNotificationLockKey = 'notificationLock'
+
     constructor() {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle)
@@ -119,11 +124,19 @@ class DingTalkContent {
 
     private newMessageListener() {
 
-        function handleNotiClass(target: HTMLElement) {
+        const that = this
+
+        async function handleNotiClass(target: HTMLElement) {
             if (target.querySelector('.unread-num.ng-scope')) {
                 const parent = target.parentElement.parentElement
                 const msg = parent.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
                 let name = parent.querySelector('.name-wrap .name-title.ng-binding')
+                if (!msg.textContent || !name.textContent) return
+
+                let banList = await StorageArea.get(that.notificationBanListKey) as Array<string> | null
+                if (!banList) banList = []
+                if (banList.indexOf(name.textContent) >= 0) return
+
                 return chrome.runtime.sendMessage({
                     chromeNotification: {
                         title: `钉钉 - ${name.textContent}`,
@@ -134,7 +147,9 @@ class DingTalkContent {
         }
 
         const obs = new MutationObserver((mutations) => {
-            mutations.forEach((m) => {
+            mutations.forEach(async (m) => {
+                if (await StorageArea.get(this.globalNotificationLockKey)) return
+                if (this.newMessageNotificationLock) return
                 if (m.type === 'characterData') {
                     if (m.target.parentElement.className.indexOf('time') >= 0) return
                     const notiBox = m.target.parentElement.parentElement.parentElement
@@ -148,12 +163,31 @@ class DingTalkContent {
 
         })
         const config = {childList: true, subtree: true, characterData: true}
-        const targetNode = document.querySelector('#sub-menu-pannel')
-        obs.observe(targetNode, config)
+        const findContactDomInterval = setInterval(() => {
+            const targetNode = document.querySelector('#sub-menu-pannel')
+            if (targetNode) {
+                clearInterval(findContactDomInterval)
+                obs.observe(targetNode, config)
+            }
+        }, 1000)
+
     }
 
-    private initMessageSelector() {
-        const father = document.querySelector('#header')
+    private async initMessageSelector() {
+        async function findFather(): Promise<Element> {
+            return new Promise((resolve) => {
+                const findFatherInterval = setInterval(() => {
+                    const father = document.querySelector('#header')
+                    if (father) {
+                        clearInterval(findFatherInterval)
+                        resolve(father)
+                        return
+                    }
+                }, 1000)
+            })
+        }
+
+        const father = await findFather()
         const btnsArea = document.createElement('div')
         btnsArea.classList.add('contact-selector-area-EVINK')
         father.appendChild(btnsArea)
@@ -165,39 +199,179 @@ class DingTalkContent {
         left: 130px;
         width: 100px;
         height: 100%;
-        border: 1px solid;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-evenly;
+        align-items: center;
+        }
+        div.contact-selector-area-EVINK a {
+        color: white;
+        cursor: pointer;
+        }
+        .contact-cover-box-EVINK {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #00000033;
+        overflow: hidden;
+        }
+        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{
+        content: '';
+        position: absolute;
+        }
+        .contact-cover-box-EVINK::before{ 
+        left: 13px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        }
+        .contact-cover-box-EVINK::after{ 
+        left: 20px;
+        width: 24px;
+        height: 100%;
+        }
+        .contact-cover-box-hover-EVINK::after {
+        top: 100%;
+        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-red.svg')}");
+        }
+        .contact-cover-box-hover-EVINK::before {
+        top: 100%;
+        background: #000000ab;
+        }
+        .contact-cover-box-hover-EVINK:hover::before {
+        top: 9px;
+        }
+        .contact-cover-box-hover-EVINK:hover::after {
+        top: 0;
+        }
+        .contact-cover-box-permanent-EVINK::after {
+        top: 0;
+        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-white.svg')}");
+        }
+        .contact-cover-box-permanent-EVINK::before {
+        top: 9px;
+        background: #ff0000cf;
         }
         </style>
         `
         const btn = document.createElement('a')
-        btn.textContent = '通知设置'
         btnsArea.appendChild(btn)
 
-        btn.onclick = (e: Event) => {
+        btn.style.display = 'flex'
+        btn.style.justifyContent = 'center'
+        btn.style.alignItems = 'center'
+        let img = new Image()
+        btn.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/notification-setting.svg')
+        img.style.width = '18px'
+        const label = document.createElement('span')
+        btn.appendChild(label)
+        label.textContent = '通知设置'
+
+        const finishBtn = document.createElement('a')
+        img = new Image()
+        finishBtn.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/finish.svg')
+        img.style.width = '26px'
+
+        const cancelBtn = document.createElement('a')
+        img = new Image()
+        cancelBtn.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/cancle.svg')
+        img.style.width = '26px'
+
+        let banList = new Array<string>()
+        const coverList = new Array<HTMLElement>()
+
+        btn.onclick = async (e: Event) => {
+            banList = await StorageArea.get(this.notificationBanListKey) as Array<string> | null
+            if (!banList) banList = []
+
+            const coverClassName = 'contact-cover-box-EVINK'
+            if (document.querySelector(`.${coverClassName}`)) return
+
+            const bannedCoverClassName = 'contact-cover-box-permanent-EVINK'
+            const hoverClassName = 'contact-cover-box-hover-EVINK'
+
+            btn.remove()
+            btnsArea.appendChild(finishBtn)
+            btnsArea.appendChild(cancelBtn)
+
+            this.newMessageNotificationLock = true
+            setTimeout(() => this.newMessageNotificationLock = false, 0)
+
             let contacts = document.querySelectorAll(
-                '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item'
+                '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child'
             ) as any
-            if(!contacts) {
+            if (!contacts) {
                 return sendMessage({bubble: '没有找到最近联系人'})
             }
             contacts = Array.from(contacts)
-            for(const node of contacts) {
+            for (const node of contacts) {
                 const cover = document.createElement('div')
                 node.appendChild(cover)
-                cover.setAttribute('style', `
-                
-                `)
-                console.log(node)
+                cover.classList.add(coverClassName)
+
+                let isBanned = false
+                const contactName = node.querySelector('p.name span[ng-bind-html="convItem.conv.i18nTitle|emoj"]')
+
+                if (banList.indexOf(contactName.textContent) >= 0) {
+                    cover.classList.add(bannedCoverClassName)
+                    isBanned = true
+                } else {
+                    cover.classList.add(hoverClassName)
+                }
+
+                cover.onclick = (e) => {
+                    if (isBanned) {
+                        cover.classList.remove(bannedCoverClassName)
+                        cover.classList.add(hoverClassName)
+                        const idx = banList.indexOf(contactName.textContent)
+                        if (idx >= 0) banList.splice(idx, 1)
+                        isBanned = false
+                    } else {
+                        cover.classList.remove(hoverClassName)
+                        cover.classList.add(bannedCoverClassName)
+                        banList.push(contactName.textContent)
+                        isBanned = true
+                    }
+                    e.stopPropagation()
+                }
+                coverList.push(cover)
             }
         }
 
+        const that = this
 
+        function handleExit() {
+            that.newMessageNotificationLock = true
+            setTimeout(() => that.newMessageNotificationLock = false, 0)
+            banList = new Array<string>()
+            for (const cover of coverList) {
+                cover.remove()
+            }
+            btnsArea.appendChild(btn)
+            finishBtn.remove()
+            cancelBtn.remove()
+        }
 
-
+        finishBtn.onclick = () => {
+            const data: { [key: string]: Array<string> } = {}
+            data[this.notificationBanListKey] = banList
+            StorageArea.set(data)
+            handleExit()
+        }
+        cancelBtn.onclick = () => {
+            handleExit()
+        }
 
 
     }
 
+
 }
+
 
 new DingTalkContent();

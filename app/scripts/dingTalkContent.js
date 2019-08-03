@@ -36,6 +36,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var DingTalkContent = (function () {
     function DingTalkContent() {
         this.dingTalkFullScreenStyle = document.createElement('style');
+        this.newMessageNotificationLock = false;
+        this.notificationBanListKey = 'newMessageBanList';
+        this.globalNotificationLockKey = 'notificationLock';
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
@@ -130,61 +133,218 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.newMessageListener = function () {
+        var _this = this;
+        var that = this;
         function handleNotiClass(target) {
-            if (target.querySelector('.unread-num.ng-scope')) {
-                var parent_1 = target.parentElement.parentElement;
-                var msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
-                var name_1 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
-                return chrome.runtime.sendMessage({
-                    chromeNotification: {
-                        title: "\u9489\u9489 - " + name_1.textContent,
-                        message: msg.textContent
+            return __awaiter(this, void 0, void 0, function () {
+                var parent_1, msg, name_1, banList;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!target.querySelector('.unread-num.ng-scope')) return [3, 2];
+                            parent_1 = target.parentElement.parentElement;
+                            msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
+                            name_1 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
+                            if (!msg.textContent || !name_1.textContent)
+                                return [2];
+                            return [4, StorageArea.get(that.notificationBanListKey)];
+                        case 1:
+                            banList = _a.sent();
+                            if (!banList)
+                                banList = [];
+                            if (banList.indexOf(name_1.textContent) >= 0)
+                                return [2];
+                            return [2, chrome.runtime.sendMessage({
+                                    chromeNotification: {
+                                        title: "\u9489\u9489 - " + name_1.textContent,
+                                        message: msg.textContent
+                                    }
+                                })];
+                        case 2: return [2];
                     }
                 });
-            }
+            });
         }
         var obs = new MutationObserver(function (mutations) {
-            mutations.forEach(function (m) {
-                if (m.type === 'characterData') {
-                    if (m.target.parentElement.className.indexOf('time') >= 0)
-                        return;
-                    var notiBox = m.target.parentElement.parentElement.parentElement;
-                    if (notiBox.className.indexOf('noti') >= 0) {
-                        return handleNotiClass(notiBox);
+            mutations.forEach(function (m) { return __awaiter(_this, void 0, void 0, function () {
+                var notiBox;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
+                        case 1:
+                            if (_a.sent())
+                                return [2];
+                            if (this.newMessageNotificationLock)
+                                return [2];
+                            if (m.type === 'characterData') {
+                                if (m.target.parentElement.className.indexOf('time') >= 0)
+                                    return [2];
+                                notiBox = m.target.parentElement.parentElement.parentElement;
+                                if (notiBox.className.indexOf('noti') >= 0) {
+                                    return [2, handleNotiClass(notiBox)];
+                                }
+                            }
+                            else if (m.target.className.indexOf('noti') >= 0) {
+                                return [2, handleNotiClass(m.target)];
+                            }
+                            return [2];
                     }
+                });
+            }); });
+        });
+        var config = { childList: true, subtree: true, characterData: true };
+        var findContactDomInterval = setInterval(function () {
+            var targetNode = document.querySelector('#sub-menu-pannel');
+            if (targetNode) {
+                clearInterval(findContactDomInterval);
+                obs.observe(targetNode, config);
+            }
+        }, 1000);
+    };
+    DingTalkContent.prototype.initMessageSelector = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            function findFather() {
+                return __awaiter(this, void 0, void 0, function () {
+                    return __generator(this, function (_a) {
+                        return [2, new Promise(function (resolve) {
+                                var findFatherInterval = setInterval(function () {
+                                    var father = document.querySelector('#header');
+                                    if (father) {
+                                        clearInterval(findFatherInterval);
+                                        resolve(father);
+                                        return;
+                                    }
+                                }, 1000);
+                            })];
+                    });
+                });
+            }
+            function handleExit() {
+                that.newMessageNotificationLock = true;
+                setTimeout(function () { return that.newMessageNotificationLock = false; }, 0);
+                banList = new Array();
+                for (var _i = 0, coverList_1 = coverList; _i < coverList_1.length; _i++) {
+                    var cover = coverList_1[_i];
+                    cover.remove();
                 }
-                else if (m.target.className.indexOf('noti') >= 0) {
-                    return handleNotiClass(m.target);
+                btnsArea.appendChild(btn);
+                finishBtn.remove();
+                cancelBtn.remove();
+            }
+            var father, btnsArea, btn, img, label, finishBtn, cancelBtn, banList, coverList, that;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, findFather()];
+                    case 1:
+                        father = _a.sent();
+                        btnsArea = document.createElement('div');
+                        btnsArea.classList.add('contact-selector-area-EVINK');
+                        father.appendChild(btnsArea);
+                        btnsArea.innerHTML += "\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        display: flex;\n        flex-flow: row;\n        justify-content: space-evenly;\n        align-items: center;\n        }\n        div.contact-selector-area-EVINK a {\n        color: white;\n        cursor: pointer;\n        }\n        .contact-cover-box-EVINK {\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: #00000033;\n        overflow: hidden;\n        }\n        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{\n        content: '';\n        position: absolute;\n        }\n        .contact-cover-box-EVINK::before{ \n        left: 13px;\n        width: 38px;\n        height: 38px;\n        border-radius: 50%;\n        }\n        .contact-cover-box-EVINK::after{ \n        left: 20px;\n        width: 24px;\n        height: 100%;\n        }\n        .contact-cover-box-hover-EVINK::after {\n        top: 100%;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-red.svg') + "\");\n        }\n        .contact-cover-box-hover-EVINK::before {\n        top: 100%;\n        background: #000000ab;\n        }\n        .contact-cover-box-hover-EVINK:hover::before {\n        top: 9px;\n        }\n        .contact-cover-box-hover-EVINK:hover::after {\n        top: 0;\n        }\n        .contact-cover-box-permanent-EVINK::after {\n        top: 0;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-white.svg') + "\");\n        }\n        .contact-cover-box-permanent-EVINK::before {\n        top: 9px;\n        background: #ff0000cf;\n        }\n        </style>\n        ";
+                        btn = document.createElement('a');
+                        btnsArea.appendChild(btn);
+                        btn.style.display = 'flex';
+                        btn.style.justifyContent = 'center';
+                        btn.style.alignItems = 'center';
+                        img = new Image();
+                        btn.appendChild(img);
+                        img.src = chrome.extension.getURL('assets/imgs/notification-setting.svg');
+                        img.style.width = '18px';
+                        label = document.createElement('span');
+                        btn.appendChild(label);
+                        label.textContent = '通知设置';
+                        finishBtn = document.createElement('a');
+                        img = new Image();
+                        finishBtn.appendChild(img);
+                        img.src = chrome.extension.getURL('assets/imgs/finish.svg');
+                        img.style.width = '26px';
+                        cancelBtn = document.createElement('a');
+                        img = new Image();
+                        cancelBtn.appendChild(img);
+                        img.src = chrome.extension.getURL('assets/imgs/cancle.svg');
+                        img.style.width = '26px';
+                        banList = new Array();
+                        coverList = new Array();
+                        btn.onclick = function (e) { return __awaiter(_this, void 0, void 0, function () {
+                            var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_1, _i, contacts_1, node;
+                            var _this = this;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4, StorageArea.get(this.notificationBanListKey)];
+                                    case 1:
+                                        banList = (_a.sent());
+                                        if (!banList)
+                                            banList = [];
+                                        coverClassName = 'contact-cover-box-EVINK';
+                                        if (document.querySelector("." + coverClassName))
+                                            return [2];
+                                        bannedCoverClassName = 'contact-cover-box-permanent-EVINK';
+                                        hoverClassName = 'contact-cover-box-hover-EVINK';
+                                        btn.remove();
+                                        btnsArea.appendChild(finishBtn);
+                                        btnsArea.appendChild(cancelBtn);
+                                        this.newMessageNotificationLock = true;
+                                        setTimeout(function () { return _this.newMessageNotificationLock = false; }, 0);
+                                        contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child');
+                                        if (!contacts) {
+                                            return [2, sendMessage({ bubble: '没有找到最近联系人' })];
+                                        }
+                                        contacts = Array.from(contacts);
+                                        _loop_1 = function (node) {
+                                            var cover = document.createElement('div');
+                                            node.appendChild(cover);
+                                            cover.classList.add(coverClassName);
+                                            var isBanned = false;
+                                            var contactName = node.querySelector('p.name span[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                                            if (banList.indexOf(contactName.textContent) >= 0) {
+                                                cover.classList.add(bannedCoverClassName);
+                                                isBanned = true;
+                                            }
+                                            else {
+                                                cover.classList.add(hoverClassName);
+                                            }
+                                            cover.onclick = function (e) {
+                                                if (isBanned) {
+                                                    cover.classList.remove(bannedCoverClassName);
+                                                    cover.classList.add(hoverClassName);
+                                                    var idx = banList.indexOf(contactName.textContent);
+                                                    if (idx >= 0)
+                                                        banList.splice(idx, 1);
+                                                    isBanned = false;
+                                                }
+                                                else {
+                                                    cover.classList.remove(hoverClassName);
+                                                    cover.classList.add(bannedCoverClassName);
+                                                    banList.push(contactName.textContent);
+                                                    isBanned = true;
+                                                }
+                                                e.stopPropagation();
+                                            };
+                                            coverList.push(cover);
+                                        };
+                                        for (_i = 0, contacts_1 = contacts; _i < contacts_1.length; _i++) {
+                                            node = contacts_1[_i];
+                                            _loop_1(node);
+                                        }
+                                        return [2];
+                                }
+                            });
+                        }); };
+                        that = this;
+                        finishBtn.onclick = function () {
+                            var data = {};
+                            data[_this.notificationBanListKey] = banList;
+                            StorageArea.set(data);
+                            handleExit();
+                        };
+                        cancelBtn.onclick = function () {
+                            handleExit();
+                        };
+                        return [2];
                 }
             });
         });
-        var config = { childList: true, subtree: true, characterData: true };
-        var targetNode = document.querySelector('#sub-menu-pannel');
-        obs.observe(targetNode, config);
-    };
-    DingTalkContent.prototype.initMessageSelector = function () {
-        var father = document.querySelector('#header');
-        var btnsArea = document.createElement('div');
-        btnsArea.classList.add('contact-selector-area-EVINK');
-        father.appendChild(btnsArea);
-        btnsArea.innerHTML += "\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        border: 1px solid;\n        }\n        </style>\n        ";
-        var btn = document.createElement('a');
-        btn.textContent = '通知设置';
-        btnsArea.appendChild(btn);
-        btn.onclick = function (e) {
-            var contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item');
-            if (!contacts) {
-                return sendMessage({ bubble: '没有找到最近联系人' });
-            }
-            contacts = Array.from(contacts);
-            for (var _i = 0, contacts_1 = contacts; _i < contacts_1.length; _i++) {
-                var node = contacts_1[_i];
-                var cover = document.createElement('div');
-                node.appendChild(cover);
-                cover.setAttribute('style', "\n                \n                ");
-                console.log(node);
-            }
-        };
     };
     return DingTalkContent;
 }());
