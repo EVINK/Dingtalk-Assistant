@@ -279,13 +279,16 @@ class DingTalkContent {
         const cancelBtn = document.createElement('a')
         img = new Image()
         cancelBtn.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/cancle.svg')
+        img.src = chrome.extension.getURL('assets/imgs/cancel.svg')
         img.style.width = '26px'
 
         let banList = new Array<string>()
         const coverList = new Array<HTMLElement>()
 
         btn.onclick = async (e: Event) => {
+            if (await StorageArea.get(this.globalNotificationLockKey))
+                return GeneralPageContent.alert('通知已被禁用，若要启用通知，请前往设置页')
+
             banList = await StorageArea.get(this.notificationBanListKey) as Array<string> | null
             if (!banList) banList = []
 

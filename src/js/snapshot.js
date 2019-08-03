@@ -117,7 +117,7 @@ var Snapshot = (function () {
         this.statusBar.innerText = '(1, 1)';
         this.previewBoxToolsBar = document.createElement('div');
         this.previewBox.append(this.previewBoxToolsBar);
-        this.previewBoxToolsBar.setAttribute('style', "\n        position: absolute;\n        bottom: -35px;\n        right: 0;\n        display: block;\n        min-width: 75px;\n        height: 35px;\n        background: black;\n        color: white;\n        border-radius: 10px;\n        ");
+        this.previewBoxToolsBar.setAttribute('style', "\n        position: absolute;\n        bottom: -35px;\n        right: 0;\n        display: block;\n        min-width: 112px;\n        height: 35px;\n        background: black;\n        color: white;\n        border-radius: 10px;\n        ");
         this.previewBoxToolsBar.innerHTML += "\n        <style>\n          ul#tools-of-toolsBar-EvinK {\n            display: flex;\n            flex-flow: row;\n            justify-content: flex-end;\n            align-items: center;\n            cursor: default;\n            width: 90%;\n            height: 100%;\n            list-style: none;\n            /* some site will interference this style */\n            /* so there is a duplicate mention */\n            margin: 0;\n            padding: 0;\n          }\n          ul#tools-of-toolsBar-EvinK li {\n            cursor: pointer;\n          }\n          ul#tools-of-toolsBar-EvinK li img{\n            width: 30px;\n          }\n        </style>\n        ";
         var toolsList = document.createElement('ul');
         toolsList.id = 'tools-of-toolsBar-EvinK';
@@ -128,6 +128,15 @@ var Snapshot = (function () {
         var li = document.createElement('li');
         toolsList.appendChild(li);
         var img = new Image();
+        li.appendChild(img);
+        img.src = chrome.extension.getURL('assets/imgs/close-white.svg');
+        img.setAttribute('style', "\n        width: 20px;\n        padding-right: 4px;\n        padding-top: 2px;\n        ");
+        li.onclick = function () {
+            _this.destroySnapshot();
+        };
+        li = document.createElement('li');
+        toolsList.appendChild(li);
+        img = new Image();
         li.appendChild(img);
         img.src = chrome.extension.getURL('assets/imgs/download.svg');
         li.onclick = function () {
@@ -177,6 +186,13 @@ var Snapshot = (function () {
     };
     Snapshot.prototype.event = function () {
         var _this = this;
+        var keydownHandler = function (e) {
+            if (e.key === 'Escape') {
+                removeEventListener('keydown', keydownHandler, true);
+                _this.destroySnapshot();
+            }
+        };
+        addEventListener('keydown', keydownHandler, true);
         if (this.cover) {
             this.cover.addEventListener('mousedown', function (e) {
                 if (!_this.isClickBegun) {

@@ -6,48 +6,39 @@ class GeneralPageContent {
     public head: HTMLHeadElement = document.querySelector('head') as HTMLHeadElement
     private alertWindowStyle = document.createElement('style') as HTMLStyleElement
     private bubbleWin = document.createElement('div') as HTMLDivElement
+    private settings: Settings
 
 
     constructor() {
+        this.genGlobalNotiWins()
+
+        const self = this
+        // event
+        chrome.runtime.onMessage.addListener(async function (request, sender, sendResponse) {
+            if (request.message.alert) {
+                GeneralPageContent.alert(request.message.alert)
+            } else if (request.message.bubble) {
+                self.genBubbleMsg(request.message.bubble as string)
+            } else if (request.message.snapshot) {
+                self.createSnapshot(request.message.snapshot)
+            }
+
+            sendResponse({
+                result: 'success'
+            })
+        })
+    }
+
+    private async genGlobalNotiWins() {
         this.alertWindowStyle.id = 'alertWindowStyle'
         this.head.appendChild(this.alertWindowStyle)
         this.bubbleWin.id = 'bubbleWin-EvinK'
         document.body.appendChild(this.bubbleWin)
-        this.genAlertWindow()
 
-        const self = this
-        // event
-        chrome.runtime.onMessage.addListener(
-            async function (request, sender, sendResponse) {
-                if (request.message.alert) {
-                    GeneralPageContent.alert(request.message.alert)
-                } else if (request.message.bubble) {
-                    self.genBubbleMsg(request.message.bubble as string)
-                } else if (request.message.snapshot) {
-                    self.createSnapshot(request.message.snapshot)
-                }
+        this.settings = await StorageArea.get('settings') as Settings | null
 
-                sendResponse({
-                    result: 'success'
-                })
-            })
-        // shortcut of snapshot
-        document.onkeydown = (e) => {
-            let isCtrlPressed = false
-            let isAltPressed = false
-            if (e.ctrlKey) isCtrlPressed = true
-            if (e.altKey) isAltPressed = true
-            if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
-                // 兼容mac
-                if (isCtrlPressed && isAltPressed) {
-                    chrome.runtime.sendMessage({snapshot: true})
-                }
-            }
-        }
-    }
-
-    private genAlertWindow() {
-        this.alertWindowStyle.innerHTML += `
+        if (!this.settings.banGlobalStyle) {
+            this.alertWindowStyle.innerHTML += `
             ::-webkit-scrollbar {
                 width: 5px;
                 height: 3px;
@@ -62,7 +53,9 @@ class GeneralPageContent {
                 background-color: #3173FD;
                 border-radius: 3px;
             }
-        
+            `
+        }
+        this.alertWindowStyle.innerHTML += `
             /* js generateWindow */
         
             .win {
@@ -200,6 +193,44 @@ class GeneralPageContent {
                 animation: bubble-on ${GeneralPageContent.bubbleTime}s;
             }
         `
+
+        function handleCustomShortcuts(shortcuts: Array<string>, e: KeyboardEvent): void {
+            if (!shortcuts) return
+            if (shortcuts && !shortcuts.length) return
+            const idx = shortcuts.indexOf(e.key)
+            if (idx >= 0) shortcuts.splice(idx, 1)
+            else return
+            return handleCustomShortcuts(shortcuts, e)
+        }
+
+        // shortcut of snapshot
+        if (!this.settings.banSnapshotShortcut) {
+            // deep clone
+            let shortcuts: Array<string> = JSON.parse(JSON.stringify(this.settings.snapshotShortcut))
+            document.onkeydown = (e) => {
+                if (!shortcuts) {
+                    let isCtrlPressed = false
+                    let isAltPressed = false
+                    if (e.ctrlKey) isCtrlPressed = true
+                    if (e.altKey) isAltPressed = true
+                    if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
+                        // 兼容mac
+                        if (isCtrlPressed && isAltPressed) {
+                            chrome.runtime.sendMessage({snapshot: true})
+                        }
+                    }
+                } else {
+                    setTimeout(() => shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut)), 500)
+                    handleCustomShortcuts(shortcuts, e)
+                    if (shortcuts.length == 0) {
+                        chrome.runtime.sendMessage({snapshot: true})
+                        shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut))
+                    }
+
+                }
+
+            }
+        }
     }
 
 

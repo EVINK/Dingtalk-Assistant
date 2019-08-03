@@ -262,7 +262,7 @@ var DingTalkContent = (function () {
                         cancelBtn = document.createElement('a');
                         img = new Image();
                         cancelBtn.appendChild(img);
-                        img.src = chrome.extension.getURL('assets/imgs/cancle.svg');
+                        img.src = chrome.extension.getURL('assets/imgs/cancel.svg');
                         img.style.width = '26px';
                         banList = new Array();
                         coverList = new Array();

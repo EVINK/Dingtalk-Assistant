@@ -43,6 +43,7 @@ new Vue({
         menuOn: false,
         menuClicked: false,
         version: undefined,
+        snapshotShortcut: ['Ctrl', 'Alt', 'A'],
     },
     methods: {
         onFullScreen: function () {
@@ -85,7 +86,7 @@ new Vue({
     },
     mounted: function () {
         return __awaiter(this, void 0, void 0, function () {
-            var manifestData, _a, _b;
+            var manifestData, _a, _b, settings;
             return __generator(this, function (_c) {
                 switch (_c.label) {
                     case 0:
@@ -99,6 +100,15 @@ new Vue({
                         return [4, StorageArea.get('loginStatusPersistence')];
                     case 2:
                         _b.loginStatusPersistence = (_c.sent()) || false;
+                        return [4, StorageArea.get('settings')];
+                    case 3:
+                        settings = _c.sent();
+                        if (settings) {
+                            if (settings.banSnapshotShortcut)
+                                this.snapshotShortcut = [];
+                            else
+                                this.snapshotShortcut = settings.snapshotShortcut;
+                        }
                         return [2];
                 }
             });

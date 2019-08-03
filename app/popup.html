@@ -47,17 +47,17 @@
                  class="switch off animation"></div>
         </div>
         <div class="tools">
-            <span>截屏(Ctrl+Alt+A)</span>
+            <span>截屏 {{snapshotShortcut.toString().replace(/,/g, '+') || ''}}</span>
             <div id="screen-shot"
                  @click="snapshot"
             >开始
             </div>
         </div>
-        <div class="tools">
-            <span>
-                <a @click="sendMessage({bubble: 'hhhhhhhh'})">test</a>
-            </span>
-        </div>
+        <!--        <div class="tools">-->
+        <!--            <span>-->
+        <!--                <a @click="sendMessage({bubble: 'hhhhhhhh'})">test</a>-->
+        <!--            </span>-->
+        <!--        </div>-->
     </div>
 
     <div :class="{dark: menuOn && menuClicked}"></div>
@@ -69,14 +69,15 @@
 
         <ul>
             <li>
-                <span><a @click="openSettingPage">设置</a></span>
-            </li>
-            <li id="author">
-                <span><a>@EvinK</a></span>
+                <span><a @click="openSettingPage">选项</a></span>
             </li>
         </ul>
 
-        <div class="version-info">v{{version}}</div>
+
+        <div class="version-info">
+            <span id="author"><a>@EvinK</a></span>
+            v{{version}}
+        </div>
     </div>
 
 </div>

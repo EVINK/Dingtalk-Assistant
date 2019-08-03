@@ -10,6 +10,7 @@ new Vue({
         menuOn: false,
         menuClicked: false,
         version: undefined,
+        snapshotShortcut: ['Ctrl', 'Alt', 'A'],
     },
     methods: {
         onFullScreen() {
@@ -62,5 +63,11 @@ new Vue({
         this.version = manifestData.version
         this.fullScreen = await StorageArea.get('fullScreen') || false
         this.loginStatusPersistence = await StorageArea.get('loginStatusPersistence') || false
+        const settings: Settings = await StorageArea.get('settings') as Settings | null
+        if (settings) {
+            if (settings.banSnapshotShortcut) this.snapshotShortcut = []
+            else this.snapshotShortcut = settings.snapshotShortcut
+        }
+
     }
 })

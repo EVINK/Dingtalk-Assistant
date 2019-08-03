@@ -262,7 +262,7 @@ var DingTalkContent = (function () {
                         cancelBtn = document.createElement('a');
                         img = new Image();
                         cancelBtn.appendChild(img);
-                        img.src = chrome.extension.getURL('assets/imgs/cancle.svg');
+                        img.src = chrome.extension.getURL('assets/imgs/cancel.svg');
                         img.style.width = '26px';
                         banList = new Array();
                         coverList = new Array();
@@ -271,8 +271,12 @@ var DingTalkContent = (function () {
                             var _this = this;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4, StorageArea.get(this.notificationBanListKey)];
+                                    case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
                                     case 1:
+                                        if (_a.sent())
+                                            return [2, GeneralPageContent.alert('通知已被禁用，若要启用通知，请前往设置页')];
+                                        return [4, StorageArea.get(this.notificationBanListKey)];
+                                    case 2:
                                         banList = (_a.sent());
                                         if (!banList)
                                             banList = [];

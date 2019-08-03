@@ -26,7 +26,6 @@ class Snapshot {
         document.body.append(this.father)
         this.genBgCover()
         this.event()
-
     }
 
     private genCoverStyle(data: { top?: number, left?: number, width?: number, height?: number }) {
@@ -190,7 +189,7 @@ class Snapshot {
         bottom: -35px;
         right: 0;
         display: block;
-        min-width: 75px;
+        min-width: 112px;
         height: 35px;
         background: black;
         color: white;
@@ -228,10 +227,23 @@ class Snapshot {
         toolsList.onmouseup = (e => e.cancelBubble = true)
         toolsList.onmousedown = (e => e.cancelBubble = true)
 
-
         let li = document.createElement('li')
         toolsList.appendChild(li)
         let img = new Image()
+        li.appendChild(img)
+        img.src = chrome.extension.getURL('assets/imgs/close-white.svg')
+        img.setAttribute('style', `
+        width: 20px;
+        padding-right: 4px;
+        padding-top: 2px;
+        `)
+        li.onclick = () => {
+            this.destroySnapshot()
+        }
+
+        li = document.createElement('li')
+        toolsList.appendChild(li)
+        img = new Image()
         li.appendChild(img)
         img.src = chrome.extension.getURL('assets/imgs/download.svg')
         li.onclick = () => {
@@ -291,6 +303,13 @@ class Snapshot {
     }
 
     private event() {
+        const keydownHandler = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') {
+                removeEventListener('keydown', keydownHandler, true)
+                this.destroySnapshot()
+            }
+        }
+        addEventListener('keydown', keydownHandler, true)
 
         if (this.cover) {
 

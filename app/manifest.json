@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "钉钉助手",
-  "description": "一款网页版钉钉增强插件",
-  "version": "1.0.1",
+  "description": "网页版钉钉增强插件",
+  "version": "1.1.0",
   "short_name": "dingding",
   "icons": {
     "16": "icon.png",

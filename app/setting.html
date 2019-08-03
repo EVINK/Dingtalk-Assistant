@@ -8,8 +8,77 @@
 </head>
 <body>
 <div id="app">
+    <div id="header">
+        DingTalk Assistant 设置页
+    </div>
+    <div id="body">
+        <div class="menu">
+            <ul>
+                <li @click="routeTo('general', true)" v-if="page==='general'" class="focus">通用设置</li>
+                <li @click="routeTo('general', true)" v-else>通用设置</li>
+                <li @click="routeTo('feedback', true)" v-if="page==='feedback'" class="focus">反馈</li>
+                <li @click="routeTo('feedback', true)" v-else>反馈</li>
+            </ul>
+        </div>
+
+        <div class="content">
+            <div v-if="page==='general'" class="settings">
+                <ul>
+                    <li>
+                        <label>新消息通知</label>
+                        <span @click="notificationLock=!notificationLock"
+                              v-if="!notificationLock" class="switch on"></span>
+                        <span @click="notificationLock=!notificationLock"
+                              v-else class="switch"></span>
+                    </li>
+                    <li>
+                        <label>禁用全局样式</label>
+                        <span @click="settings.banGlobalStyle=!settings.banGlobalStyle"
+                              v-if="settings.banGlobalStyle" class="switch on"></span>
+                        <span @click="settings.banGlobalStyle=!settings.banGlobalStyle"
+                              v-else class="switch"></span>
+                    </li>
+                    <li>
+                        <label>禁用截图快捷键</label>
+                        <span @click="settings.banSnapshotShortcut=!settings.banSnapshotShortcut"
+                              v-if="settings.banSnapshotShortcut" class="switch on"></span>
+                        <span @click="settings.banSnapshotShortcut=!settings.banSnapshotShortcut"
+                              v-else class="switch"></span>
+                    </li>
+                    <li v-if="!settings.banSnapshotShortcut">
+                        <label>截图快捷键</label>
+                        <span @click="setSnapshotShortcut" class="shortcut-editor" contenteditable="true"><span
+                                v-for="word,i in settings.snapshotShortcut" class="shortcut">
+                            <span class="word">{{word}}</span>
+                            <span v-if="i===settings.snapshotShortcut.length - 1"></span>
+                            <span v-else>+</span>
+                        </span></span>
+                    </li>
+                    <li v-else class="disable">
+                        <label>截图快捷键</label>
+                        <span><span v-for="word,i in settings.snapshotShortcut" class="shortcut">
+                            <span class="word">{{word}}</span>
+                            <span v-if="i===settings.snapshotShortcut.length - 1"></span>
+                            <span v-else>+</span>
+                        </span></span>
+                    </li>
+                </ul>
+            </div>
+            <div v-else-if="page==='feedback'">
+                <p id="feedback">反馈页面还未开放</p>
+            </div>
+            <div v-else>
+                我也不知道您从哪里来的呢……
+            </div>
+
+            <div v-if="page!=='feedback'" class="btns">
+                <input @click="saveSettings" type="button" value="保存设置">
+                <input @click="cancelSettings" type="button" value="取消">
+            </div>
+        </div>
 
 
+    </div>
 </div>
 <script src="scripts/utils.js"></script>
 <script src="scripts/setting.js"></script>

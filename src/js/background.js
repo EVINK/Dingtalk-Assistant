@@ -93,11 +93,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
         }
     });
 }); });
-chrome.commands.onCommand.addListener(function (shortcut) {
-    if (shortcut.includes("+M")) {
-        chrome.runtime.reload();
-    }
-});
 function sendChromeNotification(data) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
