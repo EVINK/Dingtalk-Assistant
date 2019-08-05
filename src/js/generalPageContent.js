@@ -91,7 +91,7 @@ var GeneralPageContent = (function () {
                             this.settings = {
                                 banGlobalStyle: true,
                                 banSnapshotShortcut: false,
-                                snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                                snapshotShortcut: null,
                             };
                         }
                         if (!this.settings.banGlobalStyle) {

@@ -40,7 +40,7 @@ class GeneralPageContent {
             this.settings = {
                 banGlobalStyle: true,
                 banSnapshotShortcut: false,
-                snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                snapshotShortcut: null,
             }
         }
 
