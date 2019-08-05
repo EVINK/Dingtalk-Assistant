@@ -221,7 +221,7 @@ var DingTalkContent = (function () {
             }
             function handleExit() {
                 that.newMessageNotificationLock = true;
-                setTimeout(function () { return that.newMessageNotificationLock = false; }, 0);
+                setTimeout(function () { return that.newMessageNotificationLock = false; }, 1000);
                 banList = [];
                 for (var _i = 0, coverList_1 = coverList; _i < coverList_1.length; _i++) {
                     var cover = coverList_1[_i];
@@ -289,7 +289,7 @@ var DingTalkContent = (function () {
                                         btnsArea.appendChild(finishBtn);
                                         btnsArea.appendChild(cancelBtn);
                                         this.newMessageNotificationLock = true;
-                                        setTimeout(function () { return _this.newMessageNotificationLock = false; }, 0);
+                                        setTimeout(function () { return _this.newMessageNotificationLock = false; }, 1000);
                                         contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child');
                                         if (!contacts) {
                                             return [2, sendMessage({ bubble: '没有找到最近联系人' })];

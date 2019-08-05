@@ -303,7 +303,7 @@ class DingTalkContent {
             btnsArea.appendChild(cancelBtn)
 
             this.newMessageNotificationLock = true
-            setTimeout(() => this.newMessageNotificationLock = false, 0)
+            setTimeout(() => this.newMessageNotificationLock = false, 1000)
 
             let contacts = document.querySelectorAll(
                 '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child'
@@ -350,7 +350,7 @@ class DingTalkContent {
 
         function handleExit() {
             that.newMessageNotificationLock = true
-            setTimeout(() => that.newMessageNotificationLock = false, 0)
+            setTimeout(() => that.newMessageNotificationLock = false, 1000)
             banList = []
             for (const cover of coverList) {
                 cover.remove()
