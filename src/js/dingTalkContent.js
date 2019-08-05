@@ -222,7 +222,7 @@ var DingTalkContent = (function () {
             function handleExit() {
                 that.newMessageNotificationLock = true;
                 setTimeout(function () { return that.newMessageNotificationLock = false; }, 0);
-                banList = new Array();
+                banList = [];
                 for (var _i = 0, coverList_1 = coverList; _i < coverList_1.length; _i++) {
                     var cover = coverList_1[_i];
                     cover.remove();
@@ -264,8 +264,8 @@ var DingTalkContent = (function () {
                         cancelBtn.appendChild(img);
                         img.src = chrome.extension.getURL('assets/imgs/cancel.svg');
                         img.style.width = '26px';
-                        banList = new Array();
-                        coverList = new Array();
+                        banList = [];
+                        coverList = [];
                         btn.onclick = function (e) { return __awaiter(_this, void 0, void 0, function () {
                             var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_1, _i, contacts_1, node;
                             var _this = this;

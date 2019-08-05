@@ -282,8 +282,8 @@ class DingTalkContent {
         img.src = chrome.extension.getURL('assets/imgs/cancel.svg')
         img.style.width = '26px'
 
-        let banList = new Array<string>()
-        const coverList = new Array<HTMLElement>()
+        let banList: Array<string> = []
+        const coverList: Array<Element> = []
 
         btn.onclick = async (e: Event) => {
             if (await StorageArea.get(this.globalNotificationLockKey))
@@ -351,7 +351,7 @@ class DingTalkContent {
         function handleExit() {
             that.newMessageNotificationLock = true
             setTimeout(() => that.newMessageNotificationLock = false, 0)
-            banList = new Array<string>()
+            banList = []
             for (const cover of coverList) {
                 cover.remove()
             }

@@ -36,6 +36,13 @@ class GeneralPageContent {
         document.body.appendChild(this.bubbleWin)
 
         this.settings = await StorageArea.get('settings') as Settings | null
+        if (!this.settings) {
+            this.settings = {
+                banGlobalStyle: true,
+                banSnapshotShortcut: false,
+                snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+            }
+        }
 
         if (!this.settings.banGlobalStyle) {
             this.alertWindowStyle.innerHTML += `

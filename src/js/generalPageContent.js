@@ -87,6 +87,13 @@ var GeneralPageContent = (function () {
                         return [4, StorageArea.get('settings')];
                     case 1:
                         _a.settings = (_b.sent());
+                        if (!this.settings) {
+                            this.settings = {
+                                banGlobalStyle: true,
+                                banSnapshotShortcut: false,
+                                snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                            };
+                        }
                         if (!this.settings.banGlobalStyle) {
                             this.alertWindowStyle.innerHTML += "\n            ::-webkit-scrollbar {\n                width: 5px;\n                height: 3px;\n            }\n        \n            ::-webkit-scrollbar-track-piece {\n                background-color: white;\n            }\n        \n            ::-webkit-scrollbar-thumb {\n                height: 50px;\n                background-color: #3173FD;\n                border-radius: 3px;\n            }\n            ";
                         }
