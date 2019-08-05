@@ -61,7 +61,8 @@
     "tabs",
     "background",
     "desktopCapture",
-    "notifications"
+    "notifications",
+    "alarms"
   ],
   "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }

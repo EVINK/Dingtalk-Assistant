@@ -137,7 +137,7 @@ var DingTalkContent = (function () {
         var that = this;
         function handleNotiClass(target) {
             return __awaiter(this, void 0, void 0, function () {
-                var parent_1, msg, name_1, banList;
+                var parent_1, msg, name_1, banList, msgContent;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -154,10 +154,13 @@ var DingTalkContent = (function () {
                                 banList = [];
                             if (banList.indexOf(name_1.textContent) >= 0)
                                 return [2];
+                            msgContent = msg.textContent;
+                            if (msgContent.length > 20)
+                                msgContent = msgContent.slice(0, 20) + "...";
                             return [2, chrome.runtime.sendMessage({
                                     chromeNotification: {
                                         title: "\u9489\u9489 - " + name_1.textContent,
-                                        message: msg.textContent
+                                        message: msgContent
                                     }
                                 })];
                         case 2: return [2];

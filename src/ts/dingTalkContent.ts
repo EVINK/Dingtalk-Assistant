@@ -137,10 +137,13 @@ class DingTalkContent {
                 if (!banList) banList = []
                 if (banList.indexOf(name.textContent) >= 0) return
 
+                let msgContent = msg.textContent
+                if (msgContent.length > 20) msgContent = `${msgContent.slice(0, 20)}...`
+
                 return chrome.runtime.sendMessage({
                     chromeNotification: {
                         title: `钉钉 - ${name.textContent}`,
-                        message: msg.textContent
+                        message: msgContent
                     }
                 })
             }

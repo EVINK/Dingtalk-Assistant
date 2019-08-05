@@ -39,7 +39,8 @@ new Vue({
         page: 'general',
         notificationLock: false,
         settings: {},
-        bubbleWin: document.createElement('div')
+        bubbleWin: document.createElement('div'),
+        versionCheck: true,
     },
     methods: {
         routeTo: function (page, clearData) {
@@ -50,7 +51,7 @@ new Vue({
         },
         syncData: function () {
             return __awaiter(this, void 0, void 0, function () {
-                var settings, _a;
+                var settings, _a, versionCheck;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0: return [4, StorageArea.get('settings')];
@@ -70,6 +71,13 @@ new Vue({
                             return [4, StorageArea.get('notificationLock')];
                         case 2:
                             _a.notificationLock = (_b.sent());
+                            return [4, StorageArea.get('versionCheck')];
+                        case 3:
+                            versionCheck = _b.sent();
+                            if (typeof versionCheck !== 'boolean')
+                                this.versionCheck = true;
+                            else
+                                this.versionCheck = versionCheck;
                             return [2];
                     }
                 });
@@ -85,6 +93,9 @@ new Vue({
             }
             StorageArea.set({ settings: this.settings });
             StorageArea.set({ notificationLock: this.notificationLock });
+            StorageArea.set({ versionCheck: this.versionCheck });
+            if (this.versionCheck)
+                chrome.runtime.sendMessage({ versionCheck: true });
             this.genBubbleMsg('设置已保存');
         },
         cancelSettings: function () {
@@ -107,7 +118,9 @@ new Vue({
         },
         setSnapshotShortcut: function (e) {
             var _this = this;
-            this.settings.snapshotShortcut = new Array();
+            if (this.settings.banSnapshotShortcut)
+                return;
+            this.settings.snapshotShortcut = [];
             e.target.onkeydown = function (e) {
                 e.preventDefault();
                 if (!e.key.trim())

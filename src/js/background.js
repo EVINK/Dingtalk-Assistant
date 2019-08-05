@@ -60,32 +60,31 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
         }
     });
 }); });
-var lastNotiId = '';
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 if (!message.storeDtId) return [3, 1];
                 StorageArea.set({ dtId: sender.tab.id });
-                return [3, 6];
+                return [3, 5];
             case 1:
                 if (!message.snapshot) return [3, 2];
                 chrome.tabs.captureVisibleTab(null, {}, function (image) {
                     sendMessage({ snapshot: image });
                 });
-                return [3, 6];
+                return [3, 5];
             case 2:
-                if (!message.chromeNotification) return [3, 6];
-                if (!lastNotiId) return [3, 4];
-                return [4, clearChromeNotification(lastNotiId)];
+                if (!message.chromeNotification) return [3, 4];
+                return [4, Notify.sendChromeNotification(message.chromeNotification)];
             case 3:
                 _a.sent();
-                _a.label = 4;
-            case 4: return [4, sendChromeNotification(message.chromeNotification)];
+                return [3, 5];
+            case 4:
+                if (message.versionCheck) {
+                    new VersionCheck();
+                }
+                _a.label = 5;
             case 5:
-                lastNotiId = _a.sent();
-                _a.label = 6;
-            case 6:
                 sendResponse({
                     result: 'success'
                 });
@@ -93,34 +92,121 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
         }
     });
 }); });
-function sendChromeNotification(data) {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            data.type = 'basic';
-            data.iconUrl = chrome.extension.getURL('icon.png');
-            return [2, new Promise(function (resolve, reject) {
-                    chrome.notifications.create(null, __assign({}, data), function (nid) {
-                        if (chrome.runtime.lastError)
-                            return console.log(chrome.runtime.lastError.message);
-                        resolve(nid);
-                    });
-                })];
+var Notify = (function () {
+    function Notify() {
+    }
+    Notify.sendChromeNotification = function (data) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!Notify.lastNotificationId) return [3, 2];
+                        return [4, this.clearChromeNotification()];
+                    case 1:
+                        _a.sent();
+                        _a.label = 2;
+                    case 2:
+                        if (!data.type)
+                            data.type = 'basic';
+                        if (!data.iconUrl)
+                            data.iconUrl = chrome.extension.getURL('icon.png');
+                        return [2, new Promise(function (resolve) {
+                                chrome.notifications.create(null, __assign({}, data), function (nid) {
+                                    if (chrome.runtime.lastError)
+                                        return console.log(chrome.runtime.lastError.message);
+                                    Notify.lastNotificationId = nid;
+                                    resolve(nid);
+                                });
+                            })];
+                }
+            });
         });
-    });
-}
-function clearChromeNotification(nid) {
-    return __awaiter(this, void 0, void 0, function () {
+    };
+    Notify.clearChromeNotification = function () {
         var _this = this;
-        return __generator(this, function (_a) {
-            return [2, new Promise(function (resolve, reject) {
-                    chrome.notifications.clear(lastNotiId, function (wasCleared) { return __awaiter(_this, void 0, void 0, function () {
-                        return __generator(this, function (_a) {
-                            resolve(wasCleared);
-                            return [2];
-                        });
-                    }); });
-                })];
+        return new Promise(function (resolve) {
+            chrome.notifications.clear(Notify.lastNotificationId, function (wasCleared) { return __awaiter(_this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    resolve(wasCleared);
+                    return [2];
+                });
+            }); });
         });
-    });
-}
+    };
+    Notify.lastNotificationId = undefined;
+    return Notify;
+}());
+var VersionCheck = (function () {
+    function VersionCheck() {
+        VersionCheck.create();
+        VersionCheck.event();
+    }
+    VersionCheck.create = function () {
+        chrome.alarms.get(VersionCheck.alarmName, function (alarm) {
+            if (!alarm)
+                chrome.alarms.create(VersionCheck.alarmName, { when: Date.now() + 60, periodInMinutes: 180, });
+        });
+    };
+    VersionCheck.clear = function () {
+        chrome.alarms.clear(VersionCheck.alarmName, (function (wasCleared) {
+            if (wasCleared)
+                console.log('alarm was removed');
+        }));
+    };
+    VersionCheck.getLatestVersion = function () {
+        return __awaiter(this, void 0, void 0, function () {
+            var data, newVersion, versionAlarmed, version;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, fetch(VersionCheck.endpoint)];
+                    case 1:
+                        data = _a.sent();
+                        return [4, data.text()];
+                    case 2:
+                        newVersion = _a.sent();
+                        return [4, StorageArea.get('versionAlarmed')];
+                    case 3:
+                        versionAlarmed = _a.sent();
+                        if (versionAlarmed === newVersion)
+                            return [2];
+                        version = chrome.runtime.getManifest().version;
+                        if (version !== newVersion) {
+                            Notify.sendChromeNotification({
+                                title: "\u9489\u9489\u52A9\u624B\u6709\u53EF\u7528\u7684\u65B0\u7248\u672C-v" + newVersion,
+                                message: '可前往设置页禁用新版本检查',
+                            });
+                            StorageArea.set({ versionAlarmed: newVersion });
+                        }
+                        return [2];
+                }
+            });
+        });
+    };
+    VersionCheck.event = function () {
+        var _this = this;
+        chrome.alarms.onAlarm.addListener(function (alarm) { return __awaiter(_this, void 0, void 0, function () {
+            var versionCheck;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!(alarm.name === VersionCheck.alarmName)) return [3, 2];
+                        return [4, StorageArea.get('versionCheck')];
+                    case 1:
+                        versionCheck = _a.sent();
+                        if (typeof versionCheck !== 'boolean')
+                            versionCheck = true;
+                        if (!versionCheck)
+                            return [2, VersionCheck.clear()];
+                        VersionCheck.getLatestVersion();
+                        _a.label = 2;
+                    case 2: return [2];
+                }
+            });
+        }); });
+    };
+    VersionCheck.alarmName = 'versionCheckAlarm';
+    VersionCheck.endpoint = 'https://api.evink.cn/dt/version';
+    return VersionCheck;
+}());
+new VersionCheck();
 //# sourceMappingURL=background.js.map

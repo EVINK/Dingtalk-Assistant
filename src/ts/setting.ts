@@ -7,7 +7,8 @@ new Vue({
         page: 'general',
         notificationLock: false,
         settings: {},
-        bubbleWin: document.createElement('div') as HTMLDivElement
+        bubbleWin: document.createElement('div') as HTMLDivElement,
+        versionCheck: true,
     },
     methods: {
         routeTo(page: string, clearData?: boolean) {
@@ -28,6 +29,9 @@ new Vue({
                 }
             }
             this.notificationLock = await StorageArea.get('notificationLock') as boolean | null
+            const versionCheck = (await StorageArea.get('versionCheck') as boolean | null)
+            if (typeof versionCheck !== 'boolean') this.versionCheck = true
+            else this.versionCheck = versionCheck
         },
         saveSettings() {
             if (this.settings.snapshotShortcut.length <= 0) {
@@ -38,6 +42,8 @@ new Vue({
             }
             StorageArea.set({settings: this.settings})
             StorageArea.set({notificationLock: this.notificationLock})
+            StorageArea.set({versionCheck: this.versionCheck})
+            if (this.versionCheck) chrome.runtime.sendMessage({versionCheck: true})
             this.genBubbleMsg('设置已保存')
         },
         cancelSettings() {
@@ -60,7 +66,8 @@ new Vue({
             bubble.classList.add(bubbleOnClass)
         },
         setSnapshotShortcut(e: Event) {
-            this.settings.snapshotShortcut = new Array<string>();
+            if (this.settings.banSnapshotShortcut) return
+            this.settings.snapshotShortcut = [];
             (e.target as HTMLElement).onkeydown = (e) => {
                 e.preventDefault()
                 if (!e.key.trim()) return
