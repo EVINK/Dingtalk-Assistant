@@ -78,7 +78,7 @@ class VersionCheck {
     private static create() {
         chrome.alarms.get(VersionCheck.alarmName, (alarm) => {
             if (!alarm)
-                chrome.alarms.create(VersionCheck.alarmName, {when: Date.now() + 60, periodInMinutes: 180,})
+                chrome.alarms.create(VersionCheck.alarmName, {when: Date.now(), periodInMinutes: 180,})
         })
     }
 
@@ -89,18 +89,25 @@ class VersionCheck {
     }
 
     private static async getLatestVersion() {
-        const data = await fetch(VersionCheck.endpoint)
-        const newVersion: string = await data.text()
-        const versionAlarmed = await StorageArea.get('versionAlarmed')
-        if (versionAlarmed === newVersion) return
-        const version = chrome.runtime.getManifest().version
-        if (version !== newVersion) {
-            Notify.sendChromeNotification({
-                title: `钉钉助手有可用的新版本-v${newVersion}`,
-                message: '可前往设置页禁用新版本检查',
-            })
-            StorageArea.set({versionAlarmed: newVersion})
+        try {
+            const data = await fetch(VersionCheck.endpoint)
+            if (data.status !== 200) return
+            const newVersion: string = await data.text()
+            const versionAlarmed = await StorageArea.get('versionAlarmed')
+            if (versionAlarmed === newVersion) return
+            const version = chrome.runtime.getManifest().version
+            if (version !== newVersion) {
+                Notify.sendChromeNotification({
+                    title: `钉钉助手有可用的新版本-v${newVersion}`,
+                    message: '可前往设置页禁用新版本检查',
+                })
+                StorageArea.set({versionAlarmed: newVersion})
+            }
+        } catch (e) {
+            console.log(e)
+            return
         }
+
     }
 
     private static event() {

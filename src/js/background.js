@@ -144,7 +144,7 @@ var VersionCheck = (function () {
     VersionCheck.create = function () {
         chrome.alarms.get(VersionCheck.alarmName, function (alarm) {
             if (!alarm)
-                chrome.alarms.create(VersionCheck.alarmName, { when: Date.now() + 60, periodInMinutes: 180, });
+                chrome.alarms.create(VersionCheck.alarmName, { when: Date.now(), periodInMinutes: 180, });
         });
     };
     VersionCheck.clear = function () {
@@ -155,12 +155,16 @@ var VersionCheck = (function () {
     };
     VersionCheck.getLatestVersion = function () {
         return __awaiter(this, void 0, void 0, function () {
-            var data, newVersion, versionAlarmed, version;
+            var data, newVersion, versionAlarmed, version, e_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, fetch(VersionCheck.endpoint)];
+                    case 0:
+                        _a.trys.push([0, 4, , 5]);
+                        return [4, fetch(VersionCheck.endpoint)];
                     case 1:
                         data = _a.sent();
+                        if (data.status !== 200)
+                            return [2];
                         return [4, data.text()];
                     case 2:
                         newVersion = _a.sent();
@@ -177,7 +181,12 @@ var VersionCheck = (function () {
                             });
                             StorageArea.set({ versionAlarmed: newVersion });
                         }
+                        return [3, 5];
+                    case 4:
+                        e_1 = _a.sent();
+                        console.log(e_1);
                         return [2];
+                    case 5: return [2];
                 }
             });
         });
