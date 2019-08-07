@@ -51,7 +51,7 @@ new Vue({
         },
         syncData: function () {
             return __awaiter(this, void 0, void 0, function () {
-                var settings, _a, versionCheck;
+                var settings, _a;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
                         case 0: return [4, StorageArea.get('settings')];
@@ -71,13 +71,6 @@ new Vue({
                             return [4, StorageArea.get('notificationLock')];
                         case 2:
                             _a.notificationLock = (_b.sent());
-                            return [4, StorageArea.get('versionCheck')];
-                        case 3:
-                            versionCheck = _b.sent();
-                            if (typeof versionCheck !== 'boolean')
-                                this.versionCheck = true;
-                            else
-                                this.versionCheck = versionCheck;
                             return [2];
                     }
                 });
@@ -85,7 +78,7 @@ new Vue({
         },
         saveSettings: function () {
             var _this = this;
-            if (this.settings.snapshotShortcut.length <= 0) {
+            if (!this.settings.banSnapshotShortcut && this.settings.snapshotShortcut.length <= 0) {
                 this.genBubbleMsg('设置未保存');
                 setTimeout(function () { return _this.genBubbleMsg('截图快捷键不是一个合法值'); }, 300);
                 setTimeout(function () { return _this.genBubbleMsg('如无需使用快捷键，建议直接禁用'); }, 600);
@@ -93,9 +86,6 @@ new Vue({
             }
             StorageArea.set({ settings: this.settings });
             StorageArea.set({ notificationLock: this.notificationLock });
-            StorageArea.set({ versionCheck: this.versionCheck });
-            if (this.versionCheck)
-                chrome.runtime.sendMessage({ versionCheck: true });
             this.genBubbleMsg('设置已保存');
         },
         cancelSettings: function () {

@@ -72,6 +72,7 @@ var DingTalkContent = (function () {
                 window.onload = function () {
                     _this.newMessageListener();
                     _this.initMessageSelector();
+                    _this.initNightMode();
                 };
                 return [2];
             });
@@ -352,6 +353,16 @@ var DingTalkContent = (function () {
                 }
             });
         });
+    };
+    DingTalkContent.prototype.switchNightMode = function (open) {
+        var id = 'dt-night-mode-EvinK';
+        if (!open)
+            if (document.querySelector(id)) {
+                return;
+            }
+        var nightModeShell = document.createElement('style');
+        nightModeShell.id = id;
+        document.body.appendChild(nightModeShell);
     };
     return DingTalkContent;
 }());

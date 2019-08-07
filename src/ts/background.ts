@@ -16,7 +16,7 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     } else if (message.chromeNotification) {
         await Notify.sendChromeNotification(message.chromeNotification)
     } else if (message.versionCheck) {
-        new VersionCheck()
+        // new VersionCheck()
     }
 
     sendResponse({
@@ -66,63 +66,63 @@ class Notify {
 }
 
 
-class VersionCheck {
-    private static alarmName = 'versionCheckAlarm'
-    private static endpoint = 'https://api.evink.cn/dt/version'
-
-    constructor() {
-        VersionCheck.create()
-        VersionCheck.event()
-    }
-
-    private static create() {
-        chrome.alarms.get(VersionCheck.alarmName, (alarm) => {
-            if (!alarm)
-                chrome.alarms.create(VersionCheck.alarmName, {when: Date.now(), periodInMinutes: 180,})
-        })
-    }
-
-    private static clear() {
-        chrome.alarms.clear(VersionCheck.alarmName, (wasCleared => {
-            if (wasCleared) console.log('alarm was removed')
-        }))
-    }
-
-    private static async getLatestVersion() {
-        try {
-            const data = await fetch(VersionCheck.endpoint)
-            if (data.status !== 200) return
-            const newVersion: string = await data.text()
-            const versionAlarmed = await StorageArea.get('versionAlarmed')
-            if (versionAlarmed === newVersion) return
-            const version = chrome.runtime.getManifest().version
-            if (version !== newVersion) {
-                Notify.sendChromeNotification({
-                    title: `钉钉助手有可用的新版本-v${newVersion}`,
-                    message: '可前往设置页禁用新版本检查',
-                })
-                StorageArea.set({versionAlarmed: newVersion})
-            }
-        } catch (e) {
-            console.log(e)
-            return
-        }
-
-    }
-
-    private static event() {
-        // period task
-        chrome.alarms.onAlarm.addListener(async (alarm) => {
-            if (alarm.name === VersionCheck.alarmName) {
-                let versionCheck = await StorageArea.get('versionCheck') as boolean | null
-                if (typeof versionCheck !== 'boolean') versionCheck = true
-                if (!versionCheck) return VersionCheck.clear()
-                VersionCheck.getLatestVersion()
-            }
-        })
-    }
-}
-
-new VersionCheck()
+// class VersionCheck {
+//     private static alarmName = 'versionCheckAlarm'
+//     private static endpoint = 'https://api.evink.cn/dt/version'
+//
+//     constructor() {
+//         VersionCheck.create()
+//         VersionCheck.event()
+//     }
+//
+//     private static create() {
+//         chrome.alarms.get(VersionCheck.alarmName, (alarm) => {
+//             if (!alarm)
+//                 chrome.alarms.create(VersionCheck.alarmName, {when: Date.now(), periodInMinutes: 180,})
+//         })
+//     }
+//
+//     private static clear() {
+//         chrome.alarms.clear(VersionCheck.alarmName, (wasCleared => {
+//             if (wasCleared) console.log('alarm was removed')
+//         }))
+//     }
+//
+//     private static async getLatestVersion() {
+//         try {
+//             const data = await fetch(VersionCheck.endpoint)
+//             if (data.status !== 200) return
+//             const newVersion: string = await data.text()
+//             const versionAlarmed = await StorageArea.get('versionAlarmed')
+//             if (versionAlarmed === newVersion) return
+//             const version = chrome.runtime.getManifest().version
+//             if (version !== newVersion) {
+//                 Notify.sendChromeNotification({
+//                     title: `钉钉助手有可用的新版本-v${newVersion}`,
+//                     message: '可前往设置页禁用新版本检查',
+//                 })
+//                 StorageArea.set({versionAlarmed: newVersion})
+//             }
+//         } catch (e) {
+//             console.log(e)
+//             return
+//         }
+//
+//     }
+//
+//     private static event() {
+//         // period task
+//         chrome.alarms.onAlarm.addListener(async (alarm) => {
+//             if (alarm.name === VersionCheck.alarmName) {
+//                 let versionCheck = await StorageArea.get('versionCheck') as boolean | null
+//                 if (typeof versionCheck !== 'boolean') versionCheck = true
+//                 if (!versionCheck) return VersionCheck.clear()
+//                 VersionCheck.getLatestVersion()
+//             }
+//         })
+//     }
+// }
+//
+// new VersionCheck()
 
 

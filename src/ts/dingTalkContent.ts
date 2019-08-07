@@ -41,6 +41,7 @@ class DingTalkContent {
         window.onload = () => {
             this.newMessageListener()
             this.initMessageSelector()
+            this.initNightMode()
         }
     }
 
@@ -372,7 +373,18 @@ class DingTalkContent {
         cancelBtn.onclick = () => {
             handleExit()
         }
+    }
 
+    private switchNightMode(open?: boolean) {
+        const id = 'dt-night-mode-EvinK'
+        if(!open)
+            if(document.querySelector(id)) {
+                return
+            }
+
+        const nightModeShell = document.createElement('style')
+        nightModeShell.id = id
+        document.body.appendChild(nightModeShell)
 
     }
 
