@@ -390,7 +390,8 @@ class DingTalkContent {
             font: 'white',
             selectedFont: 'white',
             chatBoxHeader: '#04236e',
-            chatBoxTextArea: '#12299b',
+            chatBoxTextAreaBg: 'white',
+            chatBoxTextAreaFont: 'black',
             myMsgBubble: '#0945ff',
             msgBubble: '#031a59',
         }
@@ -458,7 +459,7 @@ class DingTalkContent {
         color: ${theme.font};
         }
         #sub-menu-pannel {
-        border-right: 0px solid transparent; 
+        border-right: 0 solid transparent; 
         }
         
         .nocontent-logo {
@@ -480,8 +481,8 @@ class DingTalkContent {
         }
         .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {
         /* 聊天框Text area */
-        color: ${theme.font};
-        background-color: ${theme.chatBoxTextArea};
+        color: ${theme.chatBoxTextAreaFont};
+        background-color: ${theme.chatBoxTextAreaBg};
         }
         .conv-detail-pannel .send-msg-box-wrapper .action-area {
         border-left: 0 solid transparent;
