@@ -15,6 +15,7 @@ class DingTalkContent {
     private async init() {
         this.initDingTalkStyle()
         DingTalkContent.checkLSPStatus()
+        this.switchNightMode(true)
 
         const self = this
         // event
@@ -41,7 +42,6 @@ class DingTalkContent {
         window.onload = () => {
             this.newMessageListener()
             this.initMessageSelector()
-            this.initNightMode()
         }
     }
 
@@ -377,15 +377,128 @@ class DingTalkContent {
 
     private switchNightMode(open?: boolean) {
         const id = 'dt-night-mode-EvinK'
-        if(!open)
-            if(document.querySelector(id)) {
-                return
+        if (!open) {
+            const sheet = document.querySelector(id)
+            if (sheet) {
+                return sheet.remove()
             }
+        }
 
-        const nightModeShell = document.createElement('style')
+        const theme = {
+            main: '#020f2f',
+            header: '#04236e',
+            font: 'white',
+            selectedFont: 'white',
+            chatBoxHeader: '#04236e',
+            chatBoxTextArea: '#12299b',
+            myMsgBubble: '#0945ff',
+            msgBubble: '#031a59',
+        }
+
+        const nightModeShell = document.createElement('div')
         nightModeShell.id = id
-        document.body.appendChild(nightModeShell)
-
+        generaPageContent.head.appendChild(nightModeShell)
+        nightModeShell.innerHTML += `
+        <style>
+        #content-pannel .content-pannel-head {
+        background: ${theme.chatBoxHeader};  /* 聊天框header */
+        color: ${theme.font};
+        }
+        #content-pannel .content-pannel-head {  
+         border-bottom: 0 solid transparent; 
+        }
+        .main-chat.chat-items.ng-isolate-scope {
+        background: ${theme.main}; /* 聊天框 */ 
+        }
+        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {
+        background: ${theme.myMsgBubble};
+        border: 1px solid transparent;
+        }
+        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {
+        background: ${theme.msgBubble};
+        color: ${theme.font};
+        border: 1px solid transparent;
+        }
+        #header {
+        /* header */
+        border: 1px solid ${theme.header};
+        }
+        #header.lng-zh {
+        /* header */
+        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll ${theme.header};
+        }
+        .search-bar-wraper .main-search-2 .select2-search-field input {
+            background-color: ${theme.font};
+            border: 1px solid ${theme.main};
+         }
+         
+         #menu-pannel .main-menus .menu-item.selected {
+         color: ${theme.selectedFont};
+         }
+         #menu-pannel, #menu-pannel .profile {
+         background: ${theme.main};
+         border: 1px solid ${theme.main};
+        }
+        .conv-lists-box.ng-isolate-scope {
+        background: ${theme.main};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {
+        background-color: ${theme.chatBoxHeader};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {
+        background-color: ${theme.chatBoxHeader};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.selectedFont};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.selectedFont};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.font};
+        }
+        #sub-menu-pannel {
+        border-right: 0px solid transparent; 
+        }
+        
+        .nocontent-logo {
+        background: ${theme.main};
+        }
+        #content-pannel .nocontent-tips {
+        background: ${theme.main};
+        color: ${theme.font};
+        }
+        
+        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {
+        background-color: ${theme.main};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper {
+        border-top: 0 solid transparent; 
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .input-area {
+        background: ${theme.main};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {
+        /* 聊天框Text area */
+        color: ${theme.font};
+        background-color: ${theme.chatBoxTextArea};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .action-area {
+        border-left: 0 solid transparent;
+        }
+         
+        .chat-head .conv-operations .iconfont {
+        color: ${theme.font};
+        }       
+        
+        ::-webkit-scrollbar-track-piece {
+        background-color: ${theme.main};
+        }
+        ::-webkit-scrollbar-thumb {
+        background-color: white;
+        }
+        </style>
+        `
     }
 
 
