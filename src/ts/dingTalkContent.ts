@@ -384,17 +384,42 @@ class DingTalkContent {
             }
         }
 
+        // lightgreen
         const theme = {
-            main: '#020f2f',
-            header: '#04236e',
-            font: 'white',
-            selectedFont: 'white',
-            chatBoxHeader: '#04236e',
-            chatBoxTextAreaBg: 'white',
+            main: 'white',
+            header: '#0e9d62',
+            font: 'black',
+            selectedFont: '#0e9c61',
+            chatBoxHeader: '#0e9c6129',
+            chatBoxTextAreaBg: 'transparent',
             chatBoxTextAreaFont: 'black',
-            myMsgBubble: '#0945ff',
-            msgBubble: '#031a59',
+            myMsgBubble: '#e9ffcf',
+            msgBubble: '#e9ffcf',
         }
+        // green
+        // const theme = {
+        //     main: '#122906',
+        //     header: '#07462b',
+        //     font: 'white',
+        //     selectedFont: 'white',
+        //     chatBoxHeader: '#07462b',
+        //     chatBoxTextAreaBg: 'white',
+        //     chatBoxTextAreaFont: 'black',
+        //     myMsgBubble: '#446e0b',
+        //     msgBubble: '#446e0b',
+        // }
+        // night
+        // const theme = {
+        //     main: '#020f2f',
+        //     header: '#04236e',
+        //     font: 'white',
+        //     selectedFont: 'white',
+        //     chatBoxHeader: '#04236e',
+        //     chatBoxTextAreaBg: 'white',
+        //     chatBoxTextAreaFont: 'black',
+        //     myMsgBubble: '#0945ff',
+        //     msgBubble: '#031a59',
+        // }
 
         const nightModeShell = document.createElement('div')
         nightModeShell.id = id
@@ -429,7 +454,7 @@ class DingTalkContent {
         background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll ${theme.header};
         }
         .search-bar-wraper .main-search-2 .select2-search-field input {
-            background-color: ${theme.font};
+            background-color: white;
             border: 1px solid ${theme.main};
          }
          
@@ -497,6 +522,9 @@ class DingTalkContent {
         }
         ::-webkit-scrollbar-thumb {
         background-color: white;
+        }
+        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {
+        color: #38adff; 
         }
         </style>
         `
