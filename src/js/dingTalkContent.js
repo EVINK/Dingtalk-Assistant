@@ -42,6 +42,7 @@ var DingTalkContent = (function () {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
+        this.getLatestContacts();
     }
     DingTalkContent.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -426,6 +427,12 @@ var DingTalkContent = (function () {
                 }
             });
         });
+    };
+    DingTalkContent.prototype.getLatestContacts = function () {
+        var contacts = document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item');
+        if (!contacts)
+            return;
+        console.log(contacts);
     };
     return DingTalkContent;
 }());

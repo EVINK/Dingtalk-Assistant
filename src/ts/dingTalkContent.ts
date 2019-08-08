@@ -10,6 +10,7 @@ class DingTalkContent {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle)
         this.init()
+        this.getLatestContacts()
     }
 
     private async init() {
@@ -540,6 +541,21 @@ class DingTalkContent {
         `
     }
 
+    private getLatestContacts() {
+        const contacts = document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item')
+        if (!contacts) return
+        console.log(contacts)
+
+        // const findContactDomInterval = setInterval(() => {
+        //     const targetNode = document.querySelector('#sub-menu-pannel')
+        //     if (targetNode) {
+        //         clearInterval(findContactDomInterval)
+        //         obs.observe(targetNode, config)
+        //     }
+        // }, 1000)
+
+
+    }
 
 }
 
