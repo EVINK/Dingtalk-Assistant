@@ -50,7 +50,7 @@ var DingTalkContent = (function () {
             return __generator(this, function (_a) {
                 this.initDingTalkStyle();
                 DingTalkContent.checkLSPStatus();
-                this.switchNightMode(true);
+                this.switchNightMode();
                 self = this;
                 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     if (request.message.fullScreen) {
@@ -64,6 +64,9 @@ var DingTalkContent = (function () {
                     }
                     else if (request.message.checkLSPStatus) {
                         DingTalkContent.checkLSPStatus();
+                    }
+                    else if (request.message.theme) {
+                        self.switchNightMode(request.message.theme);
                     }
                     sendResponse({
                         result: 'success'
@@ -354,29 +357,75 @@ var DingTalkContent = (function () {
             });
         });
     };
-    DingTalkContent.prototype.switchNightMode = function (open) {
-        var id = 'dt-night-mode-EvinK';
-        if (!open) {
-            var sheet = document.querySelector(id);
-            if (sheet) {
-                return sheet.remove();
-            }
-        }
-        var theme = {
-            main: 'white',
-            header: '#0e9d62',
-            font: 'black',
-            selectedFont: '#0e9c61',
-            chatBoxHeader: '#0e9c6129',
-            chatBoxTextAreaBg: 'transparent',
-            chatBoxTextAreaFont: 'black',
-            myMsgBubble: '#e9ffcf',
-            msgBubble: '#e9ffcf',
-        };
-        var nightModeShell = document.createElement('div');
-        nightModeShell.id = id;
-        generaPageContent.head.appendChild(nightModeShell);
-        nightModeShell.innerHTML += "\n        <style>\n        #content-pannel .content-pannel-head {\n        background: " + theme.chatBoxHeader + ";  /* \u804A\u5929\u6846header */\n        color: " + theme.font + ";\n        }\n        #content-pannel .content-pannel-head {  \n         border-bottom: 0 solid transparent; \n        }\n        .main-chat.chat-items.ng-isolate-scope {\n        background: " + theme.main + "; /* \u804A\u5929\u6846 */ \n        }\n        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.myMsgBubble + ";\n        border: 1px solid transparent;\n        }\n        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.msgBubble + ";\n        color: " + theme.font + ";\n        border: 1px solid transparent;\n        }\n        #header {\n        /* header */\n        border: 1px solid " + theme.header + ";\n        }\n        #header.lng-zh {\n        /* header */\n        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll " + theme.header + ";\n        }\n        .search-bar-wraper .main-search-2 .select2-search-field input {\n            background-color: white;\n            border: 1px solid " + theme.main + ";\n         }\n         \n         #menu-pannel .main-menus .menu-item.selected {\n         color: " + theme.selectedFont + ";\n         }\n         #menu-pannel, #menu-pannel .profile {\n         background: " + theme.main + ";\n         border: 1px solid " + theme.main + ";\n        }\n        .conv-lists-box.ng-isolate-scope {\n        background: " + theme.main + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.font + ";\n        }\n        #sub-menu-pannel {\n        border-right: 0 solid transparent; \n        }\n        \n        .nocontent-logo {\n        background: " + theme.main + ";\n        }\n        #content-pannel .nocontent-tips {\n        background: " + theme.main + ";\n        color: " + theme.font + ";\n        }\n        \n        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {\n        background-color: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper {\n        border-top: 0 solid transparent; \n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area {\n        background: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {\n        /* \u804A\u5929\u6846Text area */\n        color: " + theme.chatBoxTextAreaFont + ";\n        background-color: " + theme.chatBoxTextAreaBg + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .action-area {\n        border-left: 0 solid transparent;\n        }\n         \n        .chat-head .conv-operations .iconfont {\n        color: " + theme.font + ";\n        }       \n        \n        ::-webkit-scrollbar-track-piece {\n        background-color: " + theme.main + ";\n        }\n        ::-webkit-scrollbar-thumb {\n        background-color: white;\n        }\n        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {\n        color: #38adff; \n        }\n        </style>\n        ";
+    DingTalkContent.prototype.switchNightMode = function (theme_str) {
+        return __awaiter(this, void 0, void 0, function () {
+            var id, sheet, theme, nightModeShell;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        id = 'dt-night-mode-EvinK';
+                        sheet = document.querySelector(id);
+                        if (sheet)
+                            sheet.remove();
+                        if (!!theme_str) return [3, 2];
+                        return [4, StorageArea.get('theme')];
+                    case 1:
+                        theme_str = (_a.sent()) || 'original';
+                        _a.label = 2;
+                    case 2:
+                        if (theme_str === 'original')
+                            return [2, generaPageContent.genBubbleMsg('请手动刷新页面')];
+                        switch (theme_str) {
+                            case 'night':
+                                theme = {
+                                    main: '#020f2f',
+                                    header: '#04236e',
+                                    font: 'white',
+                                    selectedFont: 'white',
+                                    chatBoxHeader: '#04236e',
+                                    chatBoxTextAreaBg: 'white',
+                                    chatBoxTextAreaFont: 'black',
+                                    myMsgBubble: '#0945ff',
+                                    msgBubble: '#031a59',
+                                };
+                                break;
+                            case 'dark-green':
+                                theme = {
+                                    main: '#122906',
+                                    header: '#07462b',
+                                    font: 'white',
+                                    selectedFont: 'white',
+                                    chatBoxHeader: '#07462b',
+                                    chatBoxTextAreaBg: 'white',
+                                    chatBoxTextAreaFont: 'black',
+                                    myMsgBubble: '#446e0b',
+                                    msgBubble: '#446e0b',
+                                };
+                                break;
+                            case 'light-green':
+                                theme = {
+                                    main: 'white',
+                                    header: '#0e9d62',
+                                    font: 'black',
+                                    selectedFont: '#0e9c61',
+                                    chatBoxHeader: '#0e9c6129',
+                                    chatBoxTextAreaBg: 'transparent',
+                                    chatBoxTextAreaFont: 'black',
+                                    myMsgBubble: '#e9ffcf',
+                                    msgBubble: '#e9ffcf',
+                                };
+                                break;
+                            default:
+                                return [2];
+                        }
+                        nightModeShell = document.createElement('div');
+                        nightModeShell.id = id;
+                        generaPageContent.head.appendChild(nightModeShell);
+                        nightModeShell.innerHTML += "\n        <style>\n        #content-pannel .content-pannel-head {\n        background: " + theme.chatBoxHeader + ";  /* \u804A\u5929\u6846header */\n        color: " + theme.font + ";\n        }\n        #content-pannel .content-pannel-head {  \n         border-bottom: 0 solid transparent; \n        }\n        .main-chat.chat-items.ng-isolate-scope {\n        background: " + theme.main + "; /* \u804A\u5929\u6846 */ \n        }\n        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.myMsgBubble + ";\n        border: 1px solid transparent;\n        }\n        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.msgBubble + ";\n        color: " + theme.font + ";\n        border: 1px solid transparent;\n        }\n        #header {\n        /* header */\n        border: 1px solid " + theme.header + ";\n        }\n        #header.lng-zh {\n        /* header */\n        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll " + theme.header + ";\n        }\n        .search-bar-wraper .main-search-2 .select2-search-field input {\n            background-color: white;\n            border: 1px solid " + theme.main + ";\n         }\n         \n         #menu-pannel .main-menus .menu-item.selected {\n         color: " + theme.selectedFont + ";\n         }\n         #menu-pannel, #menu-pannel .profile {\n         background: " + theme.main + ";\n         border: 1px solid " + theme.main + ";\n        }\n        .conv-lists-box.ng-isolate-scope {\n        background: " + theme.main + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.font + ";\n        }\n        #sub-menu-pannel {\n        border-right: 0 solid transparent; \n        }\n        \n        .nocontent-logo {\n        background: " + theme.main + ";\n        }\n        #content-pannel .nocontent-tips {\n        background: " + theme.main + ";\n        color: " + theme.font + ";\n        }\n        \n        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {\n        background-color: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper {\n        border-top: 0 solid transparent; \n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area {\n        background: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {\n        /* \u804A\u5929\u6846Text area */\n        color: " + theme.chatBoxTextAreaFont + ";\n        background-color: " + theme.chatBoxTextAreaBg + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .action-area {\n        border-left: 0 solid transparent;\n        }\n         \n        .chat-head .conv-operations .iconfont {\n        color: " + theme.font + ";\n        }       \n        \n        ::-webkit-scrollbar-track-piece {\n        background-color: " + theme.main + ";\n        }\n        ::-webkit-scrollbar-thumb {\n        background-color: white;\n        }\n        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {\n        color: #38adff; \n        }\n        </style>\n        ";
+                        return [2];
+                }
+            });
+        });
     };
     return DingTalkContent;
 }());

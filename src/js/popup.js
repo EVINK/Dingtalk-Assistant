@@ -44,6 +44,7 @@ new Vue({
         menuClicked: false,
         version: undefined,
         snapshotShortcut: ['Ctrl', 'Alt', 'A'],
+        theme: 'original',
     },
     methods: {
         onFullScreen: function () {
@@ -83,32 +84,40 @@ new Vue({
         openSettingPage: function () {
             chrome.tabs.create({ url: chrome.extension.getURL('setting.html') });
         },
+        themeChanged: function () {
+            sendMessage({ theme: this.theme });
+            StorageArea.set({ theme: this.theme });
+        },
     },
     mounted: function () {
         return __awaiter(this, void 0, void 0, function () {
-            var manifestData, _a, _b, settings;
-            return __generator(this, function (_c) {
-                switch (_c.label) {
+            var manifestData, _a, _b, settings, _c;
+            return __generator(this, function (_d) {
+                switch (_d.label) {
                     case 0:
                         manifestData = chrome.runtime.getManifest();
                         this.version = manifestData.version;
                         _a = this;
                         return [4, StorageArea.get('fullScreen')];
                     case 1:
-                        _a.fullScreen = (_c.sent()) || false;
+                        _a.fullScreen = (_d.sent()) || false;
                         _b = this;
                         return [4, StorageArea.get('loginStatusPersistence')];
                     case 2:
-                        _b.loginStatusPersistence = (_c.sent()) || false;
+                        _b.loginStatusPersistence = (_d.sent()) || false;
                         return [4, StorageArea.get('settings')];
                     case 3:
-                        settings = _c.sent();
+                        settings = _d.sent();
                         if (settings) {
                             if (settings.banSnapshotShortcut)
                                 this.snapshotShortcut = [];
                             else
                                 this.snapshotShortcut = settings.snapshotShortcut;
                         }
+                        _c = this;
+                        return [4, StorageArea.get('theme')];
+                    case 4:
+                        _c.theme = (_d.sent()) || 'original';
                         return [2];
                 }
             });

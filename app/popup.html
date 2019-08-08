@@ -53,6 +53,17 @@
             >开始
             </div>
         </div>
+        <div class="tools" >
+            <span>主题</span>
+            <label id="theme-select">
+                <select @change="themeChanged" v-model="theme">
+                    <option value="original">原生</option>
+                    <option value="night">夜晚</option>
+                    <option value="dark-green">夜晚绿</option>
+                    <option value="light-green">原生绿</option>
+                </select>
+            </label>
+        </div>
         <!--        <div class="tools">-->
         <!--            <span>-->
         <!--                <a @click="sendMessage({bubble: 'hhhhhhhh'})">test</a>-->
@@ -75,7 +86,7 @@
 
 
         <div class="version-info">
-            <span id="author"><a>@EvinK</a></span>
+            <!--<span id="author"><a>@EvinK</a></span>-->
             v{{version}}
         </div>
     </div>

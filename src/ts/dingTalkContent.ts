@@ -15,7 +15,7 @@ class DingTalkContent {
     private async init() {
         this.initDingTalkStyle()
         DingTalkContent.checkLSPStatus()
-        this.switchNightMode(true)
+        this.switchNightMode()
 
         const self = this
         // event
@@ -29,6 +29,8 @@ class DingTalkContent {
                     self.initDingTalkStyle()
                 } else if (request.message.checkLSPStatus) {
                     DingTalkContent.checkLSPStatus()
+                } else if (request.message.theme) {
+                    self.switchNightMode(request.message.theme)
                 }
 
                 sendResponse({
@@ -375,51 +377,59 @@ class DingTalkContent {
         }
     }
 
-    private switchNightMode(open?: boolean) {
+    private async switchNightMode(theme_str?: string) {
         const id = 'dt-night-mode-EvinK'
-        if (!open) {
-            const sheet = document.querySelector(id)
-            if (sheet) {
-                return sheet.remove()
-            }
+        const sheet = document.querySelector(id)
+        if (sheet) sheet.remove()
+        if (!theme_str) {
+            theme_str = await StorageArea.get('theme') as string | null || 'original'
         }
+        if (theme_str === 'original') return generaPageContent.genBubbleMsg('请手动刷新页面')
 
-        // lightgreen
-        const theme = {
-            main: 'white',
-            header: '#0e9d62',
-            font: 'black',
-            selectedFont: '#0e9c61',
-            chatBoxHeader: '#0e9c6129',
-            chatBoxTextAreaBg: 'transparent',
-            chatBoxTextAreaFont: 'black',
-            myMsgBubble: '#e9ffcf',
-            msgBubble: '#e9ffcf',
+        let theme
+        switch (theme_str) {
+            case 'night':
+                theme = {
+                    main: '#020f2f',
+                    header: '#04236e',
+                    font: 'white',
+                    selectedFont: 'white',
+                    chatBoxHeader: '#04236e',
+                    chatBoxTextAreaBg: 'white',
+                    chatBoxTextAreaFont: 'black',
+                    myMsgBubble: '#0945ff',
+                    msgBubble: '#031a59',
+                }
+                break
+            case 'dark-green':
+                theme = {
+                    main: '#122906',
+                    header: '#07462b',
+                    font: 'white',
+                    selectedFont: 'white',
+                    chatBoxHeader: '#07462b',
+                    chatBoxTextAreaBg: 'white',
+                    chatBoxTextAreaFont: 'black',
+                    myMsgBubble: '#446e0b',
+                    msgBubble: '#446e0b',
+                }
+                break
+            case 'light-green':
+                theme = {
+                    main: 'white',
+                    header: '#0e9d62',
+                    font: 'black',
+                    selectedFont: '#0e9c61',
+                    chatBoxHeader: '#0e9c6129',
+                    chatBoxTextAreaBg: 'transparent',
+                    chatBoxTextAreaFont: 'black',
+                    myMsgBubble: '#e9ffcf',
+                    msgBubble: '#e9ffcf',
+                }
+                break
+            default:
+                return
         }
-        // green
-        // const theme = {
-        //     main: '#122906',
-        //     header: '#07462b',
-        //     font: 'white',
-        //     selectedFont: 'white',
-        //     chatBoxHeader: '#07462b',
-        //     chatBoxTextAreaBg: 'white',
-        //     chatBoxTextAreaFont: 'black',
-        //     myMsgBubble: '#446e0b',
-        //     msgBubble: '#446e0b',
-        // }
-        // night
-        // const theme = {
-        //     main: '#020f2f',
-        //     header: '#04236e',
-        //     font: 'white',
-        //     selectedFont: 'white',
-        //     chatBoxHeader: '#04236e',
-        //     chatBoxTextAreaBg: 'white',
-        //     chatBoxTextAreaFont: 'black',
-        //     myMsgBubble: '#0945ff',
-        //     msgBubble: '#031a59',
-        // }
 
         const nightModeShell = document.createElement('div')
         nightModeShell.id = id

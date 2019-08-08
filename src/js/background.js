@@ -46,15 +46,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 var _this = this;
 chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_this, void 0, void 0, function () {
-    var dtId;
+    var dtId, theme;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4, StorageArea.get('dtId')];
             case 1:
                 dtId = _a.sent();
+                return [4, StorageArea.get('theme')];
+            case 2:
+                theme = (_a.sent()) || 'original';
                 if (dtId === activeInfo.tabId) {
                     sendMessage({ initDingTalkStyle: true });
                     sendMessage({ checkLSPStatus: true });
+                    sendMessage({ theme: theme });
                 }
                 return [2];
         }

@@ -1,8 +1,10 @@
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const dtId = await StorageArea.get('dtId')
+    const theme = await StorageArea.get('theme') as string | null || 'original'
     if (dtId === activeInfo.tabId) {
         sendMessage({initDingTalkStyle: true})
         sendMessage({checkLSPStatus: true})
+        sendMessage({theme})
     }
 })
 

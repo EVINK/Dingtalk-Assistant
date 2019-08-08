@@ -11,6 +11,7 @@ new Vue({
         menuClicked: false,
         version: undefined,
         snapshotShortcut: ['Ctrl', 'Alt', 'A'],
+        theme: 'original',
     },
     methods: {
         onFullScreen() {
@@ -57,6 +58,10 @@ new Vue({
         openSettingPage() {
             chrome.tabs.create({url: chrome.extension.getURL('setting.html')});
         },
+        themeChanged() {
+            sendMessage({theme: this.theme})
+            StorageArea.set({theme: this.theme})
+        },
     },
     async mounted() {
         const manifestData = chrome.runtime.getManifest()
@@ -68,6 +73,6 @@ new Vue({
             if (settings.banSnapshotShortcut) this.snapshotShortcut = []
             else this.snapshotShortcut = settings.snapshotShortcut
         }
-
+        this.theme = await StorageArea.get('theme') as string | null || 'original'
     }
 })
