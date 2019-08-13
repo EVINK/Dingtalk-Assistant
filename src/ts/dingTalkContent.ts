@@ -541,20 +541,16 @@ class DingTalkContent {
         `
     }
 
-    private getLatestContacts() {
-        const contacts = document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item')
-        if (!contacts) return
-        console.log(contacts)
-
-        // const findContactDomInterval = setInterval(() => {
-        //     const targetNode = document.querySelector('#sub-menu-pannel')
-        //     if (targetNode) {
-        //         clearInterval(findContactDomInterval)
-        //         obs.observe(targetNode, config)
-        //     }
-        // }, 1000)
-
-
+    private getLatestContacts(): Promise<Array<Element>> {
+        return new Promise((resolve, reject) => {
+            const findContactDomInterval = setInterval(() => {
+                const contacts = Array.from(document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item'))
+                if (contacts) {
+                    clearInterval(findContactDomInterval)
+                    resolve(contacts)
+                }
+            }, 1000)
+        })
     }
 
 }

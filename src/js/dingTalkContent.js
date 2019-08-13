@@ -429,10 +429,15 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.getLatestContacts = function () {
-        var contacts = document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item');
-        if (!contacts)
-            return;
-        console.log(contacts);
+        return new Promise(function (resolve, reject) {
+            var findContactDomInterval = setInterval(function () {
+                var contacts = Array.from(document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item'));
+                if (contacts) {
+                    clearInterval(findContactDomInterval);
+                    resolve(contacts);
+                }
+            }, 1000);
+        });
     };
     return DingTalkContent;
 }());
