@@ -87,6 +87,8 @@ new Vue({
         themeChanged: function () {
             sendMessage({ theme: this.theme });
             StorageArea.set({ theme: this.theme });
+            if (this.theme === 'original')
+                sendMessage({ bubble: '请刷新网页钉钉' });
         },
     },
     mounted: function () {

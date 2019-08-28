@@ -1,8 +1,6 @@
 class DingTalkContent {
     private dingTalkFullScreenStyle = document.createElement('style')
 
-    private newMessageNotificationLock = false
-
     private notificationBanListKey = 'newMessageBanList'
     private globalNotificationLockKey = 'notificationLock'
 
@@ -16,7 +14,7 @@ class DingTalkContent {
     private async init() {
         this.initDingTalkStyle()
         DingTalkContent.checkLSPStatus()
-        this.switchNightMode()
+        this.switchTheme()
 
         const self = this
         // event
@@ -31,7 +29,7 @@ class DingTalkContent {
                 } else if (request.message.checkLSPStatus) {
                     DingTalkContent.checkLSPStatus()
                 } else if (request.message.theme) {
-                    self.switchNightMode(request.message.theme)
+                    self.switchTheme(request.message.theme)
                 }
 
                 sendResponse({
@@ -127,54 +125,41 @@ class DingTalkContent {
     }
 
     private newMessageListener() {
-
         const that = this
 
-        async function handleNotiClass(target: HTMLElement) {
-            if (target.querySelector('.unread-num.ng-scope')) {
-                const parent = target.parentElement.parentElement
-                const msg = parent.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
-                let name = parent.querySelector('.name-wrap .name-title.ng-binding')
-                if (!msg.textContent || !name.textContent) return
+        function watch(mutations: MutationRecord[]) {
+            mutations.forEach(async (m) => {
+                if (await StorageArea.get(that.globalNotificationLockKey)) return
 
+                const name = m.target.parentElement.parentElement.parentElement.querySelector(
+                    '.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]'
+                )
                 let banList = await StorageArea.get(that.notificationBanListKey) as Array<string> | null
                 if (!banList) banList = []
                 if (banList.indexOf(name.textContent) >= 0) return
 
-                let msgContent = msg.textContent
-                if (msgContent.length > 20) msgContent = `${msgContent.slice(0, 20)}...`
+                const notificationCount = m.target.parentElement.parentElement.querySelector(
+                    '.noti .unread-num.ng-scope em.ng-binding[ng-show="!convItem.conv.notificationOff"]'
+                )
 
-                return chrome.runtime.sendMessage({
-                    chromeNotification: {
-                        title: `钉钉 - ${name.textContent}`,
-                        message: msgContent
-                    }
-                })
-            }
+                if (!notificationCount) return
+                let title
+                if (notificationCount.textContent.toString() === '1') title = `钉钉 - ${name.textContent}`
+                else title = `钉钉 - ${name.textContent} (${notificationCount.textContent})`
+                return chrome.runtime.sendMessage({chromeNotification: {title, message: m.target.textContent,}})
+            })
         }
 
-        const obs = new MutationObserver((mutations) => {
-            mutations.forEach(async (m) => {
-                if (await StorageArea.get(this.globalNotificationLockKey)) return
-                if (this.newMessageNotificationLock) return
-                if (m.type === 'characterData') {
-                    if (m.target.parentElement.className.indexOf('time') >= 0) return
-                    const notiBox = m.target.parentElement.parentElement.parentElement
-                    if (notiBox.className.indexOf('noti') >= 0) {
-                        return handleNotiClass(notiBox)
-                    }
-                } else if ((m.target as HTMLElement).className.indexOf('noti') >= 0) {
-                    return handleNotiClass(m.target as HTMLElement)
-                }
-            })
-
-        })
         const config = {childList: true, subtree: true, characterData: true}
         const findContactDomInterval = setInterval(() => {
-            const targetNode = document.querySelector('#sub-menu-pannel')
-            if (targetNode) {
+            const targetNodes = Array.from(document.querySelectorAll(
+                '#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
+            )
+            if (targetNodes) {
                 clearInterval(findContactDomInterval)
-                obs.observe(targetNode, config)
+                for (let node of targetNodes) {
+                    new MutationObserver(watch).observe(node, config)
+                }
             }
         }, 1000)
 
@@ -309,9 +294,6 @@ class DingTalkContent {
             btnsArea.appendChild(finishBtn)
             btnsArea.appendChild(cancelBtn)
 
-            this.newMessageNotificationLock = true
-            setTimeout(() => this.newMessageNotificationLock = false, 1000)
-
             let contacts = document.querySelectorAll(
                 '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child'
             ) as any
@@ -353,11 +335,7 @@ class DingTalkContent {
             }
         }
 
-        const that = this
-
         function handleExit() {
-            that.newMessageNotificationLock = true
-            setTimeout(() => that.newMessageNotificationLock = false, 1000)
             banList = []
             for (const cover of coverList) {
                 cover.remove()
@@ -378,14 +356,13 @@ class DingTalkContent {
         }
     }
 
-    private async switchNightMode(theme_str?: string) {
+    private async switchTheme(theme_str?: string) {
         const id = 'dt-night-mode-EvinK'
         const sheet = document.querySelector(id)
         if (sheet) sheet.remove()
         if (!theme_str) {
             theme_str = await StorageArea.get('theme') as string | null || 'original'
         }
-        if (theme_str === 'original') return generaPageContent.genBubbleMsg('请手动刷新页面')
 
         let theme
         switch (theme_str) {

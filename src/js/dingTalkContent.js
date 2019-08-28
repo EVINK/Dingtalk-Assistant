@@ -36,7 +36,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var DingTalkContent = (function () {
     function DingTalkContent() {
         this.dingTalkFullScreenStyle = document.createElement('style');
-        this.newMessageNotificationLock = false;
         this.notificationBanListKey = 'newMessageBanList';
         this.globalNotificationLockKey = 'notificationLock';
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
@@ -51,7 +50,7 @@ var DingTalkContent = (function () {
             return __generator(this, function (_a) {
                 this.initDingTalkStyle();
                 DingTalkContent.checkLSPStatus();
-                this.switchNightMode();
+                this.switchTheme();
                 self = this;
                 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                     if (request.message.fullScreen) {
@@ -67,7 +66,7 @@ var DingTalkContent = (function () {
                         DingTalkContent.checkLSPStatus();
                     }
                     else if (request.message.theme) {
-                        self.switchNightMode(request.message.theme);
+                        self.switchTheme(request.message.theme);
                     }
                     sendResponse({
                         result: 'success'
@@ -138,74 +137,46 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.newMessageListener = function () {
-        var _this = this;
         var that = this;
-        function handleNotiClass(target) {
-            return __awaiter(this, void 0, void 0, function () {
-                var parent_1, msg, name_1, banList, msgContent;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (!target.querySelector('.unread-num.ng-scope')) return [3, 2];
-                            parent_1 = target.parentElement.parentElement;
-                            msg = parent_1.querySelector('.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
-                            name_1 = parent_1.querySelector('.name-wrap .name-title.ng-binding');
-                            if (!msg.textContent || !name_1.textContent)
-                                return [2];
-                            return [4, StorageArea.get(that.notificationBanListKey)];
-                        case 1:
-                            banList = _a.sent();
-                            if (!banList)
-                                banList = [];
-                            if (banList.indexOf(name_1.textContent) >= 0)
-                                return [2];
-                            msgContent = msg.textContent;
-                            if (msgContent.length > 20)
-                                msgContent = msgContent.slice(0, 20) + "...";
-                            return [2, chrome.runtime.sendMessage({
-                                    chromeNotification: {
-                                        title: "\u9489\u9489 - " + name_1.textContent,
-                                        message: msgContent
-                                    }
-                                })];
-                        case 2: return [2];
-                    }
-                });
-            });
-        }
-        var obs = new MutationObserver(function (mutations) {
+        function watch(mutations) {
+            var _this = this;
             mutations.forEach(function (m) { return __awaiter(_this, void 0, void 0, function () {
-                var notiBox;
+                var name, banList, notificationCount, title;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
+                        case 0: return [4, StorageArea.get(that.globalNotificationLockKey)];
                         case 1:
                             if (_a.sent())
                                 return [2];
-                            if (this.newMessageNotificationLock)
+                            name = m.target.parentElement.parentElement.parentElement.querySelector('.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                            return [4, StorageArea.get(that.notificationBanListKey)];
+                        case 2:
+                            banList = _a.sent();
+                            if (!banList)
+                                banList = [];
+                            if (banList.indexOf(name.textContent) >= 0)
                                 return [2];
-                            if (m.type === 'characterData') {
-                                if (m.target.parentElement.className.indexOf('time') >= 0)
-                                    return [2];
-                                notiBox = m.target.parentElement.parentElement.parentElement;
-                                if (notiBox.className.indexOf('noti') >= 0) {
-                                    return [2, handleNotiClass(notiBox)];
-                                }
-                            }
-                            else if (m.target.className.indexOf('noti') >= 0) {
-                                return [2, handleNotiClass(m.target)];
-                            }
-                            return [2];
+                            notificationCount = m.target.parentElement.parentElement.querySelector('.noti .unread-num.ng-scope em.ng-binding[ng-show="!convItem.conv.notificationOff"]');
+                            if (!notificationCount)
+                                return [2];
+                            if (notificationCount.textContent.toString() === '1')
+                                title = "\u9489\u9489 - " + name.textContent;
+                            else
+                                title = "\u9489\u9489 - " + name.textContent + " (" + notificationCount.textContent + ")";
+                            return [2, chrome.runtime.sendMessage({ chromeNotification: { title: title, message: m.target.textContent, } })];
                     }
                 });
             }); });
-        });
+        }
         var config = { childList: true, subtree: true, characterData: true };
         var findContactDomInterval = setInterval(function () {
-            var targetNode = document.querySelector('#sub-menu-pannel');
-            if (targetNode) {
+            var targetNodes = Array.from(document.querySelectorAll('#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'));
+            if (targetNodes) {
                 clearInterval(findContactDomInterval);
-                obs.observe(targetNode, config);
+                for (var _i = 0, targetNodes_1 = targetNodes; _i < targetNodes_1.length; _i++) {
+                    var node = targetNodes_1[_i];
+                    new MutationObserver(watch).observe(node, config);
+                }
             }
         }, 1000);
     };
@@ -228,8 +199,6 @@ var DingTalkContent = (function () {
                 });
             }
             function handleExit() {
-                that.newMessageNotificationLock = true;
-                setTimeout(function () { return that.newMessageNotificationLock = false; }, 1000);
                 banList = [];
                 for (var _i = 0, coverList_1 = coverList; _i < coverList_1.length; _i++) {
                     var cover = coverList_1[_i];
@@ -239,7 +208,7 @@ var DingTalkContent = (function () {
                 finishBtn.remove();
                 cancelBtn.remove();
             }
-            var father, btnsArea, btn, img, label, finishBtn, cancelBtn, banList, coverList, that;
+            var father, btnsArea, btn, img, label, finishBtn, cancelBtn, banList, coverList;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -276,7 +245,6 @@ var DingTalkContent = (function () {
                         coverList = [];
                         btn.onclick = function (e) { return __awaiter(_this, void 0, void 0, function () {
                             var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_1, _i, contacts_1, node;
-                            var _this = this;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
@@ -296,8 +264,6 @@ var DingTalkContent = (function () {
                                         btn.remove();
                                         btnsArea.appendChild(finishBtn);
                                         btnsArea.appendChild(cancelBtn);
-                                        this.newMessageNotificationLock = true;
-                                        setTimeout(function () { return _this.newMessageNotificationLock = false; }, 1000);
                                         contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child');
                                         if (!contacts) {
                                             return [2, sendMessage({ bubble: '没有找到最近联系人' })];
@@ -343,7 +309,6 @@ var DingTalkContent = (function () {
                                 }
                             });
                         }); };
-                        that = this;
                         finishBtn.onclick = function () {
                             var data = {};
                             data[_this.notificationBanListKey] = banList;
@@ -358,7 +323,7 @@ var DingTalkContent = (function () {
             });
         });
     };
-    DingTalkContent.prototype.switchNightMode = function (theme_str) {
+    DingTalkContent.prototype.switchTheme = function (theme_str) {
         return __awaiter(this, void 0, void 0, function () {
             var id, sheet, theme, nightModeShell;
             return __generator(this, function (_a) {
@@ -374,8 +339,6 @@ var DingTalkContent = (function () {
                         theme_str = (_a.sent()) || 'original';
                         _a.label = 2;
                     case 2:
-                        if (theme_str === 'original')
-                            return [2, generaPageContent.genBubbleMsg('请手动刷新页面')];
                         switch (theme_str) {
                             case 'night':
                                 theme = {
