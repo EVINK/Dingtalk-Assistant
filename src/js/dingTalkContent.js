@@ -36,6 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var DingTalkContent = (function () {
     function DingTalkContent() {
         this.dingTalkFullScreenStyle = document.createElement('style');
+        this.newMessageNotificationLock = false;
         this.notificationBanListKey = 'newMessageBanList';
         this.globalNotificationLockKey = 'notificationLock';
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
@@ -137,6 +138,7 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.newMessageListener = function () {
+        var _this = this;
         var that = this;
         function watch(mutations) {
             var _this = this;
@@ -144,7 +146,10 @@ var DingTalkContent = (function () {
                 var name, banList, notificationCount, title;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0: return [4, StorageArea.get(that.globalNotificationLockKey)];
+                        case 0:
+                            if (that.newMessageNotificationLock)
+                                return [2];
+                            return [4, StorageArea.get(that.globalNotificationLockKey)];
                         case 1:
                             if (_a.sent())
                                 return [2];
@@ -173,6 +178,8 @@ var DingTalkContent = (function () {
             var targetNodes = Array.from(document.querySelectorAll('#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'));
             if (targetNodes) {
                 clearInterval(findContactDomInterval);
+                _this.newMessageNotificationLock = true;
+                setTimeout(function () { return _this.newMessageNotificationLock = false; }, 1000);
                 for (var _i = 0, targetNodes_1 = targetNodes; _i < targetNodes_1.length; _i++) {
                     var node = targetNodes_1[_i];
                     new MutationObserver(watch).observe(node, config);

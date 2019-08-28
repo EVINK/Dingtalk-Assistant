@@ -1,6 +1,8 @@
 class DingTalkContent {
     private dingTalkFullScreenStyle = document.createElement('style')
 
+    private newMessageNotificationLock = false
+
     private notificationBanListKey = 'newMessageBanList'
     private globalNotificationLockKey = 'notificationLock'
 
@@ -129,6 +131,7 @@ class DingTalkContent {
 
         function watch(mutations: MutationRecord[]) {
             mutations.forEach(async (m) => {
+                if (that.newMessageNotificationLock) return
                 if (await StorageArea.get(that.globalNotificationLockKey)) return
 
                 const name = m.target.parentElement.parentElement.parentElement.querySelector(
@@ -157,6 +160,8 @@ class DingTalkContent {
             )
             if (targetNodes) {
                 clearInterval(findContactDomInterval)
+                this.newMessageNotificationLock = true
+                setTimeout(() => this.newMessageNotificationLock = false, 1000)
                 for (let node of targetNodes) {
                     new MutationObserver(watch).observe(node, config)
                 }
