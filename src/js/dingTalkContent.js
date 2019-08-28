@@ -73,11 +73,11 @@ var DingTalkContent = (function () {
                         result: 'success'
                     });
                 });
-                chrome.runtime.sendMessage({ storeDtId: true });
                 window.onload = function () {
                     _this.newMessageListener();
                     _this.initMessageSelector();
                 };
+                chrome.runtime.sendMessage({ storeDtId: true });
                 return [2];
             });
         });

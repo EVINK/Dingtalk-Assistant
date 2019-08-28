@@ -39,13 +39,13 @@ class DingTalkContent {
                 })
             })
 
-        // 向background请求: 存放当前Tab的ID
-        chrome.runtime.sendMessage({storeDtId: true})
-
         window.onload = () => {
             this.newMessageListener()
             this.initMessageSelector()
         }
+
+        // 向background请求: 存放当前Tab的ID
+        chrome.runtime.sendMessage({storeDtId: true})
     }
 
     private genFullScreenDingTalk() {

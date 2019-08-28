@@ -11,6 +11,9 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
     if (message.storeDtId) {
         StorageArea.set({dtId: sender.tab.id})
+        chrome.windows.getCurrent({}, (window) => {
+            StorageArea.set({dtWindowId: window.id})
+        })
     } else if (message.snapshot) {
         chrome.tabs.captureVisibleTab(null, {}, function (image) {
             sendMessage({snapshot: image})
@@ -44,6 +47,10 @@ interface chromeNotificationOptions {
 class Notify {
     private static lastNotificationId: string = undefined
 
+    constructor() {
+        this.event()
+    }
+
     public static async sendChromeNotification(data: chromeNotificationOptions): Promise<string> {
         if (Notify.lastNotificationId) await this.clearChromeNotification()
         if (!data.type) data.type = 'basic'
@@ -65,8 +72,19 @@ class Notify {
             })
         })
     }
+
+    private event() {
+        chrome.notifications.onClicked.addListener(async (notificationId) => {
+            const dtId = await StorageArea.get('dtId') as number
+            const windowId = await StorageArea.get('dtWindowId') as number
+            if (!dtId || !windowId) return
+            chrome.windows.update(windowId, {focused: true},)
+            chrome.tabs.update(dtId, {active: true});
+        })
+    }
 }
 
+new Notify()
 
 // class VersionCheck {
 //     private static alarmName = 'versionCheckAlarm'

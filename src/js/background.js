@@ -70,6 +70,9 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
             case 0:
                 if (!message.storeDtId) return [3, 1];
                 StorageArea.set({ dtId: sender.tab.id });
+                chrome.windows.getCurrent({}, function (window) {
+                    StorageArea.set({ dtWindowId: window.id });
+                });
                 return [3, 5];
             case 1:
                 if (!message.snapshot) return [3, 2];
@@ -97,6 +100,7 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
 }); });
 var Notify = (function () {
     function Notify() {
+        this.event();
     }
     Notify.sendChromeNotification = function (data) {
         return __awaiter(this, void 0, void 0, function () {
@@ -136,7 +140,29 @@ var Notify = (function () {
             }); });
         });
     };
+    Notify.prototype.event = function () {
+        var _this = this;
+        chrome.notifications.onClicked.addListener(function (notificationId) { return __awaiter(_this, void 0, void 0, function () {
+            var dtId, windowId;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4, StorageArea.get('dtId')];
+                    case 1:
+                        dtId = _a.sent();
+                        return [4, StorageArea.get('dtWindowId')];
+                    case 2:
+                        windowId = _a.sent();
+                        if (!dtId || !windowId)
+                            return [2];
+                        chrome.windows.update(windowId, { focused: true });
+                        chrome.tabs.update(dtId, { active: true });
+                        return [2];
+                }
+            });
+        }); });
+    };
     Notify.lastNotificationId = undefined;
     return Notify;
 }());
+new Notify();
 //# sourceMappingURL=background.js.map
