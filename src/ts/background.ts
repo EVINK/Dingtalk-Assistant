@@ -19,7 +19,8 @@ chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
             sendMessage({snapshot: image})
         })
     } else if (message.chromeNotification) {
-        await Notify.sendChromeNotification(message.chromeNotification)
+        Notify.sendChromeNotification(message.chromeNotification)
+        StorageArea.set({lastMsgSender: message.sender})
     } else if (message.versionCheck) {
         // new VersionCheck()
     }
@@ -80,6 +81,7 @@ class Notify {
             if (!dtId || !windowId) return
             chrome.windows.update(windowId, {focused: true},)
             chrome.tabs.update(dtId, {active: true});
+            sendMessage({clickNotification: true})
         })
     }
 }

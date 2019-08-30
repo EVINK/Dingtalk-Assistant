@@ -39,6 +39,7 @@ var DingTalkContent = (function () {
         this.newMessageNotificationLock = false;
         this.notificationBanListKey = 'newMessageBanList';
         this.globalNotificationLockKey = 'notificationLock';
+        this.contactsMap = {};
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
@@ -54,23 +55,46 @@ var DingTalkContent = (function () {
                 this.switchTheme();
                 self = this;
                 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-                    if (request.message.fullScreen) {
-                        self.genFullScreenDingTalk();
-                    }
-                    else if (request.message.fullScreen === false) {
-                        self.genRawDingTalkStyle();
-                    }
-                    else if (request.message.initDingTalkStyle) {
-                        self.initDingTalkStyle();
-                    }
-                    else if (request.message.checkLSPStatus) {
-                        DingTalkContent.checkLSPStatus();
-                    }
-                    else if (request.message.theme) {
-                        self.switchTheme(request.message.theme);
-                    }
-                    sendResponse({
-                        result: 'success'
+                    return __awaiter(this, void 0, void 0, function () {
+                        var sender_1, node;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0:
+                                    if (!request.message.fullScreen) return [3, 1];
+                                    self.genFullScreenDingTalk();
+                                    return [3, 7];
+                                case 1:
+                                    if (!(request.message.fullScreen === false)) return [3, 2];
+                                    self.genRawDingTalkStyle();
+                                    return [3, 7];
+                                case 2:
+                                    if (!request.message.initDingTalkStyle) return [3, 3];
+                                    self.initDingTalkStyle();
+                                    return [3, 7];
+                                case 3:
+                                    if (!request.message.checkLSPStatus) return [3, 4];
+                                    DingTalkContent.checkLSPStatus();
+                                    return [3, 7];
+                                case 4:
+                                    if (!request.message.theme) return [3, 5];
+                                    self.switchTheme(request.message.theme);
+                                    return [3, 7];
+                                case 5:
+                                    if (!request.message.clickNotification) return [3, 7];
+                                    return [4, StorageArea.get('lastMsgSender')];
+                                case 6:
+                                    sender_1 = _a.sent();
+                                    node = self.contactsMap[sender_1];
+                                    if (node)
+                                        node.click();
+                                    _a.label = 7;
+                                case 7:
+                                    sendResponse({
+                                        result: 'success'
+                                    });
+                                    return [2];
+                            }
+                        });
                     });
                 });
                 window.onload = function () {
@@ -143,7 +167,7 @@ var DingTalkContent = (function () {
         function watch(mutations) {
             var _this = this;
             mutations.forEach(function (m) { return __awaiter(_this, void 0, void 0, function () {
-                var name, banList, notificationCount, title;
+                var name, banList, notificationCount, title, parentNode;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -168,7 +192,13 @@ var DingTalkContent = (function () {
                                 title = "\u9489\u9489 - " + name.textContent;
                             else
                                 title = "\u9489\u9489 - " + name.textContent + " (" + notificationCount.textContent + ")";
-                            return [2, chrome.runtime.sendMessage({ chromeNotification: { title: title, message: m.target.textContent, } })];
+                            parentNode = m.target.parentElement.parentElement.parentElement.parentElement;
+                            if (!(name.textContent in that.contactsMap))
+                                that.contactsMap[name.textContent] = parentNode;
+                            return [2, chrome.runtime.sendMessage({
+                                    chromeNotification: { title: title, message: m.target.textContent, },
+                                    sender: name.textContent,
+                                })];
                     }
                 });
             }); });
@@ -401,9 +431,17 @@ var DingTalkContent = (function () {
     DingTalkContent.prototype.getLatestContacts = function () {
         return new Promise(function (resolve, reject) {
             var findContactDomInterval = setInterval(function () {
-                var contacts = Array.from(document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item'));
+                var contacts = Array.from(document.querySelectorAll('#sub-menu-pannel conv-item div.list-item.conv-item.context-menu.ng-isolate-scope'));
                 if (contacts) {
                     clearInterval(findContactDomInterval);
+                    for (var _i = 0, contacts_2 = contacts; _i < contacts_2.length; _i++) {
+                        var contact = contacts_2[_i];
+                        console.log(contact.querySelector('.avatar-wrap div'));
+                        var avatarWrapper = contact.querySelector('.avatar-wrap .user-avatar');
+                        if (avatarWrapper && avatarWrapper.style.backgroundImage) {
+                            console.log(avatarWrapper.style.backgroundImage);
+                        }
+                    }
                     resolve(contacts);
                 }
             }, 1000);
@@ -411,5 +449,5 @@ var DingTalkContent = (function () {
     };
     return DingTalkContent;
 }());
-new DingTalkContent();
+var dingTalkContent = new DingTalkContent();
 //# sourceMappingURL=dingTalkContent.js.map

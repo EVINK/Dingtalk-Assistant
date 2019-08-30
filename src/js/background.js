@@ -66,36 +66,27 @@ chrome.tabs.onActivated.addListener(function (activeInfo) { return __awaiter(_th
 }); });
 chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { return __awaiter(_this, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                if (!message.storeDtId) return [3, 1];
-                StorageArea.set({ dtId: sender.tab.id });
-                chrome.windows.getCurrent({}, function (window) {
-                    StorageArea.set({ dtWindowId: window.id });
-                });
-                return [3, 5];
-            case 1:
-                if (!message.snapshot) return [3, 2];
-                chrome.tabs.captureVisibleTab(null, {}, function (image) {
-                    sendMessage({ snapshot: image });
-                });
-                return [3, 5];
-            case 2:
-                if (!message.chromeNotification) return [3, 4];
-                return [4, Notify.sendChromeNotification(message.chromeNotification)];
-            case 3:
-                _a.sent();
-                return [3, 5];
-            case 4:
-                if (message.versionCheck) {
-                }
-                _a.label = 5;
-            case 5:
-                sendResponse({
-                    result: 'success'
-                });
-                return [2];
+        if (message.storeDtId) {
+            StorageArea.set({ dtId: sender.tab.id });
+            chrome.windows.getCurrent({}, function (window) {
+                StorageArea.set({ dtWindowId: window.id });
+            });
         }
+        else if (message.snapshot) {
+            chrome.tabs.captureVisibleTab(null, {}, function (image) {
+                sendMessage({ snapshot: image });
+            });
+        }
+        else if (message.chromeNotification) {
+            Notify.sendChromeNotification(message.chromeNotification);
+            StorageArea.set({ lastMsgSender: message.sender });
+        }
+        else if (message.versionCheck) {
+        }
+        sendResponse({
+            result: 'success'
+        });
+        return [2];
     });
 }); });
 var Notify = (function () {
@@ -156,6 +147,7 @@ var Notify = (function () {
                             return [2];
                         chrome.windows.update(windowId, { focused: true });
                         chrome.tabs.update(dtId, { active: true });
+                        sendMessage({ clickNotification: true });
                         return [2];
                 }
             });

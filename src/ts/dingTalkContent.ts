@@ -6,6 +6,8 @@ class DingTalkContent {
     private notificationBanListKey = 'newMessageBanList'
     private globalNotificationLockKey = 'notificationLock'
 
+    private contactsMap: ContactMap = {}
+
     constructor() {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle)
@@ -21,7 +23,7 @@ class DingTalkContent {
         const self = this
         // event
         chrome.runtime.onMessage.addListener(
-            function (request, sender, sendResponse) {
+            async function (request, sender, sendResponse) {
                 if (request.message.fullScreen) {
                     self.genFullScreenDingTalk()
                 } else if (request.message.fullScreen === false) {
@@ -32,6 +34,10 @@ class DingTalkContent {
                     DingTalkContent.checkLSPStatus()
                 } else if (request.message.theme) {
                     self.switchTheme(request.message.theme)
+                } else if (request.message.clickNotification) {
+                    const sender = await StorageArea.get('lastMsgSender') as string
+                    const node = self.contactsMap[sender]
+                    if (node) node.click()
                 }
 
                 sendResponse({
@@ -149,15 +155,20 @@ class DingTalkContent {
                 let title
                 if (notificationCount.textContent.toString() === '1') title = `钉钉 - ${name.textContent}`
                 else title = `钉钉 - ${name.textContent} (${notificationCount.textContent})`
-                return chrome.runtime.sendMessage({chromeNotification: {title, message: m.target.textContent,}})
+                const parentNode = m.target.parentElement.parentElement.parentElement.parentElement
+                if (!(name.textContent in that.contactsMap)) that.contactsMap[name.textContent] = parentNode
+                return chrome.runtime.sendMessage({
+                    chromeNotification: {title, message: m.target.textContent,},
+                    sender: name.textContent,
+                })
             })
         }
 
         const config = {childList: true, subtree: true, characterData: true}
         const findContactDomInterval = setInterval(() => {
             const targetNodes = Array.from(document.querySelectorAll(
-                '#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
-            )
+                '#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'
+            ))
             if (targetNodes) {
                 clearInterval(findContactDomInterval)
                 this.newMessageNotificationLock = true
@@ -523,12 +534,23 @@ class DingTalkContent {
         `
     }
 
-    private getLatestContacts(): Promise<Array<Element>> {
+    public getLatestContacts(): Promise<Array<Element>> {
         return new Promise((resolve, reject) => {
             const findContactDomInterval = setInterval(() => {
-                const contacts = Array.from(document.querySelector('#sub-menu-pannel').querySelectorAll('conv-item'))
+                const contacts = Array.from(document.querySelectorAll(
+                    '#sub-menu-pannel conv-item div.list-item.conv-item.context-menu.ng-isolate-scope'
+                ))
                 if (contacts) {
                     clearInterval(findContactDomInterval)
+                    // console.log(contacts)
+                    for (let contact of contacts) {
+                        console.log(contact.querySelector('.avatar-wrap div'))
+                        const avatarWrapper: HTMLElement = contact.querySelector('.avatar-wrap .user-avatar')
+                        if (avatarWrapper && avatarWrapper.style.backgroundImage) {
+                            console.log(avatarWrapper.style.backgroundImage)
+                        }
+
+                    }
                     resolve(contacts)
                 }
             }, 1000)
@@ -538,4 +560,4 @@ class DingTalkContent {
 }
 
 
-new DingTalkContent();
+const dingTalkContent = new DingTalkContent();
