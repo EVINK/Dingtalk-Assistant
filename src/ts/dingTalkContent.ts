@@ -12,7 +12,7 @@ class DingTalkContent {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle)
         this.init()
-        this.getLatestContacts()
+        // this.getLatestContacts()
     }
 
     private async init() {
@@ -560,4 +560,4 @@ class DingTalkContent {
 }
 
 
-const dingTalkContent = new DingTalkContent();
+new DingTalkContent();

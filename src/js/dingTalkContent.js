@@ -43,7 +43,6 @@ var DingTalkContent = (function () {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
-        this.getLatestContacts();
     }
     DingTalkContent.prototype.init = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -449,5 +448,5 @@ var DingTalkContent = (function () {
     };
     return DingTalkContent;
 }());
-var dingTalkContent = new DingTalkContent();
+new DingTalkContent();
 //# sourceMappingURL=dingTalkContent.js.map
