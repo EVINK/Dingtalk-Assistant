@@ -26,6 +26,7 @@ new Vue({
                     banGlobalStyle: true,
                     banSnapshotShortcut: false,
                     snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                    msgClickedAction: 'focus',
                 }
             }
             this.notificationLock = await StorageArea.get('notificationLock') as boolean | null

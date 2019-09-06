@@ -40,6 +40,7 @@ var DingTalkContent = (function () {
         this.notificationBanListKey = 'newMessageBanList';
         this.globalNotificationLockKey = 'notificationLock';
         this.contactsMap = {};
+        this.contactsCount = 0;
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
@@ -202,10 +203,10 @@ var DingTalkContent = (function () {
                 });
             }); });
         }
-        var config = { childList: true, subtree: true, characterData: true };
         var findContactDomInterval = setInterval(function () {
             var targetNodes = Array.from(document.querySelectorAll('#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'));
             if (targetNodes) {
+                var config = { childList: true, subtree: true, characterData: true };
                 clearInterval(findContactDomInterval);
                 _this.newMessageNotificationLock = true;
                 setTimeout(function () { return _this.newMessageNotificationLock = false; }, 1000);
@@ -213,6 +214,40 @@ var DingTalkContent = (function () {
                     var node = targetNodes_1[_i];
                     new MutationObserver(watch).observe(node, config);
                 }
+            }
+            var contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'));
+            var _loop_1 = function (s) {
+                if (s.childElementCount > 0) {
+                    _this.contactsCount = s.childElementCount;
+                    var children_1 = Array.from(s.children);
+                    var config = { childList: true, subtree: false, characterData: false };
+                    new MutationObserver(function (mutations) {
+                        for (var _i = 0, mutations_1 = mutations; _i < mutations_1.length; _i++) {
+                            var m = mutations_1[_i];
+                            var newChildrenList = Array.from(m.target.children);
+                            if (!newChildrenList || !children_1)
+                                break;
+                            if (m.target.childElementCount <= _this.contactsCount) {
+                                children_1 = newChildrenList;
+                                _this.contactsCount--;
+                            }
+                            else {
+                                for (var _a = 0, newChildrenList_1 = newChildrenList; _a < newChildrenList_1.length; _a++) {
+                                    var c = newChildrenList_1[_a];
+                                    if (!children_1.includes(c))
+                                        console.log(c);
+                                }
+                            }
+                        }
+                    }).observe(s, config);
+                    return "break";
+                }
+            };
+            for (var _a = 0, contactsSelectors_1 = contactsSelectors; _a < contactsSelectors_1.length; _a++) {
+                var s = contactsSelectors_1[_a];
+                var state_1 = _loop_1(s);
+                if (state_1 === "break")
+                    break;
             }
         }, 1000);
     };
@@ -280,7 +315,7 @@ var DingTalkContent = (function () {
                         banList = [];
                         coverList = [];
                         btn.onclick = function (e) { return __awaiter(_this, void 0, void 0, function () {
-                            var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_1, _i, contacts_1, node;
+                            var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_2, _i, contacts_1, node;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
@@ -305,7 +340,7 @@ var DingTalkContent = (function () {
                                             return [2, sendMessage({ bubble: '没有找到最近联系人' })];
                                         }
                                         contacts = Array.from(contacts);
-                                        _loop_1 = function (node) {
+                                        _loop_2 = function (node) {
                                             var cover = document.createElement('div');
                                             node.appendChild(cover);
                                             cover.classList.add(coverClassName);
@@ -339,7 +374,7 @@ var DingTalkContent = (function () {
                                         };
                                         for (_i = 0, contacts_1 = contacts; _i < contacts_1.length; _i++) {
                                             node = contacts_1[_i];
-                                            _loop_1(node);
+                                            _loop_2(node);
                                         }
                                         return [2];
                                 }

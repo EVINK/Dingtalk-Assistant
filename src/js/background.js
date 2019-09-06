@@ -81,8 +81,6 @@ chrome.runtime.onMessage.addListener(function (message, sender, sendResponse) { 
             Notify.sendChromeNotification(message.chromeNotification);
             StorageArea.set({ lastMsgSender: message.sender });
         }
-        else if (message.versionCheck) {
-        }
         sendResponse({
             result: 'success'
         });
@@ -134,14 +132,20 @@ var Notify = (function () {
     Notify.prototype.event = function () {
         var _this = this;
         chrome.notifications.onClicked.addListener(function (notificationId) { return __awaiter(_this, void 0, void 0, function () {
-            var dtId, windowId;
+            var settings, dtId, windowId;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4, StorageArea.get('dtId')];
+                    case 0: return [4, StorageArea.get('settings')];
                     case 1:
+                        settings = _a.sent();
+                        if (settings && settings.msgClickedAction === 'close') {
+                            return [2, Notify.clearChromeNotification()];
+                        }
+                        return [4, StorageArea.get('dtId')];
+                    case 2:
                         dtId = _a.sent();
                         return [4, StorageArea.get('dtWindowId')];
-                    case 2:
+                    case 3:
                         windowId = _a.sent();
                         if (!dtId || !windowId)
                             return [2];

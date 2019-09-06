@@ -7,6 +7,7 @@ class DingTalkContent {
     private globalNotificationLockKey = 'notificationLock'
 
     private contactsMap: ContactMap = {}
+    private contactsCount: number = 0
 
     constructor() {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
@@ -164,12 +165,12 @@ class DingTalkContent {
             })
         }
 
-        const config = {childList: true, subtree: true, characterData: true}
         const findContactDomInterval = setInterval(() => {
             const targetNodes = Array.from(document.querySelectorAll(
                 '#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'
             ))
             if (targetNodes) {
+                const config = {childList: true, subtree: true, characterData: true}
                 clearInterval(findContactDomInterval)
                 this.newMessageNotificationLock = true
                 setTimeout(() => this.newMessageNotificationLock = false, 1000)
@@ -177,6 +178,33 @@ class DingTalkContent {
                     new MutationObserver(watch).observe(node, config)
                 }
             }
+            const contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'))
+            for (let s of contactsSelectors) {
+                if (s.childElementCount > 0) {
+                    this.contactsCount = s.childElementCount
+                    let children = Array.from(s.children)
+                    const config = {childList: true, subtree: false, characterData: false}
+                    new MutationObserver((mutations: MutationRecord[]) => {
+                        for (let m of mutations) {
+                            const newChildrenList = Array.from((m.target as Element).children)
+                            if (!newChildrenList || !children) break
+                            if ((m.target as Element).childElementCount <= this.contactsCount) {
+                                // 删除联系人操作
+                                children = newChildrenList
+                                this.contactsCount--
+                            } else {
+                                for (let c of newChildrenList) {
+                                    if (!(children as any).includes(c)) console.log(c)
+                                }
+                            }
+
+
+                        }
+                    }).observe(s, config)
+                    break
+                }
+            }
+
         }, 1000)
 
     }

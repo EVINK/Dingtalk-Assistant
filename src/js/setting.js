@@ -65,6 +65,7 @@ new Vue({
                                     banGlobalStyle: true,
                                     banSnapshotShortcut: false,
                                     snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                                    msgClickedAction: 'focus',
                                 };
                             }
                             _a = this;

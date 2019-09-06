@@ -29,6 +29,15 @@
                         <span @click="notificationLock=!notificationLock"
                               class="switch" :class="{'on': !notificationLock}"></span>
                     </li>
+                    <li :class="{'disable': notificationLock}">
+                        <label>点击消息通知时</label>
+                        <label id="msg-clicked-select">
+                            <select v-model="settings.msgClickedAction" :disabled="notificationLock">
+                                <option value="close">关闭通知</option>
+                                <option value="focus">定位到聊天窗口</option>
+                            </select>
+                        </label>
+                    </li>
                     <li>
                         <label>禁用全局样式</label>
                         <span @click="settings.banGlobalStyle=!settings.banGlobalStyle"
@@ -50,9 +59,9 @@
                         </span></span>
                     </li>
                     <!--<li>-->
-                        <!--<label>新版本检查</label>-->
-                        <!--<span @click="versionCheck=!versionCheck"-->
-                              <!--class="switch" :class="{'on': versionCheck===true}"></span>-->
+                    <!--<label>新版本检查</label>-->
+                    <!--<span @click="versionCheck=!versionCheck"-->
+                    <!--class="switch" :class="{'on': versionCheck===true}"></span>-->
                     <!--</li>-->
                 </ul>
             </div>
