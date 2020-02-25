@@ -210,7 +210,7 @@ var DingTalkContent = (function () {
             if (findContactsRetryCount > 30) {
                 generaPageContent.genBubbleMsg('无法获得联系人列表');
                 setTimeout(function () { return generaPageContent.genBubbleMsg('钉钉助手可能无法正常工作'); }, 300);
-                return console.error('无法获得联系人列表，钉钉助手可能无法正常工作，您可以在选项-反馈页面中向我提供详细信息');
+                return console.error('无法获得联系人列表，钉钉助手可能无法正常工作，您可以在反馈页面中向我提供详细信息');
             }
             var contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'));
             if (!contactsSelectors)
