@@ -1,8 +1,9 @@
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
         function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
@@ -36,11 +37,9 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var DingTalkContent = (function () {
     function DingTalkContent() {
         this.dingTalkFullScreenStyle = document.createElement('style');
-        this.newMessageNotificationLock = false;
         this.notificationBanListKey = 'newMessageBanList';
         this.globalNotificationLockKey = 'notificationLock';
         this.contactsMap = {};
-        this.contactsCount = 0;
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
         generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
         this.init();
@@ -141,7 +140,7 @@ var DingTalkContent = (function () {
                         scriptID = 'LSPScript-of-EVINK';
                         if (document.querySelector("#" + scriptID))
                             return [2];
-                        content = "\n            var loginStatusKeep = setInterval(function () {\n                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {\n                    var element = document.createElement('div');\n                    element.id = 'LSPScript-finished-EvinK';\n                    document.body.appendChild(element);\n                    return clearInterval(loginStatusKeep); \n                }\n                var wkToken = window.sessionStorage.getItem('wk_token');\n                if (!wkToken) return;\n                wkToken = JSON.parse(wkToken);\n                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);\n                if (wkToken.isAutoLogin) {\n                    window.sessionStorage.setItem('EvinK', 'Handsome');\n                    return location.reload();\n                }\n                wkToken.isAutoLogin = true;\n                // console.log(JSON.stringify(wkToken));\n                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n            }, 1000)\n        ";
+                        content = "\n            var loginStatusKeep = setInterval(function () {\n                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {\n                    var element = document.createElement('div');\n                    element.id = 'LSPScript-finished-EvinK';\n                    document.body.appendChild(element);\n                    return clearInterval(loginStatusKeep);\n                }\n                var wkToken = window.sessionStorage.getItem('wk_token');\n                if (!wkToken) return;\n                wkToken = JSON.parse(wkToken);\n                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);\n                if (wkToken.isAutoLogin) {\n                    window.sessionStorage.setItem('EvinK', 'Handsome');\n                    return location.reload();\n                }\n                wkToken.isAutoLogin = true;\n                // console.log(JSON.stringify(wkToken));\n                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n            }, 1000)\n        ";
                         script = document.createElement('script');
                         script.id = scriptID;
                         script.innerHTML += content;
@@ -162,94 +161,71 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.newMessageListener = function () {
-        var _this = this;
         var that = this;
-        function watch(mutations) {
+        function msgWatch(mutations) {
             var _this = this;
             mutations.forEach(function (m) { return __awaiter(_this, void 0, void 0, function () {
-                var name, banList, notificationCount, title, parentNode;
+                var indicator, contact, name, msg, banList, title;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
-                        case 0:
-                            if (that.newMessageNotificationLock)
-                                return [2];
-                            return [4, StorageArea.get(that.globalNotificationLockKey)];
+                        case 0: return [4, StorageArea.get(that.globalNotificationLockKey)];
                         case 1:
                             if (_a.sent())
                                 return [2];
-                            name = m.target.parentElement.parentElement.parentElement.querySelector('.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                            indicator = m.target.parentElement;
+                            if (!indicator || indicator.tagName !== 'EM' || indicator.className !== 'ng-binding') {
+                                return [2, console.info('indicator not found, if dingtalk-assistant notify stop working, this maybe a problem')];
+                            }
+                            contact = indicator.parentElement.parentElement.parentElement.parentElement;
+                            if (!contact)
+                                return [2, console.error('contact not found, this may cause dingtalk-assistant notify stop working')];
+                            name = contact.querySelector('.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                            msg = contact.querySelector('p.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
                             return [4, StorageArea.get(that.notificationBanListKey)];
                         case 2:
                             banList = _a.sent();
                             if (!banList)
                                 banList = [];
-                            if (banList.indexOf(name.textContent) >= 0)
+                            if (banList.includes(name.textContent))
                                 return [2];
-                            notificationCount = m.target.parentElement.parentElement.querySelector('.noti .unread-num.ng-scope em.ng-binding[ng-show="!convItem.conv.notificationOff"]');
-                            if (!notificationCount)
-                                return [2];
-                            if (notificationCount.textContent.toString() === '1')
+                            if (m.target.textContent.toString() === '1')
                                 title = "\u9489\u9489 - " + name.textContent;
                             else
-                                title = "\u9489\u9489 - " + name.textContent + " (" + notificationCount.textContent + ")";
-                            parentNode = m.target.parentElement.parentElement.parentElement.parentElement;
+                                title = "\u9489\u9489 - " + name.textContent + " (" + m.target.textContent + ")";
                             if (!(name.textContent in that.contactsMap))
-                                that.contactsMap[name.textContent] = parentNode;
+                                that.contactsMap[name.textContent] = contact;
                             return [2, chrome.runtime.sendMessage({
-                                    chromeNotification: { title: title, message: m.target.textContent, },
+                                    chromeNotification: { title: title, message: msg.textContent, },
                                     sender: name.textContent,
                                 })];
                     }
                 });
             }); });
         }
-        var findContactDomInterval = setInterval(function () {
-            var targetNodes = Array.from(document.querySelectorAll('#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'));
-            if (targetNodes) {
-                var config = { childList: true, subtree: true, characterData: true };
-                clearInterval(findContactDomInterval);
-                _this.newMessageNotificationLock = true;
-                setTimeout(function () { return _this.newMessageNotificationLock = false; }, 1000);
-                for (var _i = 0, targetNodes_1 = targetNodes; _i < targetNodes_1.length; _i++) {
-                    var node = targetNodes_1[_i];
-                    new MutationObserver(watch).observe(node, config);
-                }
+        var findContactsRetryCount = 0;
+        var findContacts = function (timeout) { return setTimeout(function () {
+            findContactsRetryCount++;
+            if (findContactsRetryCount > 10)
+                timeout = 100 * findContactsRetryCount;
+            if (findContactsRetryCount > 30) {
+                generaPageContent.genBubbleMsg('无法获得联系人列表');
+                setTimeout(function () { return generaPageContent.genBubbleMsg('钉钉助手可能无法正常工作'); }, 300);
+                return console.error('无法获得联系人列表，钉钉助手可能无法正常工作，您可以在选项-反馈页面中向我提供详细信息');
             }
             var contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'));
-            var _loop_1 = function (s) {
+            if (!contactsSelectors)
+                return findContacts(timeout);
+            for (var _i = 0, contactsSelectors_1 = contactsSelectors; _i < contactsSelectors_1.length; _i++) {
+                var s = contactsSelectors_1[_i];
                 if (s.childElementCount > 0) {
-                    _this.contactsCount = s.childElementCount;
-                    var children_1 = Array.from(s.children);
-                    var config = { childList: true, subtree: false, characterData: false };
-                    new MutationObserver(function (mutations) {
-                        for (var _i = 0, mutations_1 = mutations; _i < mutations_1.length; _i++) {
-                            var m = mutations_1[_i];
-                            var newChildrenList = Array.from(m.target.children);
-                            if (!newChildrenList || !children_1)
-                                break;
-                            if (m.target.childElementCount <= _this.contactsCount) {
-                                children_1 = newChildrenList;
-                                _this.contactsCount--;
-                            }
-                            else {
-                                for (var _a = 0, newChildrenList_1 = newChildrenList; _a < newChildrenList_1.length; _a++) {
-                                    var c = newChildrenList_1[_a];
-                                    if (!children_1.includes(c))
-                                        console.log(c);
-                                }
-                            }
-                        }
-                    }).observe(s, config);
-                    return "break";
+                    var contacts = Array.from(s.children);
+                    new MutationObserver(msgWatch).observe(s, { characterData: true, subtree: true });
+                    return;
                 }
-            };
-            for (var _a = 0, contactsSelectors_1 = contactsSelectors; _a < contactsSelectors_1.length; _a++) {
-                var s = contactsSelectors_1[_a];
-                var state_1 = _loop_1(s);
-                if (state_1 === "break")
-                    break;
             }
-        }, 1000);
+            return findContacts(timeout);
+        }, timeout); };
+        findContacts(600);
     };
     DingTalkContent.prototype.initMessageSelector = function () {
         return __awaiter(this, void 0, void 0, function () {
@@ -289,7 +265,7 @@ var DingTalkContent = (function () {
                         btnsArea = document.createElement('div');
                         btnsArea.classList.add('contact-selector-area-EVINK');
                         father.appendChild(btnsArea);
-                        btnsArea.innerHTML += "\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        display: flex;\n        flex-flow: row;\n        justify-content: space-evenly;\n        align-items: center;\n        }\n        div.contact-selector-area-EVINK a {\n        color: white;\n        cursor: pointer;\n        }\n        .contact-cover-box-EVINK {\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: #00000033;\n        overflow: hidden;\n        }\n        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{\n        content: '';\n        position: absolute;\n        }\n        .contact-cover-box-EVINK::before{ \n        left: 13px;\n        width: 38px;\n        height: 38px;\n        border-radius: 50%;\n        }\n        .contact-cover-box-EVINK::after{ \n        left: 20px;\n        width: 24px;\n        height: 100%;\n        }\n        .contact-cover-box-hover-EVINK::after {\n        top: 100%;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-red.svg') + "\");\n        }\n        .contact-cover-box-hover-EVINK::before {\n        top: 100%;\n        background: #000000ab;\n        }\n        .contact-cover-box-hover-EVINK:hover::before {\n        top: 9px;\n        }\n        .contact-cover-box-hover-EVINK:hover::after {\n        top: 0;\n        }\n        .contact-cover-box-permanent-EVINK::after {\n        top: 0;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-white.svg') + "\");\n        }\n        .contact-cover-box-permanent-EVINK::before {\n        top: 9px;\n        background: #ff0000cf;\n        }\n        </style>\n        ";
+                        btnsArea.innerHTML += "\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        display: flex;\n        flex-flow: row;\n        justify-content: space-evenly;\n        align-items: center;\n        }\n        div.contact-selector-area-EVINK a {\n        color: white;\n        cursor: pointer;\n        }\n        .contact-cover-box-EVINK {\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: #00000033;\n        overflow: hidden;\n        }\n        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{\n        content: '';\n        position: absolute;\n        }\n        .contact-cover-box-EVINK::before{\n        left: 13px;\n        width: 38px;\n        height: 38px;\n        border-radius: 50%;\n        }\n        .contact-cover-box-EVINK::after{\n        left: 20px;\n        width: 24px;\n        height: 100%;\n        }\n        .contact-cover-box-hover-EVINK::after {\n        top: 100%;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-red.svg') + "\");\n        }\n        .contact-cover-box-hover-EVINK::before {\n        top: 100%;\n        background: #000000ab;\n        }\n        .contact-cover-box-hover-EVINK:hover::before {\n        top: 9px;\n        }\n        .contact-cover-box-hover-EVINK:hover::after {\n        top: 0;\n        }\n        .contact-cover-box-permanent-EVINK::after {\n        top: 0;\n        background: no-repeat center/100% url(\"" + chrome.extension.getURL('assets/imgs/notification-disable-white.svg') + "\");\n        }\n        .contact-cover-box-permanent-EVINK::before {\n        top: 9px;\n        background: #ff0000cf;\n        }\n        </style>\n        ";
                         btn = document.createElement('a');
                         btnsArea.appendChild(btn);
                         btn.style.display = 'flex';
@@ -315,7 +291,7 @@ var DingTalkContent = (function () {
                         banList = [];
                         coverList = [];
                         btn.onclick = function (e) { return __awaiter(_this, void 0, void 0, function () {
-                            var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_2, _i, contacts_1, node;
+                            var coverClassName, bannedCoverClassName, hoverClassName, contacts, _loop_1, _i, contacts_1, node;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0: return [4, StorageArea.get(this.globalNotificationLockKey)];
@@ -340,7 +316,7 @@ var DingTalkContent = (function () {
                                             return [2, sendMessage({ bubble: '没有找到最近联系人' })];
                                         }
                                         contacts = Array.from(contacts);
-                                        _loop_2 = function (node) {
+                                        _loop_1 = function (node) {
                                             var cover = document.createElement('div');
                                             node.appendChild(cover);
                                             cover.classList.add(coverClassName);
@@ -374,7 +350,7 @@ var DingTalkContent = (function () {
                                         };
                                         for (_i = 0, contacts_1 = contacts; _i < contacts_1.length; _i++) {
                                             node = contacts_1[_i];
-                                            _loop_2(node);
+                                            _loop_1(node);
                                         }
                                         return [2];
                                 }
@@ -456,7 +432,7 @@ var DingTalkContent = (function () {
                         nightModeShell = document.createElement('div');
                         nightModeShell.id = id;
                         generaPageContent.head.appendChild(nightModeShell);
-                        nightModeShell.innerHTML += "\n        <style>\n        #content-pannel .content-pannel-head {\n        background: " + theme.chatBoxHeader + ";  /* \u804A\u5929\u6846header */\n        color: " + theme.font + ";\n        }\n        #content-pannel .content-pannel-head {  \n         border-bottom: 0 solid transparent; \n        }\n        .main-chat.chat-items.ng-isolate-scope {\n        background: " + theme.main + "; /* \u804A\u5929\u6846 */ \n        }\n        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.myMsgBubble + ";\n        border: 1px solid transparent;\n        }\n        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.msgBubble + ";\n        color: " + theme.font + ";\n        border: 1px solid transparent;\n        }\n        #header {\n        /* header */\n        border: 1px solid " + theme.header + ";\n        }\n        #header.lng-zh {\n        /* header */\n        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll " + theme.header + ";\n        }\n        .search-bar-wraper .main-search-2 .select2-search-field input {\n            background-color: white;\n            border: 1px solid " + theme.main + ";\n         }\n         \n         #menu-pannel .main-menus .menu-item.selected {\n         color: " + theme.selectedFont + ";\n         }\n         #menu-pannel, #menu-pannel .profile {\n         background: " + theme.main + ";\n         border: 1px solid " + theme.main + ";\n        }\n        .conv-lists-box.ng-isolate-scope {\n        background: " + theme.main + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.font + ";\n        }\n        #sub-menu-pannel {\n        border-right: 0 solid transparent; \n        }\n        \n        .nocontent-logo {\n        background: " + theme.main + ";\n        }\n        #content-pannel .nocontent-tips {\n        background: " + theme.main + ";\n        color: " + theme.font + ";\n        }\n        \n        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {\n        background-color: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper {\n        border-top: 0 solid transparent; \n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area {\n        background: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {\n        /* \u804A\u5929\u6846Text area */\n        color: " + theme.chatBoxTextAreaFont + ";\n        background-color: " + theme.chatBoxTextAreaBg + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .action-area {\n        border-left: 0 solid transparent;\n        }\n         \n        .chat-head .conv-operations .iconfont {\n        color: " + theme.font + ";\n        }       \n        \n        ::-webkit-scrollbar-track-piece {\n        background-color: " + theme.main + ";\n        }\n        ::-webkit-scrollbar-thumb {\n        background-color: white;\n        }\n        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {\n        color: #38adff; \n        }\n        </style>\n        ";
+                        nightModeShell.innerHTML += "\n        <style>\n        #content-pannel .content-pannel-head {\n        background: " + theme.chatBoxHeader + ";  /* \u804A\u5929\u6846header */\n        color: " + theme.font + ";\n        }\n        #content-pannel .content-pannel-head {\n         border-bottom: 0 solid transparent;\n        }\n        .main-chat.chat-items.ng-isolate-scope {\n        background: " + theme.main + "; /* \u804A\u5929\u6846 */\n        }\n        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.myMsgBubble + ";\n        border: 1px solid transparent;\n        }\n        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: " + theme.msgBubble + ";\n        color: " + theme.font + ";\n        border: 1px solid transparent;\n        }\n        #header {\n        /* header */\n        border: 1px solid " + theme.header + ";\n        }\n        #header.lng-zh {\n        /* header */\n        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll " + theme.header + ";\n        }\n        .search-bar-wraper .main-search-2 .select2-search-field input {\n            background-color: white;\n            border: 1px solid " + theme.main + ";\n         }\n\n         #menu-pannel .main-menus .menu-item.selected {\n         color: " + theme.selectedFont + ";\n         }\n         #menu-pannel, #menu-pannel .profile {\n         background: " + theme.main + ";\n         border: 1px solid " + theme.main + ";\n        }\n        .conv-lists-box.ng-isolate-scope {\n        background: " + theme.main + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {\n        background-color: " + theme.chatBoxHeader + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.selectedFont + ";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: " + theme.font + ";\n        }\n        #sub-menu-pannel {\n        border-right: 0 solid transparent;\n        }\n\n        .nocontent-logo {\n        background: " + theme.main + ";\n        }\n        #content-pannel .nocontent-tips {\n        background: " + theme.main + ";\n        color: " + theme.font + ";\n        }\n\n        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {\n        background-color: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper {\n        border-top: 0 solid transparent;\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area {\n        background: " + theme.main + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {\n        /* \u804A\u5929\u6846Text area */\n        color: " + theme.chatBoxTextAreaFont + ";\n        background-color: " + theme.chatBoxTextAreaBg + ";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .action-area {\n        border-left: 0 solid transparent;\n        }\n\n        .chat-head .conv-operations .iconfont {\n        color: " + theme.font + ";\n        }\n\n        ::-webkit-scrollbar-track-piece {\n        background-color: " + theme.main + ";\n        }\n        ::-webkit-scrollbar-thumb {\n        background-color: white;\n        }\n        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {\n        color: #38adff;\n        }\n        </style>\n        ";
                         return [2];
                 }
             });

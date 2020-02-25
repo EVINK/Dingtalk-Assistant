@@ -1,13 +1,10 @@
 class DingTalkContent {
     private dingTalkFullScreenStyle = document.createElement('style')
 
-    private newMessageNotificationLock = false
-
     private notificationBanListKey = 'newMessageBanList'
     private globalNotificationLockKey = 'notificationLock'
 
     private contactsMap: ContactMap = {}
-    private contactsCount: number = 0
 
     constructor() {
         this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle'
@@ -52,7 +49,7 @@ class DingTalkContent {
         }
 
         // 向background请求: 存放当前Tab的ID
-        chrome.runtime.sendMessage({storeDtId: true})
+        chrome.runtime.sendMessage({ storeDtId: true })
     }
 
     private genFullScreenDingTalk() {
@@ -103,7 +100,7 @@ class DingTalkContent {
                     var element = document.createElement('div');
                     element.id = 'LSPScript-finished-EvinK';
                     document.body.appendChild(element);
-                    return clearInterval(loginStatusKeep); 
+                    return clearInterval(loginStatusKeep);
                 }
                 var wkToken = window.sessionStorage.getItem('wk_token');
                 if (!wkToken) return;
@@ -136,76 +133,84 @@ class DingTalkContent {
     private newMessageListener() {
         const that = this
 
-        function watch(mutations: MutationRecord[]) {
+        function msgWatch(mutations: MutationRecord[]) {
             mutations.forEach(async (m) => {
-                if (that.newMessageNotificationLock) return
                 if (await StorageArea.get(that.globalNotificationLockKey)) return
 
-                const name = m.target.parentElement.parentElement.parentElement.querySelector(
+                const indicator = m.target.parentElement
+                if (!indicator || indicator.tagName !== 'EM' || indicator.className !== 'ng-binding') {
+                    return console.info('indicator not found, if dingtalk-assistant notify stop working, this maybe a problem')
+                }
+
+                const contact = indicator.parentElement.parentElement.parentElement.parentElement
+                if (!contact) return console.error('contact not found, this may cause dingtalk-assistant notify stop working')
+
+
+                const name = contact.querySelector(
                     '.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]'
                 )
+                const msg = contact.querySelector('p.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]')
+
+
                 let banList = await StorageArea.get(that.notificationBanListKey) as Array<string> | null
                 if (!banList) banList = []
-                if (banList.indexOf(name.textContent) >= 0) return
+                if (banList.includes(name.textContent)) return
 
-                const notificationCount = m.target.parentElement.parentElement.querySelector(
-                    '.noti .unread-num.ng-scope em.ng-binding[ng-show="!convItem.conv.notificationOff"]'
-                )
 
-                if (!notificationCount) return
                 let title
-                if (notificationCount.textContent.toString() === '1') title = `钉钉 - ${name.textContent}`
-                else title = `钉钉 - ${name.textContent} (${notificationCount.textContent})`
-                const parentNode = m.target.parentElement.parentElement.parentElement.parentElement
-                if (!(name.textContent in that.contactsMap)) that.contactsMap[name.textContent] = parentNode
+                if (m.target.textContent.toString() === '1') title = `钉钉 - ${name.textContent}`
+                else title = `钉钉 - ${name.textContent} (${m.target.textContent})`
+                if (!(name.textContent in that.contactsMap)) that.contactsMap[name.textContent] = contact
                 return chrome.runtime.sendMessage({
-                    chromeNotification: {title, message: m.target.textContent,},
+                    chromeNotification: { title, message: msg.textContent, },
                     sender: name.textContent,
                 })
             })
         }
 
-        const findContactDomInterval = setInterval(() => {
-            const targetNodes = Array.from(document.querySelectorAll(
-                '#sub-menu-pannel .latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'
-            ))
-            if (targetNodes) {
-                const config = {childList: true, subtree: true, characterData: true}
-                clearInterval(findContactDomInterval)
-                this.newMessageNotificationLock = true
-                setTimeout(() => this.newMessageNotificationLock = false, 1000)
-                for (let node of targetNodes) {
-                    new MutationObserver(watch).observe(node, config)
-                }
+        // function contactWatch(mutations: MutationRecord[], contacts: Array<Element>) {
+        //     console.log('childList changes', mutations.length, mutations)
+        //     for (let m of mutations) {
+        //         const children = Array.from((m.target as Element).children)
+        //         if (!children || !contacts) break
+        //         if (m.removedNodes.length > 0) {
+        //             // 删除联系人操作
+        //             contacts = children
+        //         }
+        //         else if (m.addedNodes.length > 0) {
+        //             // 新出现在列表中的联系人
+        //             // TODO
+        //             console.log('addNodes', m.addedNodes)
+        //             contacts = children
+        //         }
+        //     }
+        // }
+
+        // contacts 列表
+        let findContactsRetryCount = 0
+        const findContacts = (timeout: number) => setTimeout(() => {
+            findContactsRetryCount++
+            if (findContactsRetryCount > 10) timeout = 100 * findContactsRetryCount
+            if (findContactsRetryCount > 30) {
+                generaPageContent.genBubbleMsg('无法获得联系人列表')
+                setTimeout(() => generaPageContent.genBubbleMsg('钉钉助手可能无法正常工作'), 300)
+                return console.error('无法获得联系人列表，钉钉助手可能无法正常工作，您可以在选项-反馈页面中向我提供详细信息')
             }
+
             const contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'))
+            if (!contactsSelectors) return findContacts(timeout)
             for (let s of contactsSelectors) {
                 if (s.childElementCount > 0) {
-                    this.contactsCount = s.childElementCount
-                    let children = Array.from(s.children)
-                    const config = {childList: true, subtree: false, characterData: false}
-                    new MutationObserver((mutations: MutationRecord[]) => {
-                        for (let m of mutations) {
-                            const newChildrenList = Array.from((m.target as Element).children)
-                            if (!newChildrenList || !children) break
-                            if ((m.target as Element).childElementCount <= this.contactsCount) {
-                                // 删除联系人操作
-                                children = newChildrenList
-                                this.contactsCount--
-                            } else {
-                                for (let c of newChildrenList) {
-                                    if (!(children as any).includes(c)) console.log(c)
-                                }
-                            }
-
-
-                        }
-                    }).observe(s, config)
-                    break
+                    let contacts = Array.from(s.children)
+                    new MutationObserver(msgWatch).observe(s, { characterData: true, subtree: true })
+                    // new MutationObserver((mutations) => { contactWatch(mutations, contacts) }).observe(s, { childList: true })
+                    return
                 }
             }
+            return findContacts(timeout)
 
-        }, 1000)
+        }, timeout)
+        findContacts(600)
 
     }
 
@@ -257,13 +262,13 @@ class DingTalkContent {
         content: '';
         position: absolute;
         }
-        .contact-cover-box-EVINK::before{ 
+        .contact-cover-box-EVINK::before{
         left: 13px;
         width: 38px;
         height: 38px;
         border-radius: 50%;
         }
-        .contact-cover-box-EVINK::after{ 
+        .contact-cover-box-EVINK::after{
         left: 20px;
         width: 24px;
         height: 100%;
@@ -342,7 +347,7 @@ class DingTalkContent {
                 '#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child'
             ) as any
             if (!contacts) {
-                return sendMessage({bubble: '没有找到最近联系人'})
+                return sendMessage({ bubble: '没有找到最近联系人' })
             }
             contacts = Array.from(contacts)
             for (const node of contacts) {
@@ -462,11 +467,11 @@ class DingTalkContent {
         background: ${theme.chatBoxHeader};  /* 聊天框header */
         color: ${theme.font};
         }
-        #content-pannel .content-pannel-head {  
-         border-bottom: 0 solid transparent; 
+        #content-pannel .content-pannel-head {
+         border-bottom: 0 solid transparent;
         }
         .main-chat.chat-items.ng-isolate-scope {
-        background: ${theme.main}; /* 聊天框 */ 
+        background: ${theme.main}; /* 聊天框 */
         }
         .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {
         background: ${theme.myMsgBubble};
@@ -489,7 +494,7 @@ class DingTalkContent {
             background-color: white;
             border: 1px solid ${theme.main};
          }
-         
+
          #menu-pannel .main-menus .menu-item.selected {
          color: ${theme.selectedFont};
          }
@@ -516,9 +521,9 @@ class DingTalkContent {
         color: ${theme.font};
         }
         #sub-menu-pannel {
-        border-right: 0 solid transparent; 
+        border-right: 0 solid transparent;
         }
-        
+
         .nocontent-logo {
         background: ${theme.main};
         }
@@ -526,12 +531,12 @@ class DingTalkContent {
         background: ${theme.main};
         color: ${theme.font};
         }
-        
+
         .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {
         background-color: ${theme.main};
         }
         .conv-detail-pannel .send-msg-box-wrapper {
-        border-top: 0 solid transparent; 
+        border-top: 0 solid transparent;
         }
         .conv-detail-pannel .send-msg-box-wrapper .input-area {
         background: ${theme.main};
@@ -544,11 +549,11 @@ class DingTalkContent {
         .conv-detail-pannel .send-msg-box-wrapper .action-area {
         border-left: 0 solid transparent;
         }
-         
+
         .chat-head .conv-operations .iconfont {
         color: ${theme.font};
-        }       
-        
+        }
+
         ::-webkit-scrollbar-track-piece {
         background-color: ${theme.main};
         }
@@ -556,7 +561,7 @@ class DingTalkContent {
         background-color: white;
         }
         .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {
-        color: #38adff; 
+        color: #38adff;
         }
         </style>
         `

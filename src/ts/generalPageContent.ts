@@ -41,6 +41,7 @@ class GeneralPageContent {
                 banGlobalStyle: true,
                 banSnapshotShortcut: false,
                 snapshotShortcut: null,
+                msgClickedAction: 'focus',
             }
         }
 
@@ -50,11 +51,11 @@ class GeneralPageContent {
                 width: 5px;
                 height: 3px;
             }
-        
+
             ::-webkit-scrollbar-track-piece {
                 background-color: white;
             }
-        
+
             ::-webkit-scrollbar-thumb {
                 height: 50px;
                 background-color: #3173FD;
@@ -64,11 +65,11 @@ class GeneralPageContent {
         }
         this.alertWindowStyle.innerHTML += `
             /* js generateWindow */
-        
+
             .win {
                 background: black;
             }
-        
+
             #back_win,
             .back_win {
                 height: 100vh;
@@ -80,7 +81,7 @@ class GeneralPageContent {
                 display: none;
                 text-align: center;
             }
-        
+
             #win,
             .win {
                 height: 80%;
@@ -91,7 +92,7 @@ class GeneralPageContent {
                 display: inline-block;
                 text-align: center;
             }
-        
+
             #win {
                 top: 35%;
                 left: 50%;
@@ -103,7 +104,7 @@ class GeneralPageContent {
                 flex-flow: column;
                 justify-content: space-between;
             }
-        
+
             #p_title_error {
                 margin: 0 auto;
                 color: #484545;
@@ -113,7 +114,7 @@ class GeneralPageContent {
                 width: 70%;
                 line-height: 35px;
             }
-        
+
             #p_tips {
                 display: block;
                 text-align: center;
@@ -124,7 +125,7 @@ class GeneralPageContent {
                 overflow-y: scroll;
                 overflow-x: hidden;
             }
-        
+
             #btn_div {
                 width: 100%;
                 display: flex;
@@ -132,7 +133,7 @@ class GeneralPageContent {
                 justify-content: center;
                 align-items: center;
             }
-        
+
             #win_confirm,
             #win_cancel {
                 display: inline;
@@ -144,22 +145,22 @@ class GeneralPageContent {
                 font-family: 微软雅黑;
                 cursor: pointer;
             }
-        
+
             #win_confirm {
                 color: white;
                 background: #279a50;
                 margin: 15px 0;
                 white-space: nowrap;
             }
-        
+
             #win_confirm:hover {
                 background: #218344;
             }
-            
-            
+
+
             @keyframes bubble-on {
                 0% {
-                    
+
                 }
                 7% {
                    right: -10px;
@@ -168,17 +169,17 @@ class GeneralPageContent {
                    right: -10px;
                 }
                 100% {
-                   right: -100%; 
+                   right: -100%;
                 }
             }
-            
+
             #bubbleWin-EvinK {
                 display: flex;
                 flex-flow: column;
                 justify-content: center;
                 align-items: center;
             }
-            
+
             .bubble-EvinK {
                 position: fixed;
                 top: 0;
@@ -195,7 +196,7 @@ class GeneralPageContent {
                 color: white;
                 padding: 0 20px;
             }
-            
+
             .bubble-EvinK.bubble-on {
                 animation: bubble-on ${GeneralPageContent.bubbleTime}s;
             }
@@ -223,14 +224,14 @@ class GeneralPageContent {
                     if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
                         // 兼容mac
                         if (isCtrlPressed && isAltPressed) {
-                            chrome.runtime.sendMessage({snapshot: true})
+                            chrome.runtime.sendMessage({ snapshot: true })
                         }
                     }
                 } else {
                     setTimeout(() => shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut)), 500)
                     handleCustomShortcuts(shortcuts, e)
                     if (shortcuts.length == 0) {
-                        chrome.runtime.sendMessage({snapshot: true})
+                        chrome.runtime.sendMessage({ snapshot: true })
                         shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut))
                     }
 
