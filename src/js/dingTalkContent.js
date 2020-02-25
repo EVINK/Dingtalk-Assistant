@@ -106,7 +106,7 @@ var DingTalkContent = (function () {
         });
     };
     DingTalkContent.prototype.genFullScreenDingTalk = function () {
-        this.dingTalkFullScreenStyle.innerHTML = "\n                            #layout-main {\n                                width: 100%;\n                                height: 100%;\n                            }\n                            #body {\n                                height: 100%;\n                            }\n                            #layout-container {\n                                display: block;\n                            }\n    ";
+        this.dingTalkFullScreenStyle.innerHTML = "\n                            #layout-main {\n                                width: 100%;\n                                height: 100%;\n                            }\n                            #body {\n                                /* height: 100%; */\n                                height: -webkit-calc(100% - 60px);\n                            }\n                            #layout-container {\n                                display: block;\n                            }\n    ";
     };
     DingTalkContent.prototype.genRawDingTalkStyle = function () {
         this.dingTalkFullScreenStyle.innerHTML += "\n                            #layout-main {\n                                width: 1000px;\n                            }\n                            #body {\n                                height: 542px;\n                            }\n                            #layout-container {\n                                display: flex;\n                            }\n    ";

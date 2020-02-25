@@ -59,7 +59,8 @@ class DingTalkContent {
                                 height: 100%;
                             }
                             #body {
-                                height: 100%;
+                                /* height: 100%; */
+                                height: -webkit-calc(100% - 60px);
                             }
                             #layout-container {
                                 display: block;
