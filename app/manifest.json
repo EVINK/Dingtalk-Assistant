@@ -16,8 +16,8 @@
   "content_scripts": [
     {
       "matches": [
-        "http://im.dingtalk.com/",
-        "https://im.dingtalk.com/"
+        "http://im.dingtalk.com/*",
+        "https://im.dingtalk.com/*"
       ],
       "js": [
         "scripts/utils.js",
