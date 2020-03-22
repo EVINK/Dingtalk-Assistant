@@ -9,7 +9,7 @@
     "gulp-notify": "^3.2.0",
     "gulp-plumber": "^1.2.1",
     "gulp-uglify": "^3.0.2",
-    "tslint": "^5.19.0",
+    "tslint": "^6.1.0",
     "typescript": "^3.7.0-dev.20190906",
     "vue": "^2.6.10"
   }
