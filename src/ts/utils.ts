@@ -1,4 +1,4 @@
-class StorageArea {
+export class StorageArea {
 
     public static set(data: object) {
         chrome.storage.local.set(data)
@@ -14,7 +14,7 @@ class StorageArea {
 }
 
 // this is sendMessage to current page
-const sendMessage = function (msg: object, callback?: () => {}) {
+export const sendMessage = (msg: object, callback?: () => {}) => {
     return new Promise(async (solve, reject) => {
         const thisPage = await getCurrentPage()
         chrome.tabs.sendMessage(thisPage.id, {message: msg}, callback);
@@ -22,7 +22,7 @@ const sendMessage = function (msg: object, callback?: () => {}) {
 }
 
 
-async function getCurrentPage(): Promise<chrome.tabs.Tab> {
+export async function getCurrentPage(): Promise<chrome.tabs.Tab> {
     // @ts-ignore
     return new Promise(resolve =>
         chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {

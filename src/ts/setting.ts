@@ -1,6 +1,8 @@
-///<reference path="../../node_modules/vue/types/index.d.ts"/>
-///<reference path="utils.ts"/>
-// @ts-ignore
+import Vue from 'vue'
+import { StorageArea, sendMessage, getCurrentPage } from './utils'
+
+
+// tslint:disable-next-line:no-unused-expression
 new Vue({
     el: '#app',
     data: {
@@ -41,8 +43,8 @@ new Vue({
                 setTimeout(() => this.genBubbleMsg('如无需使用快捷键，建议直接禁用'), 600)
                 return
             }
-            StorageArea.set({settings: this.settings})
-            StorageArea.set({notificationLock: this.notificationLock})
+            StorageArea.set({ settings: this.settings })
+            StorageArea.set({ notificationLock: this.notificationLock })
             // StorageArea.set({versionCheck: this.versionCheck})
             // if (this.versionCheck) chrome.runtime.sendMessage({versionCheck: true})
             this.genBubbleMsg('设置已保存')
@@ -69,6 +71,7 @@ new Vue({
         setSnapshotShortcut(e: Event) {
             if (this.settings.banSnapshotShortcut) return
             this.settings.snapshotShortcut = [];
+            // tslint:disable-next-line:no-shadowed-variable
             (e.target as HTMLElement).onkeydown = (e) => {
                 e.preventDefault()
                 if (!e.key.trim()) return
