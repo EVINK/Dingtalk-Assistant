@@ -1,1 +1,584 @@
-var __awaiter=this&&this.__awaiter||function(e,i,c,s){return new(c=c||Promise)(function(n,t){function o(e){try{a(s.next(e))}catch(e){t(e)}}function r(e){try{a(s.throw(e))}catch(e){t(e)}}function a(e){e.done?n(e.value):function(n){return n instanceof c?n:new c(function(e){e(n)})}(e.value).then(o,r)}a((s=s.apply(e,i||[])).next())})},__generator=this&&this.__generator||function(t,o){var r,a,i,e,c={label:0,sent:function(){if(1&i[0])throw i[1];return i[1]},trys:[],ops:[]};return e={next:n(0),throw:n(1),return:n(2)},"function"==typeof Symbol&&(e[Symbol.iterator]=function(){return this}),e;function n(n){return function(e){return function(n){if(r)throw new TypeError("Generator is already executing.");for(;c;)try{if(r=1,a&&(i=2&n[0]?a.return:n[0]?a.throw||((i=a.return)&&i.call(a),0):a.next)&&!(i=i.call(a,n[1])).done)return i;switch(a=0,i&&(n=[2&n[0],i.value]),n[0]){case 0:case 1:i=n;break;case 4:return c.label++,{value:n[1],done:!1};case 5:c.label++,a=n[1],n=[0];continue;case 7:n=c.ops.pop(),c.trys.pop();continue;default:if(!(i=0<(i=c.trys).length&&i[i.length-1])&&(6===n[0]||2===n[0])){c=0;continue}if(3===n[0]&&(!i||n[1]>i[0]&&n[1]<i[3])){c.label=n[1];break}if(6===n[0]&&c.label<i[1]){c.label=i[1],i=n;break}if(i&&c.label<i[2]){c.label=i[2],c.ops.push(n);break}i[2]&&c.ops.pop(),c.trys.pop();continue}n=o.call(t,c)}catch(e){n=[6,e],a=0}finally{r=i=0}if(5&n[0])throw n[1];return{value:n[0]?n[1]:void 0,done:!0}}([n,e])}}},DingTalkContent=function(){function i(){this.dingTalkFullScreenStyle=document.createElement("style"),this.notificationBanListKey="newMessageBanList",this.globalNotificationLockKey="notificationLock",this.contactsMap={},this.dingTalkFullScreenStyle.id="dingTalkFullScreenStyle",generaPageContent.head.appendChild(this.dingTalkFullScreenStyle),this.init()}return i.prototype.init=function(){return __awaiter(this,void 0,void 0,function(){var a,n=this;return __generator(this,function(e){return this.initDingTalkStyle(),i.checkLSPStatus(),this.switchTheme(),a=this,chrome.runtime.onMessage.addListener(function(o,e,r){return __awaiter(this,void 0,void 0,function(){var n,t;return __generator(this,function(e){switch(e.label){case 0:return o.message.fullScreen?(a.genFullScreenDingTalk(),[3,7]):[3,1];case 1:return!1!==o.message.fullScreen?[3,2]:(a.genRawDingTalkStyle(),[3,7]);case 2:return o.message.initDingTalkStyle?(a.initDingTalkStyle(),[3,7]):[3,3];case 3:return o.message.checkLSPStatus?(i.checkLSPStatus(),[3,7]):[3,4];case 4:return o.message.theme?(a.switchTheme(o.message.theme),[3,7]):[3,5];case 5:return o.message.clickNotification?[4,StorageArea.get("lastMsgSender")]:[3,7];case 6:n=e.sent(),(t=a.contactsMap[n])&&t.click(),e.label=7;case 7:return r({result:"success"}),[2]}})})}),window.onload=function(){n.newMessageListener(),n.initMessageSelector()},chrome.runtime.sendMessage({storeDtId:!0}),[2]})})},i.prototype.genFullScreenDingTalk=function(){this.dingTalkFullScreenStyle.innerHTML="\n                            #layout-main {\n                                width: 100%;\n                                height: 100%;\n                            }\n                            #body {\n                                /* height: 100%; */\n                                height: -webkit-calc(100% - 60px);\n                            }\n                            #layout-container {\n                                display: block;\n                            }\n    "},i.prototype.genRawDingTalkStyle=function(){this.dingTalkFullScreenStyle.innerHTML+="\n                            #layout-main {\n                                width: 1000px;\n                            }\n                            #body {\n                                height: 542px;\n                            }\n                            #layout-container {\n                                display: flex;\n                            }\n    "},i.prototype.initDingTalkStyle=function(){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(e){switch(e.label){case 0:return[4,StorageArea.get("fullScreen")];case 1:return e.sent()?this.genFullScreenDingTalk():this.genRawDingTalkStyle(),[2]}})})},i.checkLSPStatus=function(){return __awaiter(this,void 0,void 0,function(){var n,t,o;return __generator(this,function(e){switch(e.label){case 0:return[4,StorageArea.get("loginStatusPersistence")];case 1:return e.sent()?(n="LSPScript-of-EVINK",document.querySelector("#"+n)?[2]:("\n            var loginStatusKeep = setInterval(function () {\n                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {\n                    var element = document.createElement('div');\n                    element.id = 'LSPScript-finished-EvinK';\n                    document.body.appendChild(element);\n                    return clearInterval(loginStatusKeep);\n                }\n                var wkToken = window.sessionStorage.getItem('wk_token');\n                if (!wkToken) return;\n                wkToken = JSON.parse(wkToken);\n                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);\n                if (wkToken.isAutoLogin) {\n                    window.sessionStorage.setItem('EvinK', 'Handsome');\n                    return location.reload();\n                }\n                wkToken.isAutoLogin = true;\n                // console.log(JSON.stringify(wkToken));\n                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n            }, 1000)\n        ",(t=document.createElement("script")).id=n,t.innerHTML+="\n            var loginStatusKeep = setInterval(function () {\n                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {\n                    var element = document.createElement('div');\n                    element.id = 'LSPScript-finished-EvinK';\n                    document.body.appendChild(element);\n                    return clearInterval(loginStatusKeep);\n                }\n                var wkToken = window.sessionStorage.getItem('wk_token');\n                if (!wkToken) return;\n                wkToken = JSON.parse(wkToken);\n                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);\n                if (wkToken.isAutoLogin) {\n                    window.sessionStorage.setItem('EvinK', 'Handsome');\n                    return location.reload();\n                }\n                wkToken.isAutoLogin = true;\n                // console.log(JSON.stringify(wkToken));\n                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));\n            }, 1000)\n        ",document.body.appendChild(t),[4,StorageArea.get("loginStatusPersistence")])):[2];case 2:return e.sent()&&(o=setInterval(function(){if(document.querySelector("#LSPScript-finished-EvinK"))return generaPageContent.genBubbleMsg("登录状态已保存"),clearInterval(o)},1e3)),[2]}})})},i.prototype.newMessageListener=function(){var c=this;function a(e){var n=this;e.forEach(function(i){return __awaiter(n,void 0,void 0,function(){var n,t,o,r,a;return __generator(this,function(e){switch(e.label){case 0:return[4,StorageArea.get(c.globalNotificationLockKey)];case 1:return e.sent()?[2]:(n=i.target.parentElement)&&"EM"===n.tagName&&"ng-binding"===n.className?(t=n.parentElement.parentElement.parentElement.parentElement)?(o=t.querySelector('.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]'),r=t.querySelector('p.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]'),[4,StorageArea.get(c.notificationBanListKey)]):[2,console.error("contact not found, this may cause dingtalk-assistant notify stop working")]:[2,console.info("indicator not found, if dingtalk-assistant notify stop working, this maybe a problem")];case 2:return(e.sent()||[]).includes(o.textContent)?[2]:(a="1"===i.target.textContent.toString()?"钉钉 - "+o.textContent:"钉钉 - "+o.textContent+" ("+i.target.textContent+")",o.textContent in c.contactsMap||(c.contactsMap[o.textContent]=t),[2,chrome.runtime.sendMessage({chromeNotification:{title:a,message:r.textContent},sender:o.textContent})])}})})})}var i=0,s=function(r){return setTimeout(function(){if(10<++i&&(r=100*i),30<i)return generaPageContent.genBubbleMsg("无法获得联系人列表"),setTimeout(function(){return generaPageContent.genBubbleMsg("钉钉助手可能无法正常工作")},300),console.error("无法获得联系人列表，钉钉助手可能无法正常工作，您可以在反馈页面中向我提供详细信息");var e=Array.from(document.querySelectorAll("#sub-menu-pannel div.conv-lists.ng-scope"));if(!e)return s(r);for(var n=0,t=e;n<t.length;n++){var o=t[n];if(0<o.childElementCount){Array.from(o.children);return void new MutationObserver(a).observe(o,{characterData:!0,subtree:!0})}}return s(r)},r)};s(600)},i.prototype.initMessageSelector=function(){return __awaiter(this,void 0,void 0,function(){function n(){m=[];for(var e=0,n=p;e<n.length;e++){n[e].remove()}l.appendChild(u),d.remove(),g.remove()}var t,l,u,o,r,d,g,m,p,a=this;return __generator(this,function(e){switch(e.label){case 0:return[4,function(){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(e){return[2,new Promise(function(n){var t=setInterval(function(){var e=document.querySelector("#header");if(e)return clearInterval(t),void n(e)},1e3)})]})})}()];case 1:return t=e.sent(),(l=document.createElement("div")).classList.add("contact-selector-area-EVINK"),t.appendChild(l),l.innerHTML+="\n        <style>\n        div.contact-selector-area-EVINK {\n        position: absolute;\n        top: 0;\n        left: 130px;\n        width: 100px;\n        height: 100%;\n        display: flex;\n        flex-flow: row;\n        justify-content: space-evenly;\n        align-items: center;\n        }\n        div.contact-selector-area-EVINK a {\n        color: white;\n        cursor: pointer;\n        }\n        .contact-cover-box-EVINK {\n        position: absolute;\n        top: 0;\n        left: 0;\n        width: 100%;\n        height: 100%;\n        background: #00000033;\n        overflow: hidden;\n        }\n        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{\n        content: '';\n        position: absolute;\n        }\n        .contact-cover-box-EVINK::before{\n        left: 13px;\n        width: 38px;\n        height: 38px;\n        border-radius: 50%;\n        }\n        .contact-cover-box-EVINK::after{\n        left: 20px;\n        width: 24px;\n        height: 100%;\n        }\n        .contact-cover-box-hover-EVINK::after {\n        top: 100%;\n        background: no-repeat center/100% url(\""+chrome.extension.getURL("assets/imgs/notification-disable-red.svg")+'");\n        }\n        .contact-cover-box-hover-EVINK::before {\n        top: 100%;\n        background: #000000ab;\n        }\n        .contact-cover-box-hover-EVINK:hover::before {\n        top: 9px;\n        }\n        .contact-cover-box-hover-EVINK:hover::after {\n        top: 0;\n        }\n        .contact-cover-box-permanent-EVINK::after {\n        top: 0;\n        background: no-repeat center/100% url("'+chrome.extension.getURL("assets/imgs/notification-disable-white.svg")+'");\n        }\n        .contact-cover-box-permanent-EVINK::before {\n        top: 9px;\n        background: #ff0000cf;\n        }\n        </style>\n        ',u=document.createElement("a"),l.appendChild(u),u.style.display="flex",u.style.justifyContent="center",u.style.alignItems="center",o=new Image,u.appendChild(o),o.src=chrome.extension.getURL("assets/imgs/notification-setting.svg"),o.style.width="18px",r=document.createElement("span"),u.appendChild(r),r.textContent="通知设置",d=document.createElement("a"),o=new Image,d.appendChild(o),o.src=chrome.extension.getURL("assets/imgs/finish.svg"),o.style.width="26px",g=document.createElement("a"),o=new Image,g.appendChild(o),o.src=chrome.extension.getURL("assets/imgs/cancel.svg"),o.style.width="26px",m=[],p=[],u.onclick=function(e){return __awaiter(a,void 0,void 0,function(){var n,a,i,t,o,r,c,s;return __generator(this,function(e){switch(e.label){case 0:return[4,StorageArea.get(this.globalNotificationLockKey)];case 1:return e.sent()?[2,GeneralPageContent.alert("通知已被禁用，若要启用通知，请前往设置页")]:[4,StorageArea.get(this.notificationBanListKey)];case 2:if(m=(m=e.sent())||[],n="contact-cover-box-EVINK",document.querySelector("."+n))return[2];if(a="contact-cover-box-permanent-EVINK",i="contact-cover-box-hover-EVINK",u.remove(),l.appendChild(d),l.appendChild(g),!(t=document.querySelectorAll("#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child")))return[2,sendMessage({bubble:"没有找到最近联系人"})];for(t=Array.from(t),o=function(e){var t=document.createElement("div");e.appendChild(t),t.classList.add(n);var o=!1,r=e.querySelector('p.name span[ng-bind-html="convItem.conv.i18nTitle|emoj"]');0<=m.indexOf(r.textContent)?(t.classList.add(a),o=!0):t.classList.add(i),t.onclick=function(e){if(o){t.classList.remove(a),t.classList.add(i);var n=m.indexOf(r.textContent);0<=n&&m.splice(n,1),o=!1}else t.classList.remove(i),t.classList.add(a),m.push(r.textContent),o=!0;e.stopPropagation()},p.push(t)},r=0,c=t;r<c.length;r++)s=c[r],o(s);return[2]}})})},d.onclick=function(){var e={};e[a.notificationBanListKey]=m,StorageArea.set(e),n()},g.onclick=function(){n()},[2]}})})},i.prototype.switchTheme=function(a){return __awaiter(this,void 0,void 0,function(){var n,t,o,r;return __generator(this,function(e){switch(e.label){case 0:return n="dt-night-mode-EvinK",(t=document.querySelector(n))&&t.remove(),a?[3,2]:[4,StorageArea.get("theme")];case 1:a=e.sent()||"original",e.label=2;case 2:switch(a){case"night":o={main:"#020f2f",header:"#04236e",font:"white",selectedFont:"white",chatBoxHeader:"#04236e",chatBoxTextAreaBg:"white",chatBoxTextAreaFont:"black",myMsgBubble:"#0945ff",msgBubble:"#031a59"};break;case"dark-green":o={main:"#122906",header:"#07462b",font:"white",selectedFont:"white",chatBoxHeader:"#07462b",chatBoxTextAreaBg:"white",chatBoxTextAreaFont:"black",myMsgBubble:"#446e0b",msgBubble:"#446e0b"};break;case"light-green":o={main:"white",header:"#0e9d62",font:"black",selectedFont:"#0e9c61",chatBoxHeader:"#0e9c6129",chatBoxTextAreaBg:"transparent",chatBoxTextAreaFont:"black",myMsgBubble:"#e9ffcf",msgBubble:"#e9ffcf"};break;default:return[2]}return(r=document.createElement("div")).id=n,generaPageContent.head.appendChild(r),r.innerHTML+="\n        <style>\n        #content-pannel .content-pannel-head {\n        background: "+o.chatBoxHeader+";  /* 聊天框header */\n        color: "+o.font+";\n        }\n        #content-pannel .content-pannel-head {\n         border-bottom: 0 solid transparent;\n        }\n        .main-chat.chat-items.ng-isolate-scope {\n        background: "+o.main+"; /* 聊天框 */\n        }\n        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: "+o.myMsgBubble+";\n        border: 1px solid transparent;\n        }\n        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {\n        background: "+o.msgBubble+";\n        color: "+o.font+";\n        border: 1px solid transparent;\n        }\n        #header {\n        /* header */\n        border: 1px solid "+o.header+";\n        }\n        #header.lng-zh {\n        /* header */\n        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll "+o.header+";\n        }\n        .search-bar-wraper .main-search-2 .select2-search-field input {\n            background-color: white;\n            border: 1px solid "+o.main+";\n         }\n\n         #menu-pannel .main-menus .menu-item.selected {\n         color: "+o.selectedFont+";\n         }\n         #menu-pannel, #menu-pannel .profile {\n         background: "+o.main+";\n         border: 1px solid "+o.main+";\n        }\n        .conv-lists-box.ng-isolate-scope {\n        background: "+o.main+";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {\n        background-color: "+o.chatBoxHeader+";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {\n        background-color: "+o.chatBoxHeader+";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: "+o.selectedFont+";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: "+o.selectedFont+";\n        }\n        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {\n        color: "+o.font+";\n        }\n        #sub-menu-pannel {\n        border-right: 0 solid transparent;\n        }\n\n        .nocontent-logo {\n        background: "+o.main+";\n        }\n        #content-pannel .nocontent-tips {\n        background: "+o.main+";\n        color: "+o.font+";\n        }\n\n        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {\n        background-color: "+o.main+";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper {\n        border-top: 0 solid transparent;\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area {\n        background: "+o.main+";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {\n        /* 聊天框Text area */\n        color: "+o.chatBoxTextAreaFont+";\n        background-color: "+o.chatBoxTextAreaBg+";\n        }\n        .conv-detail-pannel .send-msg-box-wrapper .action-area {\n        border-left: 0 solid transparent;\n        }\n\n        .chat-head .conv-operations .iconfont {\n        color: "+o.font+";\n        }\n\n        ::-webkit-scrollbar-track-piece {\n        background-color: "+o.main+";\n        }\n        ::-webkit-scrollbar-thumb {\n        background-color: white;\n        }\n        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {\n        color: #38adff;\n        }\n        </style>\n        ",[2]}})})},i.prototype.getLatestContacts=function(){return new Promise(function(a,e){var i=setInterval(function(){var e=Array.from(document.querySelectorAll("#sub-menu-pannel conv-item div.list-item.conv-item.context-menu.ng-isolate-scope"));if(e){clearInterval(i);for(var n=0,t=e;n<t.length;n++){var o=t[n];console.log(o.querySelector(".avatar-wrap div"));var r=o.querySelector(".avatar-wrap .user-avatar");r&&r.style.backgroundImage&&console.log(r.style.backgroundImage)}a(e)}},1e3)})},i}();new DingTalkContent;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class DingTalkContent {
+    constructor() {
+        this.dingTalkFullScreenStyle = document.createElement('style');
+        this.notificationBanListKey = 'newMessageBanList';
+        this.globalNotificationLockKey = 'notificationLock';
+        this.contactsMap = {};
+        this.dingTalkFullScreenStyle.id = 'dingTalkFullScreenStyle';
+        generaPageContent.head.appendChild(this.dingTalkFullScreenStyle);
+        this.init();
+        // this.getLatestContacts()
+    }
+    init() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.initDingTalkStyle();
+            DingTalkContent.checkLSPStatus();
+            this.switchTheme();
+            const self = this;
+            // event
+            chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+                return __awaiter(this, void 0, void 0, function* () {
+                    if (request.message.fullScreen) {
+                        self.genFullScreenDingTalk();
+                    }
+                    else if (request.message.fullScreen === false) {
+                        self.genRawDingTalkStyle();
+                    }
+                    else if (request.message.initDingTalkStyle) {
+                        self.initDingTalkStyle();
+                    }
+                    else if (request.message.checkLSPStatus) {
+                        DingTalkContent.checkLSPStatus();
+                    }
+                    else if (request.message.theme) {
+                        self.switchTheme(request.message.theme);
+                    }
+                    else if (request.message.clickNotification) {
+                        const sender = yield StorageArea.get('lastMsgSender');
+                        const node = self.contactsMap[sender];
+                        if (node)
+                            node.click();
+                    }
+                    sendResponse({
+                        result: 'success'
+                    });
+                });
+            });
+            window.onload = () => {
+                this.newMessageListener();
+                this.initMessageSelector();
+            };
+            // 向background请求: 存放当前Tab的ID
+            chrome.runtime.sendMessage({ storeDtId: true });
+        });
+    }
+    genFullScreenDingTalk() {
+        this.dingTalkFullScreenStyle.innerHTML = `
+                            #layout-main {
+                                width: 100%;
+                                height: 100%;
+                            }
+                            #body {
+                                /* height: 100%; */
+                                height: -webkit-calc(100% - 60px);
+                            }
+                            #layout-container {
+                                display: block;
+                            }
+    `;
+    }
+    genRawDingTalkStyle() {
+        this.dingTalkFullScreenStyle.innerHTML += `
+                            #layout-main {
+                                width: 1000px;
+                            }
+                            #body {
+                                height: 542px;
+                            }
+                            #layout-container {
+                                display: flex;
+                            }
+    `;
+    }
+    initDingTalkStyle() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (yield StorageArea.get('fullScreen')) {
+                this.genFullScreenDingTalk();
+            }
+            else {
+                this.genRawDingTalkStyle();
+            }
+        });
+    }
+    static checkLSPStatus() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!(yield StorageArea.get('loginStatusPersistence')))
+                return;
+            const scriptID = 'LSPScript-of-EVINK';
+            if (document.querySelector(`#${scriptID}`))
+                return;
+            const content = `
+            var loginStatusKeep = setInterval(function () {
+                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {
+                    var element = document.createElement('div');
+                    element.id = 'LSPScript-finished-EvinK';
+                    document.body.appendChild(element);
+                    return clearInterval(loginStatusKeep);
+                }
+                var wkToken = window.sessionStorage.getItem('wk_token');
+                if (!wkToken) return;
+                wkToken = JSON.parse(wkToken);
+                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);
+                if (wkToken.isAutoLogin) {
+                    window.sessionStorage.setItem('EvinK', 'Handsome');
+                    return location.reload();
+                }
+                wkToken.isAutoLogin = true;
+                // console.log(JSON.stringify(wkToken));
+                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));
+            }, 1000)
+        `;
+            const script = document.createElement('script');
+            script.id = scriptID;
+            script.innerHTML += content;
+            document.body.appendChild(script);
+            // notification
+            if (yield StorageArea.get('loginStatusPersistence')) {
+                const loopLSPStatus = setInterval(() => {
+                    if (document.querySelector('#LSPScript-finished-EvinK')) {
+                        generaPageContent.genBubbleMsg('登录状态已保存');
+                        return clearInterval(loopLSPStatus);
+                    }
+                }, 1000);
+            }
+        });
+    }
+    newMessageListener() {
+        const that = this;
+        function msgWatch(mutations) {
+            mutations.forEach((m) => __awaiter(this, void 0, void 0, function* () {
+                if (yield StorageArea.get(that.globalNotificationLockKey))
+                    return;
+                const indicator = m.target.parentElement;
+                if (!indicator || indicator.tagName !== 'EM' || indicator.className !== 'ng-binding') {
+                    return console.info('indicator not found, if dingtalk-assistant notify stop working, this maybe a problem');
+                }
+                const contact = indicator.parentElement.parentElement.parentElement.parentElement;
+                if (!contact)
+                    return console.error('contact not found, this may cause dingtalk-assistant notify stop working');
+                const name = contact.querySelector('.title-wrap.info .name-wrap .name span.name-title.ng-binding[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                const msg = contact.querySelector('p.latest-msg span[ng-bind-html="convItem.conv.lastMessageContent|emoj"]');
+                let banList = yield StorageArea.get(that.notificationBanListKey);
+                if (!banList)
+                    banList = [];
+                if (banList.includes(name.textContent))
+                    return;
+                let title;
+                if (m.target.textContent.toString() === '1')
+                    title = `钉钉 - ${name.textContent}`;
+                else
+                    title = `钉钉 - ${name.textContent} (${m.target.textContent})`;
+                if (!(name.textContent in that.contactsMap))
+                    that.contactsMap[name.textContent] = contact;
+                return chrome.runtime.sendMessage({
+                    chromeNotification: { title, message: msg.textContent, },
+                    sender: name.textContent,
+                });
+            }));
+        }
+        // function contactWatch(mutations: MutationRecord[], contacts: Array<Element>) {
+        //     console.log('childList changes', mutations.length, mutations)
+        //     for (let m of mutations) {
+        //         const children = Array.from((m.target as Element).children)
+        //         if (!children || !contacts) break
+        //         if (m.removedNodes.length > 0) {
+        //             // 删除联系人操作
+        //             contacts = children
+        //         }
+        //         else if (m.addedNodes.length > 0) {
+        //             // 新出现在列表中的联系人
+        //             // TODO
+        //             console.log('addNodes', m.addedNodes)
+        //             contacts = children
+        //         }
+        //     }
+        // }
+        // contacts 列表
+        let findContactsRetryCount = 0;
+        const findContacts = (timeout) => setTimeout(() => {
+            findContactsRetryCount++;
+            if (findContactsRetryCount > 10)
+                timeout = 100 * findContactsRetryCount;
+            if (findContactsRetryCount > 30) {
+                generaPageContent.genBubbleMsg('无法获得联系人列表');
+                setTimeout(() => generaPageContent.genBubbleMsg('钉钉助手可能无法正常工作'), 300);
+                return console.error('无法获得联系人列表，钉钉助手可能无法正常工作，您可以在反馈页面中向我提供详细信息');
+            }
+            const contactsSelectors = Array.from(document.querySelectorAll('#sub-menu-pannel div.conv-lists.ng-scope'));
+            if (!contactsSelectors)
+                return findContacts(timeout);
+            for (let s of contactsSelectors) {
+                if (s.childElementCount > 0) {
+                    let contacts = Array.from(s.children);
+                    new MutationObserver(msgWatch).observe(s, { characterData: true, subtree: true });
+                    // new MutationObserver((mutations) => { contactWatch(mutations, contacts) }).observe(s, { childList: true })
+                    return;
+                }
+            }
+            return findContacts(timeout);
+        }, timeout);
+        findContacts(600);
+    }
+    initMessageSelector() {
+        return __awaiter(this, void 0, void 0, function* () {
+            function findFather() {
+                return __awaiter(this, void 0, void 0, function* () {
+                    return new Promise((resolve) => {
+                        const findFatherInterval = setInterval(() => {
+                            const father = document.querySelector('#header');
+                            if (father) {
+                                clearInterval(findFatherInterval);
+                                resolve(father);
+                                return;
+                            }
+                        }, 1000);
+                    });
+                });
+            }
+            const father = yield findFather();
+            const btnsArea = document.createElement('div');
+            btnsArea.classList.add('contact-selector-area-EVINK');
+            father.appendChild(btnsArea);
+            btnsArea.innerHTML += `
+        <style>
+        div.contact-selector-area-EVINK {
+        position: absolute;
+        top: 0;
+        left: 130px;
+        width: 100px;
+        height: 100%;
+        display: flex;
+        flex-flow: row;
+        justify-content: space-evenly;
+        align-items: center;
+        }
+        div.contact-selector-area-EVINK a {
+        color: white;
+        cursor: pointer;
+        }
+        .contact-cover-box-EVINK {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: #00000033;
+        overflow: hidden;
+        }
+        .contact-cover-box-EVINK::after, .contact-cover-box-EVINK::before{
+        content: '';
+        position: absolute;
+        }
+        .contact-cover-box-EVINK::before{
+        left: 13px;
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        }
+        .contact-cover-box-EVINK::after{
+        left: 20px;
+        width: 24px;
+        height: 100%;
+        }
+        .contact-cover-box-hover-EVINK::after {
+        top: 100%;
+        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-red.svg')}");
+        }
+        .contact-cover-box-hover-EVINK::before {
+        top: 100%;
+        background: #000000ab;
+        }
+        .contact-cover-box-hover-EVINK:hover::before {
+        top: 9px;
+        }
+        .contact-cover-box-hover-EVINK:hover::after {
+        top: 0;
+        }
+        .contact-cover-box-permanent-EVINK::after {
+        top: 0;
+        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-white.svg')}");
+        }
+        .contact-cover-box-permanent-EVINK::before {
+        top: 9px;
+        background: #ff0000cf;
+        }
+        </style>
+        `;
+            const btn = document.createElement('a');
+            btnsArea.appendChild(btn);
+            btn.style.display = 'flex';
+            btn.style.justifyContent = 'center';
+            btn.style.alignItems = 'center';
+            let img = new Image();
+            btn.appendChild(img);
+            img.src = chrome.extension.getURL('assets/imgs/notification-setting.svg');
+            img.style.width = '18px';
+            const label = document.createElement('span');
+            btn.appendChild(label);
+            label.textContent = '通知设置';
+            const finishBtn = document.createElement('a');
+            img = new Image();
+            finishBtn.appendChild(img);
+            img.src = chrome.extension.getURL('assets/imgs/finish.svg');
+            img.style.width = '26px';
+            const cancelBtn = document.createElement('a');
+            img = new Image();
+            cancelBtn.appendChild(img);
+            img.src = chrome.extension.getURL('assets/imgs/cancel.svg');
+            img.style.width = '26px';
+            let banList = [];
+            const coverList = [];
+            btn.onclick = (e) => __awaiter(this, void 0, void 0, function* () {
+                if (yield StorageArea.get(this.globalNotificationLockKey))
+                    return GeneralPageContent.alert('通知已被禁用，若要启用通知，请前往设置页');
+                banList = (yield StorageArea.get(this.notificationBanListKey));
+                if (!banList)
+                    banList = [];
+                const coverClassName = 'contact-cover-box-EVINK';
+                if (document.querySelector(`.${coverClassName}`))
+                    return;
+                const bannedCoverClassName = 'contact-cover-box-permanent-EVINK';
+                const hoverClassName = 'contact-cover-box-hover-EVINK';
+                btn.remove();
+                btnsArea.appendChild(finishBtn);
+                btnsArea.appendChild(cancelBtn);
+                let contacts = document.querySelectorAll('#sub-menu-pannel .conv-lists-box.ng-isolate-scope conv-item div.conv-item:first-child');
+                if (!contacts) {
+                    return sendMessage({ bubble: '没有找到最近联系人' });
+                }
+                contacts = Array.from(contacts);
+                for (const node of contacts) {
+                    const cover = document.createElement('div');
+                    node.appendChild(cover);
+                    cover.classList.add(coverClassName);
+                    let isBanned = false;
+                    const contactName = node.querySelector('p.name span[ng-bind-html="convItem.conv.i18nTitle|emoj"]');
+                    if (banList.indexOf(contactName.textContent) >= 0) {
+                        cover.classList.add(bannedCoverClassName);
+                        isBanned = true;
+                    }
+                    else {
+                        cover.classList.add(hoverClassName);
+                    }
+                    cover.onclick = (e) => {
+                        if (isBanned) {
+                            cover.classList.remove(bannedCoverClassName);
+                            cover.classList.add(hoverClassName);
+                            const idx = banList.indexOf(contactName.textContent);
+                            if (idx >= 0)
+                                banList.splice(idx, 1);
+                            isBanned = false;
+                        }
+                        else {
+                            cover.classList.remove(hoverClassName);
+                            cover.classList.add(bannedCoverClassName);
+                            banList.push(contactName.textContent);
+                            isBanned = true;
+                        }
+                        e.stopPropagation();
+                    };
+                    coverList.push(cover);
+                }
+            });
+            function handleExit() {
+                banList = [];
+                for (const cover of coverList) {
+                    cover.remove();
+                }
+                btnsArea.appendChild(btn);
+                finishBtn.remove();
+                cancelBtn.remove();
+            }
+            finishBtn.onclick = () => {
+                const data = {};
+                data[this.notificationBanListKey] = banList;
+                StorageArea.set(data);
+                handleExit();
+            };
+            cancelBtn.onclick = () => {
+                handleExit();
+            };
+        });
+    }
+    switchTheme(theme_str) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const id = 'dt-night-mode-EvinK';
+            const sheet = document.querySelector(id);
+            if (sheet)
+                sheet.remove();
+            if (!theme_str) {
+                theme_str = (yield StorageArea.get('theme')) || 'original';
+            }
+            let theme;
+            switch (theme_str) {
+                case 'night':
+                    theme = {
+                        main: '#020f2f',
+                        header: '#04236e',
+                        font: 'white',
+                        selectedFont: 'white',
+                        chatBoxHeader: '#04236e',
+                        chatBoxTextAreaBg: 'white',
+                        chatBoxTextAreaFont: 'black',
+                        myMsgBubble: '#0945ff',
+                        msgBubble: '#031a59',
+                    };
+                    break;
+                case 'dark-green':
+                    theme = {
+                        main: '#122906',
+                        header: '#07462b',
+                        font: 'white',
+                        selectedFont: 'white',
+                        chatBoxHeader: '#07462b',
+                        chatBoxTextAreaBg: 'white',
+                        chatBoxTextAreaFont: 'black',
+                        myMsgBubble: '#446e0b',
+                        msgBubble: '#446e0b',
+                    };
+                    break;
+                case 'light-green':
+                    theme = {
+                        main: 'white',
+                        header: '#0e9d62',
+                        font: 'black',
+                        selectedFont: '#0e9c61',
+                        chatBoxHeader: '#0e9c6129',
+                        chatBoxTextAreaBg: 'transparent',
+                        chatBoxTextAreaFont: 'black',
+                        myMsgBubble: '#e9ffcf',
+                        msgBubble: '#e9ffcf',
+                    };
+                    break;
+                default:
+                    return;
+            }
+            const nightModeShell = document.createElement('div');
+            nightModeShell.id = id;
+            generaPageContent.head.appendChild(nightModeShell);
+            nightModeShell.innerHTML += `
+        <style>
+        #content-pannel .content-pannel-head {
+        background: ${theme.chatBoxHeader};  /* 聊天框header */
+        color: ${theme.font};
+        }
+        #content-pannel .content-pannel-head {
+         border-bottom: 0 solid transparent;
+        }
+        .main-chat.chat-items.ng-isolate-scope {
+        background: ${theme.main}; /* 聊天框 */
+        }
+        .chat-item.me.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {
+        background: ${theme.myMsgBubble};
+        border: 1px solid transparent;
+        }
+        .chat-item.responsive-box .content-area .msg-bubble-box .msg-bubble-area .msg-content-wrapper .msg-bubble {
+        background: ${theme.msgBubble};
+        color: ${theme.font};
+        border: 1px solid transparent;
+        }
+        #header {
+        /* header */
+        border: 1px solid ${theme.header};
+        }
+        #header.lng-zh {
+        /* header */
+        background: url('https://g.alicdn.com/DingTalkWeb/web/3.8.7/assets/webpack-img/logo_cn.png') no-repeat 35px 18px scroll ${theme.header};
+        }
+        .search-bar-wraper .main-search-2 .select2-search-field input {
+            background-color: white;
+            border: 1px solid ${theme.main};
+         }
+
+         #menu-pannel .main-menus .menu-item.selected {
+         color: ${theme.selectedFont};
+         }
+         #menu-pannel, #menu-pannel .profile {
+         background: ${theme.main};
+         border: 1px solid ${theme.main};
+        }
+        .conv-lists-box.ng-isolate-scope {
+        background: ${theme.main};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover {
+        background-color: ${theme.chatBoxHeader};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active {
+        background-color: ${theme.chatBoxHeader};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item:hover .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.selectedFont};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item.active .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.selectedFont};
+        }
+        #sub-menu-pannel.conv-list-pannel .conv-lists .conv-item .conv-item-content .title-wrap .name-wrap .name .name-title {
+        color: ${theme.font};
+        }
+        #sub-menu-pannel {
+        border-right: 0 solid transparent;
+        }
+
+        .nocontent-logo {
+        background: ${theme.main};
+        }
+        #content-pannel .nocontent-tips {
+        background: ${theme.main};
+        color: ${theme.font};
+        }
+
+        .conv-detail-pannel .send-msg-box-wrapper .action-area .send-message-button {
+        background-color: ${theme.main};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper {
+        border-top: 0 solid transparent;
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .input-area {
+        background: ${theme.main};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .input-area .msg-box .input-msg-box {
+        /* 聊天框Text area */
+        color: ${theme.chatBoxTextAreaFont};
+        background-color: ${theme.chatBoxTextAreaBg};
+        }
+        .conv-detail-pannel .send-msg-box-wrapper .action-area {
+        border-left: 0 solid transparent;
+        }
+
+        .chat-head .conv-operations .iconfont {
+        color: ${theme.font};
+        }
+
+        ::-webkit-scrollbar-track-piece {
+        background-color: ${theme.main};
+        }
+        ::-webkit-scrollbar-thumb {
+        background-color: white;
+        }
+        .conv-detail-pannel .content-pannel-body .chat-item.me .msg-bubble-area .text a {
+        color: #38adff;
+        }
+        </style>
+        `;
+        });
+    }
+    getLatestContacts() {
+        return new Promise((resolve, reject) => {
+            const findContactDomInterval = setInterval(() => {
+                const contacts = Array.from(document.querySelectorAll('#sub-menu-pannel conv-item div.list-item.conv-item.context-menu.ng-isolate-scope'));
+                if (contacts) {
+                    clearInterval(findContactDomInterval);
+                    // console.log(contacts)
+                    for (let contact of contacts) {
+                        console.log(contact.querySelector('.avatar-wrap div'));
+                        const avatarWrapper = contact.querySelector('.avatar-wrap .user-avatar');
+                        if (avatarWrapper && avatarWrapper.style.backgroundImage) {
+                            console.log(avatarWrapper.style.backgroundImage);
+                        }
+                    }
+                    resolve(contacts);
+                }
+            }, 1000);
+        });
+    }
+}
+new DingTalkContent();

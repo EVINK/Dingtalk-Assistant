@@ -1,1 +1,116 @@
-var __awaiter=this&&this.__awaiter||function(t,s,a,u){return new(a=a||Promise)(function(e,n){function i(t){try{r(u.next(t))}catch(t){n(t)}}function o(t){try{r(u.throw(t))}catch(t){n(t)}}function r(t){t.done?e(t.value):function(e){return e instanceof a?e:new a(function(t){t(e)})}(t.value).then(i,o)}r((u=u.apply(t,s||[])).next())})},__generator=this&&this.__generator||function(n,i){var o,r,s,t,a={label:0,sent:function(){if(1&s[0])throw s[1];return s[1]},trys:[],ops:[]};return t={next:e(0),throw:e(1),return:e(2)},"function"==typeof Symbol&&(t[Symbol.iterator]=function(){return this}),t;function e(e){return function(t){return function(e){if(o)throw new TypeError("Generator is already executing.");for(;a;)try{if(o=1,r&&(s=2&e[0]?r.return:e[0]?r.throw||((s=r.return)&&s.call(r),0):r.next)&&!(s=s.call(r,e[1])).done)return s;switch(r=0,s&&(e=[2&e[0],s.value]),e[0]){case 0:case 1:s=e;break;case 4:return a.label++,{value:e[1],done:!1};case 5:a.label++,r=e[1],e=[0];continue;case 7:e=a.ops.pop(),a.trys.pop();continue;default:if(!(s=0<(s=a.trys).length&&s[s.length-1])&&(6===e[0]||2===e[0])){a=0;continue}if(3===e[0]&&(!s||e[1]>s[0]&&e[1]<s[3])){a.label=e[1];break}if(6===e[0]&&a.label<s[1]){a.label=s[1],s=e;break}if(s&&a.label<s[2]){a.label=s[2],a.ops.push(e);break}s[2]&&a.ops.pop(),a.trys.pop();continue}e=i.call(n,a)}catch(t){e=[6,t],r=0}finally{o=s=0}if(5&e[0])throw e[1];return{value:e[0]?e[1]:void 0,done:!0}}([e,t])}}};function fixBg(){var t=document.body.clientWidth,e=document.body.clientHeight;document.body.style.backgroundSize=3840/2160<t/e?"100vw auto":"auto 100vh"}new Vue({el:"#app",data:{page:"general",notificationLock:!1,settings:{},bubbleWin:document.createElement("div"),versionCheck:!0},methods:{routeTo:function(t,e){this.page=t,e&&this.syncData()},syncData:function(){return __awaiter(this,void 0,void 0,function(){var e,n;return __generator(this,function(t){switch(t.label){case 0:return[4,StorageArea.get("settings")];case 1:return e=t.sent(),this.settings=e||{banGlobalStyle:!0,banSnapshotShortcut:!1,snapshotShortcut:["Ctrl","Alt","a"],msgClickedAction:"focus"},n=this,[4,StorageArea.get("notificationLock")];case 2:return n.notificationLock=t.sent(),[2]}})})},saveSettings:function(){var t=this;if(!this.settings.banSnapshotShortcut&&this.settings.snapshotShortcut.length<=0)return this.genBubbleMsg("设置未保存"),setTimeout(function(){return t.genBubbleMsg("截图快捷键不是一个合法值")},300),void setTimeout(function(){return t.genBubbleMsg("如无需使用快捷键，建议直接禁用")},600);StorageArea.set({settings:this.settings}),StorageArea.set({notificationLock:this.notificationLock}),this.genBubbleMsg("设置已保存")},cancelSettings:function(){this.syncData()},genBubbleMsg:function(t){var e=document.createElement("div");e.classList.add("bubble-EvinK");var n=document.createElement("p");e.appendChild(n),this.bubbleWin.appendChild(e),setTimeout(function(){e.remove()},5e3);var i="bubble-on",o=this.bubbleWin.querySelectorAll("."+i).length;e.style.top=65*o+"px",n.innerText="通知: "+t,e.classList.add(i)},setSnapshotShortcut:function(t){var e=this;this.settings.banSnapshotShortcut||(this.settings.snapshotShortcut=[],t.target.onkeydown=function(t){t.preventDefault(),t.key.trim()&&(0<=e.settings.snapshotShortcut.indexOf(t.key.trim())||e.settings.snapshotShortcut.push(t.key.trim()))})}},mounted:function(){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(t){return this.syncData(),this.bubbleWin.id="bubbleWin-EvinK",document.body.appendChild(this.bubbleWin),[2]})})}}),fixBg(),window.onresize=function(){fixBg()};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+new Vue({
+    el: '#app',
+    data: {
+        page: 'general',
+        notificationLock: false,
+        settings: {},
+        bubbleWin: document.createElement('div'),
+        versionCheck: true,
+    },
+    methods: {
+        routeTo(page, clearData) {
+            this.page = page;
+            if (clearData) {
+                this.syncData();
+            }
+        },
+        syncData() {
+            return __awaiter(this, void 0, void 0, function* () {
+                const settings = yield StorageArea.get('settings');
+                if (settings) {
+                    this.settings = settings;
+                }
+                else {
+                    this.settings = {
+                        banGlobalStyle: true,
+                        banSnapshotShortcut: true,
+                        snapshotShortcut: ['Ctrl', 'Alt', 'a'],
+                        msgClickedAction: 'focus',
+                    };
+                }
+                this.notificationLock = (yield StorageArea.get('notificationLock'));
+                // const versionCheck = (await StorageArea.get('versionCheck') as boolean | null)
+                // if (typeof versionCheck !== 'boolean') this.versionCheck = true
+                // else this.versionCheck = versionCheck
+            });
+        },
+        saveSettings() {
+            // 禁止全局样式
+            this.settings.banGlobalStyle = true;
+            // 禁止截图快捷键（截图现在太粗糙了，等稍微做好点在放出来，但保留了手动按钮）
+            this.settings.banSnapshotShortcut = true;
+            // if (!this.settings.banSnapshotShortcut && this.settings.snapshotShortcut.length <= 0) {
+            //     this.genBubbleMsg('设置未保存')
+            //     setTimeout(() => this.genBubbleMsg('截图快捷键不是一个合法值'), 300)
+            //     setTimeout(() => this.genBubbleMsg('如无需使用快捷键，建议直接禁用'), 600)
+            //     return
+            // }
+            StorageArea.set({ settings: this.settings });
+            StorageArea.set({ notificationLock: this.notificationLock });
+            // StorageArea.set({versionCheck: this.versionCheck})
+            // if (this.versionCheck) chrome.runtime.sendMessage({versionCheck: true})
+            this.genBubbleMsg('设置已保存');
+        },
+        cancelSettings() {
+            this.syncData();
+        },
+        genBubbleMsg(msg) {
+            const bubble = document.createElement('div');
+            bubble.classList.add('bubble-EvinK');
+            const bubbleChild = document.createElement('p');
+            bubble.appendChild(bubbleChild);
+            this.bubbleWin.appendChild(bubble);
+            setTimeout(() => {
+                bubble.remove();
+            }, 5000);
+            const bubbleOnClass = 'bubble-on';
+            const bubbleLength = this.bubbleWin.querySelectorAll(`.${bubbleOnClass}`).length;
+            bubble.style.top = `${bubbleLength * 65}px`;
+            bubbleChild.innerText = `通知: ${msg}`;
+            bubble.classList.add(bubbleOnClass);
+        },
+        setSnapshotShortcut(e) {
+            if (this.settings.banSnapshotShortcut)
+                return;
+            this.settings.snapshotShortcut = [];
+            // tslint:disable-next-line:no-shadowed-variable
+            e.target.onkeydown = (e) => {
+                e.preventDefault();
+                if (!e.key.trim())
+                    return;
+                if (this.settings.snapshotShortcut.indexOf(e.key.trim()) >= 0)
+                    return;
+                this.settings.snapshotShortcut.push(e.key.trim());
+            };
+        },
+    },
+    mounted() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.syncData();
+            this.bubbleWin.id = 'bubbleWin-EvinK';
+            document.body.appendChild(this.bubbleWin);
+        });
+    }
+});
+function fixBg() {
+    const widht = document.body.clientWidth;
+    const height = document.body.clientHeight;
+    const WHRate = 3840 / 2160;
+    if (widht / height > WHRate)
+        document.body.style.backgroundSize = '100vw auto';
+    else
+        document.body.style.backgroundSize = 'auto 100vh';
+}
+fixBg();
+window.onresize = () => {
+    fixBg();
+};

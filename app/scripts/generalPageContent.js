@@ -1,1 +1,364 @@
-var __awaiter=this&&this.__awaiter||function(n,a,l,s){return new(l=l||Promise)(function(e,t){function i(n){try{o(s.next(n))}catch(n){t(n)}}function r(n){try{o(s.throw(n))}catch(n){t(n)}}function o(n){n.done?e(n.value):function(e){return e instanceof l?e:new l(function(n){n(e)})}(n.value).then(i,r)}o((s=s.apply(n,a||[])).next())})},__generator=this&&this.__generator||function(t,i){var r,o,a,n,l={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]};return n={next:e(0),throw:e(1),return:e(2)},"function"==typeof Symbol&&(n[Symbol.iterator]=function(){return this}),n;function e(e){return function(n){return function(e){if(r)throw new TypeError("Generator is already executing.");for(;l;)try{if(r=1,o&&(a=2&e[0]?o.return:e[0]?o.throw||((a=o.return)&&a.call(o),0):o.next)&&!(a=a.call(o,e[1])).done)return a;switch(o=0,a&&(e=[2&e[0],a.value]),e[0]){case 0:case 1:a=e;break;case 4:return l.label++,{value:e[1],done:!1};case 5:l.label++,o=e[1],e=[0];continue;case 7:e=l.ops.pop(),l.trys.pop();continue;default:if(!(a=0<(a=l.trys).length&&a[a.length-1])&&(6===e[0]||2===e[0])){l=0;continue}if(3===e[0]&&(!a||e[1]>a[0]&&e[1]<a[3])){l.label=e[1];break}if(6===e[0]&&l.label<a[1]){l.label=a[1],a=e;break}if(a&&l.label<a[2]){l.label=a[2],l.ops.push(e);break}a[2]&&l.ops.pop(),l.trys.pop();continue}e=i.call(t,l)}catch(n){e=[6,n],o=0}finally{r=a=0}if(5&e[0])throw e[1];return{value:e[0]?e[1]:void 0,done:!0}}([e,n])}}},GeneralPageContent=function(){function s(){this.head=document.querySelector("head"),this.alertWindowStyle=document.createElement("style"),this.bubbleWin=document.createElement("div"),this.genGlobalNotiWins();var i=this;chrome.runtime.onMessage.addListener(function(e,n,t){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(n){return e.message.alert?s.alert(e.message.alert):e.message.bubble?i.genBubbleMsg(e.message.bubble):e.message.snapshot&&i.createSnapshot(e.message.snapshot),t({result:"success"}),[2]})})})}return s.prototype.genGlobalNotiWins=function(){return __awaiter(this,void 0,void 0,function(){var e,i,r=this;return __generator(this,function(n){switch(n.label){case 0:return this.alertWindowStyle.id="alertWindowStyle",this.head.appendChild(this.alertWindowStyle),this.bubbleWin.id="bubbleWin-EvinK",document.body.appendChild(this.bubbleWin),e=this,[4,StorageArea.get("settings")];case 1:return e.settings=n.sent(),this.settings||(this.settings={banGlobalStyle:!0,banSnapshotShortcut:!1,snapshotShortcut:null,msgClickedAction:"focus"}),this.settings.banGlobalStyle||(this.alertWindowStyle.innerHTML+="\n            ::-webkit-scrollbar {\n                width: 5px;\n                height: 3px;\n            }\n\n            ::-webkit-scrollbar-track-piece {\n                background-color: white;\n            }\n\n            ::-webkit-scrollbar-thumb {\n                height: 50px;\n                background-color: #3173FD;\n                border-radius: 3px;\n            }\n            "),this.alertWindowStyle.innerHTML+="\n            /* js generateWindow */\n\n            .win {\n                background: black;\n            }\n\n            #back_win,\n            .back_win {\n                height: 100vh;\n                width: 100vw;\n                background: rgba(0, 0, 0, 0.8);\n                position: fixed;\n                top: 0;\n                z-index: "+s.highestZIndex+";\n                display: none;\n                text-align: center;\n            }\n\n            #win,\n            .win {\n                height: 80%;\n                width: 70%;\n                background: white;\n                position: relative;\n                top: 50%;\n                display: inline-block;\n                text-align: center;\n            }\n\n            #win {\n                top: 35%;\n                left: 50%;\n                width: 300px;\n                max-height: 200px;\n                border-radius: 5px;\n                transform: translate3D(-50%, -35%, 0);\n                display: flex;\n                flex-flow: column;\n                justify-content: space-between;\n            }\n\n            #p_title_error {\n                margin: 0 auto;\n                color: #484545;\n                height: auto;\n                text-align: center;\n                border-bottom: 1px solid #cfcfcf;\n                width: 70%;\n                line-height: 35px;\n            }\n\n            #p_tips {\n                display: block;\n                text-align: center;\n                color: black;\n                height: auto;\n                padding: 2px 40px;\n                line-height: 25px;\n                overflow-y: scroll;\n                overflow-x: hidden;\n            }\n\n            #btn_div {\n                width: 100%;\n                display: flex;\n                flex-flow: row;\n                justify-content: center;\n                align-items: center;\n            }\n\n            #win_confirm,\n            #win_cancel {\n                display: inline;\n                width: 50px;\n                height: 33px;\n                border-radius: 2px;\n                border: none;\n                margin: 0 10px 0 10px;\n                font-family: 微软雅黑;\n                cursor: pointer;\n            }\n\n            #win_confirm {\n                color: white;\n                background: #279a50;\n                margin: 15px 0;\n                white-space: nowrap;\n            }\n\n            #win_confirm:hover {\n                background: #218344;\n            }\n\n\n            @keyframes bubble-on {\n                0% {\n\n                }\n                7% {\n                   right: -10px;\n                }\n                92% {\n                   right: -10px;\n                }\n                100% {\n                   right: -100%;\n                }\n            }\n\n            #bubbleWin-EvinK {\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                align-items: center;\n            }\n\n            .bubble-EvinK {\n                position: fixed;\n                top: 0;\n                right: -100%;\n                z-index: 2147483645;\n                width: 300px;\n                height: 60px;\n                background: #000000a6;\n                border-radius: 10px;\n                display: flex;\n                flex-flow: column;\n                justify-content: center;\n                text-align: left;\n                color: white;\n                padding: 0 20px;\n            }\n\n            .bubble-EvinK.bubble-on {\n                animation: bubble-on "+s.bubbleTime+"s;\n            }\n        ",this.settings.banSnapshotShortcut||(i=JSON.parse(JSON.stringify(this.settings.snapshotShortcut)),document.onkeydown=function(n){if(i)setTimeout(function(){return i=JSON.parse(JSON.stringify(r.settings.snapshotShortcut))},500),function n(e,t){if(e&&(!e||e.length)){var i=e.indexOf(t.key);if(0<=i)return e.splice(i,1),n(e,t)}}(i,n),0==i.length&&(chrome.runtime.sendMessage({snapshot:!0}),i=JSON.parse(JSON.stringify(r.settings.snapshotShortcut)));else{var e=!1,t=!1;n.ctrlKey&&(e=!0),n.altKey&&(t=!0),"å"!==n.key&&"a"!==n.key&&"A"!==n.key&&"Å"!==n.key||e&&t&&chrome.runtime.sendMessage({snapshot:!0})}}),[2]}})})},s.alert=function(n){s.generationPopWin(n,function(n,e,t,i){e.style.display="none",n.onclick=function(){i.style.display="none"}})},s.generationPopWin=function(n,e){var t=s.generateErrorWindow("提示",n),i=t[0],r=t[1];if(t[2])return document.querySelector("#win_confirm").style.display="block",r.style.display="block";var o=document.createElement("div"),a=document.createElement("button"),l=document.createElement("button");o.id="btn_div",a.id="win_confirm",a.innerText="确定",l.id="win_cancel",l.innerText="取消",o.appendChild(a),o.appendChild(l),i.appendChild(o),e&&e(a,l,i,r)},s.generateErrorWindow=function(n,e){var t,i,r=document.getElementById("back_win");if(r){var o=document.getElementById("p_tips");(a=document.getElementById("p_title_error")).innerHTML=n,o.innerHTML=e,i=!0}else{r=document.createElement("div"),t=document.createElement("div");var a=document.createElement("p");o=document.createElement("p");r.id="back_win",r.className="back_win",t.id="win",t.className="win",a.id="p_title_error",o.id="p_tips",document.body.appendChild(r),r.appendChild(t),a.innerHTML=n,o.innerHTML=e,t.appendChild(a),t.appendChild(o),r.style.display="block",i=!(r.onclick=function(n){var e=document.querySelector("#win").getBoundingClientRect(),t=e.left,i=e.right,r=e.top,o=e.bottom;t<n.clientX&&n.clientX<i&&r<n.clientY&&n.clientY<o||(n.target.style.display="none")})}return[t,r,i]},s.prototype.genBubbleMsg=function(n){var e=document.createElement("div");e.classList.add("bubble-EvinK");var t=document.createElement("p");e.appendChild(t),this.bubbleWin.appendChild(e),setTimeout(function(){e.remove()},1e3*s.bubbleTime);var i="bubble-on",r=this.bubbleWin.querySelectorAll("."+i).length;e.style.top=65*r+"px",t.innerText="通知: "+n,e.classList.add(i)},s.prototype.createSnapshot=function(n){var e=new Image;e.src=n,e.onload=function(){var n=document.createElement("canvas");n.width=e.width,n.height=e.height,n.style.position="fixed",n.style.top="0",n.style.left="0",n.style.zIndex=(s.highestZIndex-1).toString(),n.style.width=window.innerWidth+"px",n.style.height="100vh",n.getContext("2d").drawImage(e,0,0,e.width,e.height),new Snapshot(n)}},s.highestZIndex=2147483645,s.bubbleTime=5,s}(),generaPageContent=new GeneralPageContent;
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class GeneralPageContent {
+    constructor() {
+        this.head = document.querySelector('head');
+        this.alertWindowStyle = document.createElement('style');
+        this.bubbleWin = document.createElement('div');
+        this.genGlobalNotiWins();
+        const self = this;
+        // event
+        chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
+            return __awaiter(this, void 0, void 0, function* () {
+                if (request.message.alert) {
+                    GeneralPageContent.alert(request.message.alert);
+                }
+                else if (request.message.bubble) {
+                    self.genBubbleMsg(request.message.bubble);
+                }
+                else if (request.message.snapshot) {
+                    self.createSnapshot(request.message.snapshot);
+                }
+                sendResponse({
+                    result: 'success'
+                });
+            });
+        });
+    }
+    genGlobalNotiWins() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.alertWindowStyle.id = 'alertWindowStyle';
+            this.head.appendChild(this.alertWindowStyle);
+            this.bubbleWin.id = 'bubbleWin-EvinK';
+            document.body.appendChild(this.bubbleWin);
+            this.settings = (yield StorageArea.get('settings'));
+            if (!this.settings) {
+                this.settings = {
+                    banGlobalStyle: true,
+                    banSnapshotShortcut: true,
+                    snapshotShortcut: null,
+                    msgClickedAction: 'focus',
+                };
+            }
+            if (!this.settings.banGlobalStyle) {
+                this.alertWindowStyle.innerHTML += `
+            ::-webkit-scrollbar {
+                width: 5px;
+                height: 3px;
+            }
+
+            ::-webkit-scrollbar-track-piece {
+                background-color: white;
+            }
+
+            ::-webkit-scrollbar-thumb {
+                height: 50px;
+                background-color: #3173FD;
+                border-radius: 3px;
+            }
+            `;
+            }
+            this.alertWindowStyle.innerHTML += `
+            /* js generateWindow */
+
+            .win {
+                background: black;
+            }
+
+            #back_win,
+            .back_win {
+                height: 100vh;
+                width: 100vw;
+                background: rgba(0, 0, 0, 0.8);
+                position: fixed;
+                top: 0;
+                z-index: ${GeneralPageContent.highestZIndex};
+                display: none;
+                text-align: center;
+            }
+
+            #win,
+            .win {
+                height: 80%;
+                width: 70%;
+                background: white;
+                position: relative;
+                top: 50%;
+                display: inline-block;
+                text-align: center;
+            }
+
+            #win {
+                top: 35%;
+                left: 50%;
+                width: 300px;
+                max-height: 200px;
+                border-radius: 5px;
+                transform: translate3D(-50%, -35%, 0);
+                display: flex;
+                flex-flow: column;
+                justify-content: space-between;
+            }
+
+            #p_title_error {
+                margin: 0 auto;
+                color: #484545;
+                height: auto;
+                text-align: center;
+                border-bottom: 1px solid #cfcfcf;
+                width: 70%;
+                line-height: 35px;
+            }
+
+            #p_tips {
+                display: block;
+                text-align: center;
+                color: black;
+                height: auto;
+                padding: 2px 40px;
+                line-height: 25px;
+                overflow-y: scroll;
+                overflow-x: hidden;
+            }
+
+            #btn_div {
+                width: 100%;
+                display: flex;
+                flex-flow: row;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #win_confirm,
+            #win_cancel {
+                display: inline;
+                width: 50px;
+                height: 33px;
+                border-radius: 2px;
+                border: none;
+                margin: 0 10px 0 10px;
+                font-family: 微软雅黑;
+                cursor: pointer;
+            }
+
+            #win_confirm {
+                color: white;
+                background: #279a50;
+                margin: 15px 0;
+                white-space: nowrap;
+            }
+
+            #win_confirm:hover {
+                background: #218344;
+            }
+
+
+            @keyframes bubble-on {
+                0% {
+
+                }
+                7% {
+                   right: -10px;
+                }
+                92% {
+                   right: -10px;
+                }
+                100% {
+                   right: -100%;
+                }
+            }
+
+            #bubbleWin-EvinK {
+                display: flex;
+                flex-flow: column;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .bubble-EvinK {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                z-index: 2147483645;
+                width: 300px;
+                height: 60px;
+                background: #000000a6;
+                border-radius: 10px;
+                display: flex;
+                flex-flow: column;
+                justify-content: center;
+                text-align: left;
+                color: white;
+                padding: 0 20px;
+            }
+
+            .bubble-EvinK.bubble-on {
+                animation: bubble-on ${GeneralPageContent.bubbleTime}s;
+            }
+        `;
+            function handleCustomShortcuts(shortcuts, e) {
+                if (!shortcuts)
+                    return;
+                if (shortcuts && !shortcuts.length)
+                    return;
+                const idx = shortcuts.indexOf(e.key);
+                if (idx >= 0)
+                    shortcuts.splice(idx, 1);
+                else
+                    return;
+                return handleCustomShortcuts(shortcuts, e);
+            }
+            // shortcut of snapshot
+            if (!this.settings.banSnapshotShortcut) {
+                // deep clone
+                let shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut));
+                document.onkeydown = (e) => {
+                    if (!shortcuts) {
+                        let isCtrlPressed = false;
+                        let isAltPressed = false;
+                        if (e.ctrlKey)
+                            isCtrlPressed = true;
+                        if (e.altKey)
+                            isAltPressed = true;
+                        if (e.key === 'å' || e.key === 'a' || e.key === 'A' || e.key === 'Å') {
+                            // 兼容mac
+                            if (isCtrlPressed && isAltPressed) {
+                                chrome.runtime.sendMessage({ snapshot: true });
+                            }
+                        }
+                    }
+                    else {
+                        setTimeout(() => shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut)), 500);
+                        handleCustomShortcuts(shortcuts, e);
+                        if (shortcuts.length == 0) {
+                            chrome.runtime.sendMessage({ snapshot: true });
+                            shortcuts = JSON.parse(JSON.stringify(this.settings.snapshotShortcut));
+                        }
+                    }
+                };
+            }
+        });
+    }
+    static alert(msg) {
+        GeneralPageContent.generationPopWin(msg, function (confirmBtn, cancelBtn, win, back_win) {
+            cancelBtn.style.display = 'none';
+            confirmBtn.onclick = () => {
+                back_win.style.display = 'none';
+            };
+        });
+    }
+    static generationPopWin(msg, callback) {
+        let data = GeneralPageContent.generateErrorWindow("提示", msg);
+        let win = data[0];
+        let back_win = data[1];
+        let hasWin = data[2];
+        if (hasWin) {
+            let confirm = document.querySelector('#win_confirm');
+            confirm.style.display = 'block';
+            return back_win.style.display = 'block';
+        }
+        let btn_div = document.createElement("div");
+        let confirm = document.createElement("button");
+        let cancel = document.createElement("button");
+        btn_div.id = "btn_div";
+        confirm.id = "win_confirm";
+        confirm.innerText = "确定";
+        cancel.id = "win_cancel";
+        cancel.innerText = "取消";
+        btn_div.appendChild(confirm);
+        btn_div.appendChild(cancel);
+        win.appendChild(btn_div);
+        if (callback)
+            callback(confirm, cancel, win, back_win);
+    }
+    static generateErrorWindow(titleStr, content) {
+        let back_win = document.getElementById("back_win");
+        let win;
+        let hasWin;
+        if (back_win) {
+            let tips = document.getElementById("p_tips");
+            let title = document.getElementById("p_title_error");
+            title.innerHTML = titleStr;
+            tips.innerHTML = content;
+            hasWin = true;
+        }
+        else {
+            back_win = document.createElement("div");
+            win = document.createElement("div");
+            let title = document.createElement("p");
+            let tips = document.createElement("p");
+            back_win.id = "back_win";
+            back_win.className = "back_win";
+            win.id = "win";
+            win.className = "win";
+            title.id = "p_title_error";
+            tips.id = "p_tips";
+            document.body.appendChild(back_win);
+            back_win.appendChild(win);
+            title.innerHTML = titleStr;
+            tips.innerHTML = content;
+            win.appendChild(title);
+            win.appendChild(tips);
+            back_win.style.display = 'block';
+            back_win.onclick = function (e) {
+                let winRect = document.querySelector('#win').getBoundingClientRect();
+                let targetLeft = winRect.left;
+                let targetRight = winRect.right;
+                let targetTop = winRect.top;
+                let targetBottom = winRect.bottom;
+                if (!(targetLeft < e.clientX && e.clientX < targetRight) ||
+                    !(targetTop < e.clientY && e.clientY < targetBottom)) {
+                    e.target.style.display = 'none';
+                }
+            };
+            hasWin = false;
+        }
+        return [win, back_win, hasWin];
+    }
+    genBubbleMsg(msg) {
+        // const closeBtn = new Image()
+        // closeBtn.src = chrome.extension.getURL('assets/imgs/close.svg')
+        // this.bubbleWin.appendChild(closeBtn)
+        const bubble = document.createElement('div');
+        bubble.classList.add('bubble-EvinK');
+        const bubbleChild = document.createElement('p');
+        bubble.appendChild(bubbleChild);
+        this.bubbleWin.appendChild(bubble);
+        setTimeout(() => {
+            bubble.remove();
+        }, GeneralPageContent.bubbleTime * 1000);
+        const bubbleOnClass = 'bubble-on';
+        const bubbleLength = this.bubbleWin.querySelectorAll(`.${bubbleOnClass}`).length;
+        bubble.style.top = `${bubbleLength * 65}px`;
+        bubbleChild.innerText = `通知: ${msg}`;
+        bubble.classList.add(bubbleOnClass);
+    }
+    createSnapshot(imageData) {
+        const img = new Image();
+        img.src = imageData;
+        img.onload = () => {
+            const imgCanvas = document.createElement('canvas');
+            imgCanvas.width = img.width;
+            imgCanvas.height = img.height;
+            imgCanvas.style.position = 'fixed';
+            imgCanvas.style.top = '0';
+            imgCanvas.style.left = '0';
+            imgCanvas.style.zIndex = (GeneralPageContent.highestZIndex - 1).toString();
+            imgCanvas.style.width = `${window.innerWidth}px`;
+            imgCanvas.style.height = '100vh';
+            const ctx = imgCanvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, img.width, img.height);
+            new Snapshot(imgCanvas);
+        };
+    }
+}
+GeneralPageContent.highestZIndex = 2147483645;
+GeneralPageContent.bubbleTime = 5;
+const generaPageContent = new GeneralPageContent();

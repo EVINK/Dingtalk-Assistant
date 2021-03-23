@@ -1,4 +1,6 @@
-class Snapshot {
+import { generaPageContent } from "./generalPageContent"
+
+export class Snapshot {
 
     private static bgCoverId: string = 'bgCover-snapshot-EvinK'
     private static highestZIndex: number = 2147483645
@@ -186,11 +188,11 @@ class Snapshot {
         this.previewBox.append(this.previewBoxToolsBar)
         this.previewBoxToolsBar.setAttribute('style', `
         position: absolute;
-        bottom: -35px;
+        bottom: -50px;
         right: 0;
         display: block;
         min-width: 112px;
-        height: 35px;
+        height: 50px;
         background: black;
         color: white;
         border-radius: 10px;
@@ -204,7 +206,7 @@ class Snapshot {
             justify-content: flex-end;
             align-items: center;
             cursor: default;
-            width: 90%;
+            width: 100%;
             height: 100%;
             list-style: none;
             /* some site will interference this style */
@@ -232,11 +234,11 @@ class Snapshot {
         let img = new Image()
         li.appendChild(img)
         img.src = chrome.extension.getURL('assets/imgs/close-white.svg')
-        img.setAttribute('style', `
-        width: 20px;
-        padding-right: 4px;
-        padding-top: 2px;
-        `)
+        // img.setAttribute('style', `
+        // width: 20px;
+        // padding-right: 4px;
+        // padding-top: 2px;
+        // `)
         li.onclick = () => {
             this.destroySnapshot()
         }

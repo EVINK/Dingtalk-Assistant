@@ -1,5 +1,6 @@
-///<reference path="../../node_modules/vue/types/index.d.ts"/>
-// @ts-ignore
+import { sendMessage, StorageArea } from "./utils"
+import Vue from "../../node_modules/vue/types/index"
+
 new Vue({
     el: '#app',
     data: {
@@ -17,27 +18,27 @@ new Vue({
         onFullScreen() {
             this.fullScreen = true
             this.fsSwitchAnimation = true
-            StorageArea.set({fullScreen: true})
-            sendMessage({fullScreen: true})
+            StorageArea.set({ fullScreen: true })
+            sendMessage({ fullScreen: true })
         },
         offFullScreen() {
             this.fullScreen = false
             this.fsSwitchAnimation = true
-            StorageArea.set({fullScreen: false})
-            sendMessage({fullScreen: false})
+            StorageArea.set({ fullScreen: false })
+            sendMessage({ fullScreen: false })
         },
         keepLoginStatus() {
             this.loginStatusPersistence = true
             this.lspSwitchAnimation = true
-            StorageArea.set({loginStatusPersistence: true})
-            sendMessage({bubble: '设置完成'})
-            sendMessage({checkLSPStatus: true})
+            StorageArea.set({ loginStatusPersistence: true })
+            sendMessage({ bubble: '设置完成' })
+            sendMessage({ checkLSPStatus: true })
         },
         notKeepLoginStatus() {
             this.loginStatusPersistence = false
             this.lspSwitchAnimation = true
-            StorageArea.set({loginStatusPersistence: false})
-            sendMessage({bubble: '设置完成，下次重新登陆后将生效'})
+            StorageArea.set({ loginStatusPersistence: false })
+            sendMessage({ bubble: '设置完成，下次重新登陆后将生效' })
         },
         clickMenu() {
             this.menuOn = !this.menuOn
@@ -46,7 +47,7 @@ new Vue({
         snapshot() {
             // 截图 (当前网页)
             return chrome.tabs.captureVisibleTab(null, {}, function (image) {
-                sendMessage({snapshot: image})
+                sendMessage({ snapshot: image })
             })
 
             // 录屏
@@ -56,12 +57,12 @@ new Vue({
             // })
         },
         openSettingPage() {
-            chrome.tabs.create({url: chrome.extension.getURL('setting.html')});
+            chrome.tabs.create({ url: chrome.extension.getURL('setting.html') });
         },
         themeChanged() {
-            sendMessage({theme: this.theme})
-            StorageArea.set({theme: this.theme})
-            if (this.theme === 'original') sendMessage({bubble: '请刷新网页钉钉'})
+            sendMessage({ theme: this.theme })
+            StorageArea.set({ theme: this.theme })
+            if (this.theme === 'original') sendMessage({ bubble: '请刷新网页钉钉' })
         },
     },
     async mounted() {

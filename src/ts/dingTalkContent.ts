@@ -1,3 +1,6 @@
+import { GeneralPageContent, generaPageContent } from "./generalPageContent"
+import { sendMessage, StorageArea } from "./utils"
+
 class DingTalkContent {
     private dingTalkFullScreenStyle = document.createElement('style')
 

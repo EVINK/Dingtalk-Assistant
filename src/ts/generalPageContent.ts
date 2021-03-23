@@ -1,4 +1,7 @@
-class GeneralPageContent {
+import { Snapshot } from "./snapshot"
+import { StorageArea } from "./utils"
+
+export class GeneralPageContent {
 
     private static highestZIndex: number = 2147483645
     private static bubbleTime: number = 5
@@ -39,7 +42,7 @@ class GeneralPageContent {
         if (!this.settings) {
             this.settings = {
                 banGlobalStyle: true,
-                banSnapshotShortcut: false,
+                banSnapshotShortcut: true,
                 snapshotShortcut: null,
                 msgClickedAction: 'focus',
             }
@@ -385,4 +388,4 @@ class GeneralPageContent {
 
 }
 
-const generaPageContent = new GeneralPageContent()
+export const generaPageContent = new GeneralPageContent()

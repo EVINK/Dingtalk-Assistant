@@ -1,1 +1,403 @@
-var Snapshot=function(){function d(e){this.father=document.createElement("div"),this.isClickBegun=!1,this.father.id="snapshot-unique-of-this-window-EvinK",document.getElementById(this.father.id)||(this.canvas=e,this.father.appendChild(this.canvas),document.body.append(this.father),this.genBgCover(),this.event())}return d.prototype.genCoverStyle=function(e){var t=e.top,o=e.left,i=e.width,n=e.height;return"\n            margin: 0;\n            padding: 0;\n            position: fixed;\n            top: "+(t=t||0)+"px;\n            left: "+(o=o||0)+"px;\n            width: "+(null==i?"100vw":i+"px")+";\n            height: "+(null==n?document.body.clientHeight+"px":n+"px")+";\n            background: #0000008f;\n            z-index: "+d.highestZIndex+";\n            "},d.prototype.genBgCover=function(){if(this.previewBox){this.cover.style.background&&this.cover.style.removeProperty("background");var e=d.bgCoverId+"-left",t=d.bgCoverId+"-right",o=d.bgCoverId+"-top",i=d.bgCoverId+"-bottom";this.coverLeft=document.getElementById(e),this.coverRight=document.getElementById(t),this.coverTop=document.getElementById(o),this.coverBottom=document.getElementById(i),this.coverLeft||(this.coverLeft=document.createElement("div"),this.coverLeft.id=e,this.father.append(this.coverLeft)),this.coverRight||(this.coverRight=document.createElement("div"),this.coverRight.id=t,this.father.append(this.coverRight)),this.coverTop||(this.coverTop=document.createElement("div"),this.coverTop.id=o,this.father.append(this.coverTop)),this.coverBottom||(this.coverBottom=document.createElement("div"),this.coverBottom.id=i,this.father.append(this.coverBottom));var n=document.body.clientWidth-this.previewBox.offsetLeft-this.previewBox.offsetWidth;this.coverLeft.setAttribute("style",this.genCoverStyle({width:this.previewBox.offsetLeft})),this.coverRight.setAttribute("style",this.genCoverStyle({left:this.previewBox.offsetLeft+this.previewBox.offsetWidth,width:n})),this.coverTop.setAttribute("style",this.genCoverStyle({left:this.previewBox.offsetLeft,height:this.previewBox.offsetTop,width:document.body.clientWidth-this.previewBox.offsetLeft-n})),this.coverBottom.setAttribute("style",this.genCoverStyle({left:this.previewBox.offsetLeft,top:this.previewBox.offsetTop+this.previewBox.offsetHeight,height:document.body.clientHeight-this.previewBox.offsetTop-this.previewBox.offsetHeight,width:document.body.clientWidth-this.previewBox.offsetLeft-n}))}else{var r=document.getElementById(d.bgCoverId);if(r)return r;(r=document.createElement("div")).id=d.bgCoverId,r.setAttribute("style","\n            position: fixed;\n            top: 0;\n            left: 0;\n            width: 100vw;\n            height: "+document.body.clientHeight+"px;\n            background: #0000008f;\n            z-index: "+(d.highestZIndex+2)+";\n            cursor: crosshair;\n            "),this.father.append(r),this.cover=r}},d.prototype.genPreviewBox=function(e,t){var h=this;this.previewBox=document.createElement("div"),this.previewBox.setAttribute("startX",e.toString()),this.previewBox.setAttribute("startY",t.toString()),this.previewBox.setAttribute("id","dt-preview"),this.previewBox.setAttribute("style","\n        width: 1px;\n        height: 1px;\n        border: 2px dashed gray;\n        background: transparent;\n        position: fixed;\n        top: "+t+"px;\n        left: "+e+"px;\n        z-index: "+(d.highestZIndex+1)+";\n        cursor: move;\n        "),this.father.append(this.previewBox),this.statusBar=document.createElement("div"),this.previewBox.append(this.statusBar),this.statusBar.setAttribute("style","\n        position: absolute;\n        top: -25px;\n        left: 0;\n        display: inline-block;\n        text-indent: 10px;\n        width: 87px;\n        line-height: 22px;\n        background: black;\n        color: white;\n        border-radius: 10px;\n        "),this.statusBar.innerText="(1, 1)",this.previewBoxToolsBar=document.createElement("div"),this.previewBox.append(this.previewBoxToolsBar),this.previewBoxToolsBar.setAttribute("style","\n        position: absolute;\n        bottom: -35px;\n        right: 0;\n        display: block;\n        min-width: 112px;\n        height: 35px;\n        background: black;\n        color: white;\n        border-radius: 10px;\n        "),this.previewBoxToolsBar.innerHTML+="\n        <style>\n          ul#tools-of-toolsBar-EvinK {\n            display: flex;\n            flex-flow: row;\n            justify-content: flex-end;\n            align-items: center;\n            cursor: default;\n            width: 90%;\n            height: 100%;\n            list-style: none;\n            /* some site will interference this style */\n            /* so there is a duplicate mention */\n            margin: 0;\n            padding: 0;\n          }\n          ul#tools-of-toolsBar-EvinK li {\n            cursor: pointer;\n          }\n          ul#tools-of-toolsBar-EvinK li img{\n            width: 30px;\n          }\n        </style>\n        ";var o=document.createElement("ul");o.id="tools-of-toolsBar-EvinK",this.previewBoxToolsBar.appendChild(o),o.onmousemove=function(e){return e.cancelBubble=!0},o.onmouseup=function(e){return e.cancelBubble=!0},o.onmousedown=function(e){return e.cancelBubble=!0};var i=document.createElement("li");o.appendChild(i);var n=new Image;i.appendChild(n),n.src=chrome.extension.getURL("assets/imgs/close-white.svg"),n.setAttribute("style","\n        width: 20px;\n        padding-right: 4px;\n        padding-top: 2px;\n        "),i.onclick=function(){h.destroySnapshot()},i=document.createElement("li"),o.appendChild(i),n=new Image,i.appendChild(n),n.src=chrome.extension.getURL("assets/imgs/download.svg"),i.onclick=function(){var e=parseInt(h.previewBox.getAttribute("startX")),t=parseInt(h.previewBox.getAttribute("startY")),o=e+h.previewBox.clientWidth,i=t+h.previewBox.clientHeight;d.cropCanvas(h.canvas,{x:e,y:t},{x:o,y:i}).toBlob(function(e){var t=window.URL,o=document.createElement("a");o.download=(new Date).getTime()+".png",o.href=t.createObjectURL(e),o.dataset.downloadurl=["png",o.download,o.href].join(":"),o.click(),h.destroySnapshot(),generaPageContent.genBubbleMsg("已保存图片")})},i=document.createElement("li"),o.appendChild(i),n=new Image,i.appendChild(n),n.src=chrome.extension.getURL("assets/imgs/ok.svg"),i.onclick=function(){var e=parseInt(h.previewBox.getAttribute("startX")),t=parseInt(h.previewBox.getAttribute("startY")),o=e+h.previewBox.clientWidth,i=t+h.previewBox.clientHeight,n=d.cropCanvas(h.canvas,{x:e,y:t},{x:o,y:i}).toDataURL("image/png"),r=new Image;h.father.appendChild(r),r.src=n;var s=window.devicePixelRatio||1;r.style.transform="scale("+(2-s)+")";var a=document.createRange(),p=document.getSelection();a.selectNode(r),p.removeAllRanges(),p.addRange(a),document.execCommand("copy"),h.destroySnapshot(),generaPageContent.genBubbleMsg("图片已复制"),setTimeout(function(){return generaPageContent.genBubbleMsg("注意,在富文本编辑器中才能粘贴哦")},500)}},d.prototype.event=function(){var a=this,t=function(e){"Escape"===e.key&&(removeEventListener("keydown",t,!0),a.destroySnapshot())};addEventListener("keydown",t,!0),this.cover&&(this.cover.addEventListener("mousedown",function(e){a.isClickBegun||(a.isClickBegun=!0,a.genPreviewBox(e.offsetX,e.offsetY),a.genBgCover())}),this.cover.onmousemove=function(e){if(a.previewBox&&a.isClickBegun){var t=parseInt(a.previewBox.getAttribute("startX")),o=parseInt(a.previewBox.getAttribute("startY")),i=e.offsetX-t,n=e.offsetY-o;i<0&&(a.previewBox.style.left=t-Math.abs(i)+"px"),n<0&&(a.previewBox.style.top=o-Math.abs(n)+"px"),a.previewBox.style.width=Math.abs(i)+"px",a.previewBox.style.height=Math.abs(n)+"px",a.statusBar&&(a.statusBar.innerText="("+Math.abs(e.offsetX)+", "+Math.abs(e.offsetY)+")"),a.genBgCover()}},this.cover.onmouseup=function(e){var t=parseInt(a.previewBox.getAttribute("startX")),o=parseInt(a.previewBox.getAttribute("startY")),i=e.offsetX-t,n=e.offsetY-o;i<0&&a.previewBox.setAttribute("startX",e.offsetX.toString()),n<0&&a.previewBox.setAttribute("startY",e.offsetY.toString()),a.isClickBegun=!1,a.cover.remove(),a.previewBox.onmousedown=function(e){a.previewBox.setAttribute("mouseDownX",e.offsetX.toString()),a.previewBox.setAttribute("mouseDownY",e.offsetY.toString()),a.previewBox.setAttribute("mouseDown","1")},a.previewBox.onmousemove=function(e){if("1"===a.previewBox.getAttribute("mouseDown")){var t=parseInt(a.previewBox.getAttribute("startX")),o=parseInt(a.previewBox.getAttribute("startY")),i=parseInt(a.previewBox.getAttribute("mouseDownX")),n=parseInt(a.previewBox.getAttribute("mouseDownY"));if(i&&n){var r=t+e.offsetX-i,s=o+e.offsetY-n;a.previewBox.style.top=s+"px",a.previewBox.style.left=r+"px",a.genBgCover(),a.previewBox.setAttribute("startX",r.toString()),a.previewBox.setAttribute("startY",s.toString()),a.statusBar.innerText="("+Math.abs(r)+", "+Math.abs(s)+")"}}},a.previewBox.onmouseup=function(e){a.previewBox.setAttribute("mouseDown","0");var t=parseInt(a.previewBox.getAttribute("mouseDownX")),o=parseInt(a.previewBox.getAttribute("mouseDownY"));if(t&&o){var i=parseInt(a.previewBox.getAttribute("startX")),n=parseInt(a.previewBox.getAttribute("startY")),r=i+e.offsetX-t,s=n+e.offsetY-o;a.previewBox.setAttribute("startX",r.toString()),a.previewBox.setAttribute("startY",s.toString())}},a.previewBox.onmouseenter=function(){a.previewBox.style.cursor="move"},a.previewBox.onmouseleave=function(){a.previewBox.setAttribute("mouseDown","0")}})},d.cropCanvas=function(e,t,o){var i=window.devicePixelRatio||1,n=e.getContext("2d").getImageData(t.x*i,t.y*i,o.x*i,o.y*i),r=document.createElement("canvas");return r.width=(o.x-t.x)*i,r.height=(o.y-t.y)*i,r.getContext("2d").putImageData(n,0,0),r},d.prototype.destroySnapshot=function(){var o=this.father.id;this.father.remove();try{document.querySelectorAll("iframe").forEach(function(e){var t=e.contentWindow.document.getElementById(o);t&&t.remove()})}catch(e){console.error(e)}},d.bgCoverId="bgCover-snapshot-EvinK",d.highestZIndex=2147483645,d}();
+class Snapshot {
+    constructor(canvas) {
+        this.father = document.createElement('div');
+        this.isClickBegun = false;
+        this.father.id = 'snapshot-unique-of-this-window-EvinK';
+        if (document.getElementById(this.father.id))
+            return;
+        this.canvas = canvas;
+        this.father.appendChild(this.canvas);
+        document.body.append(this.father);
+        this.genBgCover();
+        this.event();
+    }
+    genCoverStyle(data) {
+        let top = data.top;
+        let left = data.left;
+        const width = data.width;
+        const height = data.height;
+        if (!top) {
+            top = 0;
+        }
+        if (!left) {
+            left = 0;
+        }
+        let realWidth;
+        let realHeight;
+        if (width === undefined || width === null) {
+            realWidth = '100vw';
+        }
+        else {
+            realWidth = `${width}px`;
+        }
+        if (height === undefined || height === null) {
+            realHeight = `${document.body.clientHeight}px`;
+        }
+        else {
+            realHeight = `${height}px`;
+        }
+        return `
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: ${top}px;
+            left: ${left}px;
+            width: ${realWidth};
+            height: ${realHeight};
+            background: #0000008f;
+            z-index: ${Snapshot.highestZIndex};
+            `;
+    }
+    genBgCover() {
+        if (!this.previewBox) {
+            let element = document.getElementById(Snapshot.bgCoverId);
+            if (element) {
+                return element;
+            }
+            element = document.createElement('div');
+            element.id = Snapshot.bgCoverId;
+            element.setAttribute('style', `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: ${document.body.clientHeight}px;
+            background: #0000008f;
+            z-index: ${Snapshot.highestZIndex + 2};
+            cursor: crosshair;
+            `);
+            this.father.append(element);
+            this.cover = element;
+        }
+        else {
+            if (this.cover.style.background) {
+                this.cover.style.removeProperty('background');
+            }
+            const coverLeftId = `${Snapshot.bgCoverId}-left`;
+            const coverRightId = `${Snapshot.bgCoverId}-right`;
+            const coverTopId = `${Snapshot.bgCoverId}-top`;
+            const coverBottomId = `${Snapshot.bgCoverId}-bottom`;
+            this.coverLeft = document.getElementById(coverLeftId);
+            this.coverRight = document.getElementById(coverRightId);
+            this.coverTop = document.getElementById(coverTopId);
+            this.coverBottom = document.getElementById(coverBottomId);
+            if (!this.coverLeft) {
+                this.coverLeft = document.createElement('div');
+                this.coverLeft.id = coverLeftId;
+                this.father.append(this.coverLeft);
+            }
+            if (!this.coverRight) {
+                this.coverRight = document.createElement('div');
+                this.coverRight.id = coverRightId;
+                this.father.append(this.coverRight);
+            }
+            if (!this.coverTop) {
+                this.coverTop = document.createElement('div');
+                this.coverTop.id = coverTopId;
+                this.father.append(this.coverTop);
+            }
+            if (!this.coverBottom) {
+                this.coverBottom = document.createElement('div');
+                this.coverBottom.id = coverBottomId;
+                this.father.append(this.coverBottom);
+            }
+            const rightWidth = document.body.clientWidth - this.previewBox.offsetLeft - this.previewBox.offsetWidth;
+            this.coverLeft.setAttribute('style', this.genCoverStyle({
+                width: this.previewBox.offsetLeft
+            }));
+            this.coverRight.setAttribute('style', this.genCoverStyle({
+                left: this.previewBox.offsetLeft + this.previewBox.offsetWidth,
+                width: rightWidth,
+            }));
+            this.coverTop.setAttribute('style', this.genCoverStyle({
+                left: this.previewBox.offsetLeft,
+                height: this.previewBox.offsetTop,
+                width: document.body.clientWidth - this.previewBox.offsetLeft - rightWidth
+            }));
+            this.coverBottom.setAttribute('style', this.genCoverStyle({
+                left: this.previewBox.offsetLeft,
+                top: this.previewBox.offsetTop + this.previewBox.offsetHeight,
+                height: document.body.clientHeight - this.previewBox.offsetTop - this.previewBox.offsetHeight,
+                width: document.body.clientWidth - this.previewBox.offsetLeft - rightWidth,
+            }));
+        }
+    }
+    genPreviewBox(x, y) {
+        this.previewBox = document.createElement('div');
+        this.previewBox.setAttribute('startX', x.toString());
+        this.previewBox.setAttribute('startY', y.toString());
+        this.previewBox.setAttribute('id', 'dt-preview');
+        this.previewBox.setAttribute('style', `
+        width: 1px;
+        height: 1px;
+        border: 2px dashed gray;
+        background: transparent;
+        position: fixed;
+        top: ${y}px;
+        left: ${x}px;
+        z-index: ${Snapshot.highestZIndex + 1};
+        cursor: move;
+        `);
+        this.father.append(this.previewBox);
+        this.statusBar = document.createElement('div');
+        this.previewBox.append(this.statusBar);
+        this.statusBar.setAttribute('style', `
+        position: absolute;
+        top: -25px;
+        left: 0;
+        display: inline-block;
+        text-indent: 10px;
+        width: 87px;
+        line-height: 22px;
+        background: black;
+        color: white;
+        border-radius: 10px;
+        `);
+        this.statusBar.innerText = '(1, 1)';
+        this.previewBoxToolsBar = document.createElement('div');
+        this.previewBox.append(this.previewBoxToolsBar);
+        this.previewBoxToolsBar.setAttribute('style', `
+        position: absolute;
+        bottom: -50px;
+        right: 0;
+        display: block;
+        min-width: 112px;
+        height: 50px;
+        background: black;
+        color: white;
+        border-radius: 10px;
+        `);
+        // generate tools
+        this.previewBoxToolsBar.innerHTML += `
+        <style>
+          ul#tools-of-toolsBar-EvinK {
+            display: flex;
+            flex-flow: row;
+            justify-content: flex-end;
+            align-items: center;
+            cursor: default;
+            width: 100%;
+            height: 100%;
+            list-style: none;
+            /* some site will interference this style */
+            /* so there is a duplicate mention */
+            margin: 0;
+            padding: 0;
+          }
+          ul#tools-of-toolsBar-EvinK li {
+            cursor: pointer;
+          }
+          ul#tools-of-toolsBar-EvinK li img{
+            width: 30px;
+          }
+        </style>
+        `;
+        const toolsList = document.createElement('ul');
+        toolsList.id = 'tools-of-toolsBar-EvinK';
+        this.previewBoxToolsBar.appendChild(toolsList);
+        toolsList.onmousemove = (e => e.cancelBubble = true);
+        toolsList.onmouseup = (e => e.cancelBubble = true);
+        toolsList.onmousedown = (e => e.cancelBubble = true);
+        let li = document.createElement('li');
+        toolsList.appendChild(li);
+        let img = new Image();
+        li.appendChild(img);
+        img.src = chrome.extension.getURL('assets/imgs/close-white.svg');
+        // img.setAttribute('style', `
+        // width: 20px;
+        // padding-right: 4px;
+        // padding-top: 2px;
+        // `)
+        li.onclick = () => {
+            this.destroySnapshot();
+        };
+        li = document.createElement('li');
+        toolsList.appendChild(li);
+        img = new Image();
+        li.appendChild(img);
+        img.src = chrome.extension.getURL('assets/imgs/download.svg');
+        li.onclick = () => {
+            const startX = parseInt(this.previewBox.getAttribute('startX'));
+            const startY = parseInt(this.previewBox.getAttribute('startY'));
+            const endX = startX + this.previewBox.clientWidth;
+            const endY = startY + this.previewBox.clientHeight;
+            const canvas = Snapshot.cropCanvas(this.canvas, { x: startX, y: startY }, { x: endX, y: endY });
+            canvas.toBlob((blob => {
+                const url = window.URL;
+                const a = document.createElement('a');
+                a.download = `${new Date().getTime()}.png`;
+                a.href = url.createObjectURL(blob);
+                a.dataset.downloadurl = ['png', a.download, a.href].join(':');
+                // console.log(a.dataset.downloadurl)
+                a.click();
+                this.destroySnapshot();
+                generaPageContent.genBubbleMsg('已保存图片');
+            }));
+        };
+        li = document.createElement('li');
+        toolsList.appendChild(li);
+        img = new Image();
+        li.appendChild(img);
+        img.src = chrome.extension.getURL('assets/imgs/ok.svg');
+        li.onclick = () => {
+            const startX = parseInt(this.previewBox.getAttribute('startX'));
+            const startY = parseInt(this.previewBox.getAttribute('startY'));
+            const endX = startX + this.previewBox.clientWidth;
+            const endY = startY + this.previewBox.clientHeight;
+            const canvas = Snapshot.cropCanvas(this.canvas, { x: startX, y: startY }, { x: endX, y: endY });
+            const data = canvas.toDataURL('image/png');
+            const img = new Image();
+            this.father.appendChild(img);
+            img.src = data;
+            const dpr = window.devicePixelRatio || 1;
+            img.style.transform = `scale(${2 - dpr})`;
+            const range = document.createRange();
+            const selection = document.getSelection();
+            range.selectNode(img);
+            selection.removeAllRanges();
+            selection.addRange(range);
+            document.execCommand('copy');
+            this.destroySnapshot();
+            generaPageContent.genBubbleMsg('图片已复制');
+            setTimeout(() => generaPageContent.genBubbleMsg('注意,在富文本编辑器中才能粘贴哦'), 500);
+        };
+    }
+    event() {
+        const keydownHandler = (e) => {
+            if (e.key === 'Escape') {
+                removeEventListener('keydown', keydownHandler, true);
+                this.destroySnapshot();
+            }
+        };
+        addEventListener('keydown', keydownHandler, true);
+        if (this.cover) {
+            this.cover.addEventListener('mousedown', (e) => {
+                if (!this.isClickBegun) {
+                    this.isClickBegun = true;
+                    this.genPreviewBox(e.offsetX, e.offsetY);
+                    this.genBgCover();
+                }
+            });
+            this.cover.onmousemove = (e) => {
+                if (this.previewBox && this.isClickBegun) {
+                    const x = parseInt(this.previewBox.getAttribute('startX'));
+                    const y = parseInt(this.previewBox.getAttribute('startY'));
+                    const offsetX = e.offsetX - x;
+                    const offsetY = e.offsetY - y;
+                    if (offsetX < 0) {
+                        this.previewBox.style.left = `${x - Math.abs(offsetX)}px`;
+                    }
+                    if (offsetY < 0) {
+                        this.previewBox.style.top = `${y - Math.abs(offsetY)}px`;
+                    }
+                    this.previewBox.style.width = `${Math.abs(offsetX)}px`;
+                    this.previewBox.style.height = `${Math.abs(offsetY)}px`;
+                    if (this.statusBar) {
+                        // this.statusBar.innerText = `(${Math.abs(offsetX)}, ${Math.abs(offsetY)})`
+                        this.statusBar.innerText = `(${Math.abs(e.offsetX)}, ${Math.abs(e.offsetY)})`;
+                    }
+                    this.genBgCover();
+                }
+            };
+            this.cover.onmouseup = (e) => {
+                // 重新设定 startX 和 startY
+                const x = parseInt(this.previewBox.getAttribute('startX'));
+                const y = parseInt(this.previewBox.getAttribute('startY'));
+                const offsetX = e.offsetX - x;
+                const offsetY = e.offsetY - y;
+                if (offsetX < 0) {
+                    this.previewBox.setAttribute('startX', e.offsetX.toString());
+                }
+                if (offsetY < 0) {
+                    this.previewBox.setAttribute('startY', e.offsetY.toString());
+                }
+                // 移除cover
+                this.isClickBegun = false;
+                this.cover.remove();
+                // event
+                // tslint:disable-next-line
+                this.previewBox.onmousedown = (e) => {
+                    this.previewBox.setAttribute('mouseDownX', e.offsetX.toString());
+                    this.previewBox.setAttribute('mouseDownY', e.offsetY.toString());
+                    this.previewBox.setAttribute('mouseDown', '1');
+                };
+                this.previewBox.onmousemove = (e) => {
+                    if (this.previewBox.getAttribute('mouseDown') !== '1') {
+                        return;
+                    }
+                    const startX = parseInt(this.previewBox.getAttribute('startX'));
+                    const startY = parseInt(this.previewBox.getAttribute('startY'));
+                    const mode = 'move';
+                    const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'));
+                    const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'));
+                    if (!offsetX || !offsetY) {
+                        return;
+                    }
+                    // 窗体移动
+                    if (mode === 'move') {
+                        const leftOffset = startX + e.offsetX - offsetX;
+                        const topOffset = startY + e.offsetY - offsetY;
+                        this.previewBox.style.top = `${topOffset}px`;
+                        this.previewBox.style.left = `${leftOffset}px`;
+                        this.genBgCover();
+                        this.previewBox.setAttribute('startX', leftOffset.toString());
+                        this.previewBox.setAttribute('startY', topOffset.toString());
+                        this.statusBar.innerText = `(${Math.abs(leftOffset)}, ${Math.abs(topOffset)})`;
+                    }
+                    else if (mode === 'resize') {
+                        // TODO
+                    }
+                };
+                this.previewBox.onmouseup = (e) => {
+                    this.previewBox.setAttribute('mouseDown', '0');
+                    // 更新 startX startY
+                    const offsetX = parseInt(this.previewBox.getAttribute('mouseDownX'));
+                    const offsetY = parseInt(this.previewBox.getAttribute('mouseDownY'));
+                    if (!offsetX || !offsetY) {
+                        return;
+                    }
+                    const startX = parseInt(this.previewBox.getAttribute('startX'));
+                    const startY = parseInt(this.previewBox.getAttribute('startY'));
+                    const leftOffset = startX + e.offsetX - offsetX;
+                    const topOffset = startY + e.offsetY - offsetY;
+                    this.previewBox.setAttribute('startX', leftOffset.toString());
+                    this.previewBox.setAttribute('startY', topOffset.toString());
+                };
+                this.previewBox.onmouseenter = () => {
+                    this.previewBox.style.cursor = 'move';
+                };
+                this.previewBox.onmouseleave = () => {
+                    this.previewBox.setAttribute('mouseDown', '0');
+                };
+            };
+        }
+    }
+    static cropCanvas(canvas, start, end) {
+        const dpr = window.devicePixelRatio || 1;
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(start.x * dpr, start.y * dpr, end.x * dpr, end.y * dpr);
+        const newCanvas = document.createElement('canvas');
+        newCanvas.width = (end.x - start.x) * dpr;
+        newCanvas.height = (end.y - start.y) * dpr;
+        const newCtx = newCanvas.getContext('2d');
+        newCtx.putImageData(imageData, 0, 0);
+        return newCanvas;
+    }
+    destroySnapshot() {
+        const id = this.father.id;
+        this.father.remove();
+        // fuck iframe!!!
+        try {
+            document.querySelectorAll('iframe').forEach(item => {
+                const element = item.contentWindow.document.getElementById(id);
+                if (element)
+                    element.remove();
+            });
+        }
+        catch (e) {
+            console.error(e);
+        }
+    }
+}
+Snapshot.bgCoverId = 'bgCover-snapshot-EvinK';
+Snapshot.highestZIndex = 2147483645;
