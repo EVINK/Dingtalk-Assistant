@@ -1,8 +1,55 @@
 import Vue from "../../node_modules/vue/types/index"
-import { StorageArea, sendMessage, getCurrentPage } from './utils'
+// import { StorageArea, sendMessage, getCurrentPage } from './utils'
 
+interface MessageHubData {
+    id: number
+    data: any
+}
 
+class MessageHub {
+    static map = {} as { [key: number]: (data?: MessageHubData) => void }
 
+    static seed = 0
+
+    static getMsgId() {
+        if (this.seed > 1000 * 1000) {
+            this.seed = 0
+        }
+        this.seed++
+        return this.seed
+    }
+
+    static sendMessage(id: number, message: { [key: string]: any }, fn?: (data?: MessageHubData) => void) {
+        if (id in this.map) {
+            throw Error('MessageHub id conflict')
+        }
+        this.map[id] = fn
+        window.top.postMessage({ ...message, id }, '*')
+    }
+}
+
+window.addEventListener('message', function (event) {
+    const data = event.data as MessageHubData
+    const fn = MessageHub.map[data.id]
+    if (fn) {
+        fn(data)
+    }
+    delete MessageHub.map[data.id]
+})
+
+class StorageArea {
+    static set(data: object) {
+        return new Promise((resolve) =>
+            MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageSet', data }, () => resolve(null))
+        )
+    }
+
+    static get(key: string) {
+        return new Promise((resolve) =>
+            MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageGet', key }, (data) => resolve(data.data))
+        )
+    }
+}
 
 new Vue({
     el: '#app',

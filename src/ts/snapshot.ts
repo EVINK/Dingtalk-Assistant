@@ -216,9 +216,11 @@ export class Snapshot {
           }
           ul#tools-of-toolsBar-EvinK li {
             cursor: pointer;
+            margin: 0 5px;
           }
           ul#tools-of-toolsBar-EvinK li img{
             width: 30px;
+            height: 30px;
           }
         </style>
         `
@@ -233,7 +235,7 @@ export class Snapshot {
         toolsList.appendChild(li)
         let img = new Image()
         li.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/close-white.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/close-white.svg')
         // img.setAttribute('style', `
         // width: 20px;
         // padding-right: 4px;
@@ -247,14 +249,14 @@ export class Snapshot {
         toolsList.appendChild(li)
         img = new Image()
         li.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/download.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/download.svg')
         li.onclick = () => {
             const startX = parseInt(this.previewBox.getAttribute('startX'))
             const startY = parseInt(this.previewBox.getAttribute('startY'))
             const endX = startX + this.previewBox.clientWidth
             const endY = startY + this.previewBox.clientHeight
 
-            const canvas = Snapshot.cropCanvas(this.canvas, {x: startX, y: startY}, {x: endX, y: endY})
+            const canvas = Snapshot.cropCanvas(this.canvas, { x: startX, y: startY }, { x: endX, y: endY })
 
             canvas.toBlob((blob => {
                 const url = window.URL
@@ -275,14 +277,14 @@ export class Snapshot {
         toolsList.appendChild(li)
         img = new Image()
         li.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/ok.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/ok.svg')
         li.onclick = () => {
             const startX = parseInt(this.previewBox.getAttribute('startX'))
             const startY = parseInt(this.previewBox.getAttribute('startY'))
             const endX = startX + this.previewBox.clientWidth
             const endY = startY + this.previewBox.clientHeight
 
-            const canvas = Snapshot.cropCanvas(this.canvas, {x: startX, y: startY}, {x: endX, y: endY})
+            const canvas = Snapshot.cropCanvas(this.canvas, { x: startX, y: startY }, { x: endX, y: endY })
             const data = canvas.toDataURL('image/png')
             const img = new Image()
             this.father.appendChild(img)

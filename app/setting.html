@@ -1,49 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>DingTalk Assistant Awesome!</title>
-    <script src="scripts/vue-dev.js"></script>
-    <link rel="stylesheet" href="styles/setting.css">
-</head>
-<body>
-<div id="app">
-    <div id="header">
-        DingTalk Assistant 设置页
-    </div>
-    <div id="body">
-        <div class="menu">
-            <ul>
-                <li @click="routeTo('general', true)" v-if="page==='general'" class="focus">通用设置</li>
-                <li @click="routeTo('general', true)" v-else>通用设置</li>
-                <li @click="routeTo('feedback', true)" v-if="page==='feedback'" class="focus">反馈</li>
-                <li @click="routeTo('feedback', true)" v-else>反馈</li>
-            </ul>
-        </div>
 
-        <div class="content">
-            <div v-if="page==='general'" class="settings">
-                <ul>
-                    <li>
-                        <label>新消息通知</label>
-                        <span @click="notificationLock=!notificationLock"
-                              class="switch" :class="{'on': !notificationLock}"></span>
-                    </li>
-                    <li :class="{'disable': notificationLock}">
-                        <label>点击消息通知时</label>
-                        <label id="msg-clicked-select">
+    <head>
+        <meta charset="UTF-8">
+        <title>DingTalk Assistant Awesome!</title>
+        <script src="scripts/vue-dev.js"></script>
+        <link rel="stylesheet" href="styles/setting.css">
+    </head>
+
+    <body>
+        <div id="app">
+            <div id="header">
+                DingTalk Assistant 设置页
+            </div>
+            <div id="body">
+                <div class="menu">
+                    <ul>
+                        <li @click="routeTo('general', true)" v-if="page==='general'" class="focus">通用设置</li>
+                        <li @click="routeTo('general', true)" v-else>通用设置</li>
+                        <li @click="routeTo('feedback', true)" v-if="page==='feedback'" class="focus">反馈</li>
+                        <li @click="window.open('https://jinshuju.net/f/rP1a9p','_blank')" v-else>反馈</li>
+                    </ul>
+                </div>
+
+                <div class="content">
+                    <div v-if="page==='general'" class="settings">
+                        <ul>
+                            <li>
+                                <label>新消息通知</label>
+                                <span @click="notificationLock=!notificationLock" class="switch"
+                                    :class="{'on': !notificationLock}"></span>
+                            </li>
+                            <li :class="{'disable': notificationLock}">
+                                <label>点击消息通知时</label>
+                                <label id="msg-clicked-select">
                             <select v-model="settings.msgClickedAction" :disabled="notificationLock">
                                 <option value="close">关闭通知</option>
                                 <option value="focus">定位到聊天窗口</option>
                             </select>
                         </label>
-                    </li>
-                    <!-- <li>
+                            </li>
+                            <!-- <li>
                         <label>禁用全局样式</label>
                         <span @click="settings.banGlobalStyle=!settings.banGlobalStyle"
                               class="switch" :class="{'on': settings.banGlobalStyle}"></span>
                     </li> -->
-                    <!-- <li>
+                            <!-- <li>
                         <label>禁用截图快捷键</label>
                         <span @click="settings.banSnapshotShortcut=!settings.banSnapshotShortcut"
                               class="switch" :class="{'on': settings.banSnapshotShortcut}"></span>
@@ -58,31 +60,32 @@
                             <span v-else>+</span>
                         </span></span>
                     </li> -->
-                    <!--<li>-->
-                    <!--<label>新版本检查</label>-->
-                    <!--<span @click="versionCheck=!versionCheck"-->
-                    <!--class="switch" :class="{'on': versionCheck===true}"></span>-->
-                    <!--</li>-->
-                </ul>
-            </div>
-            <div v-else-if="page==='feedback'" class="feedback">
-                <iframe src="https://jinshuju.net/f/rP1a9p"></iframe>
-                <!-- <p id="feedback">反馈页面还未开放</p> -->
-            </div>
-            <div v-else>
-                我也不知道您从哪里来的呢……
-            </div>
+                            <!--<li>-->
+                            <!--<label>新版本检查</label>-->
+                            <!--<span @click="versionCheck=!versionCheck"-->
+                            <!--class="switch" :class="{'on': versionCheck===true}"></span>-->
+                            <!--</li>-->
+                        </ul>
+                    </div>
+                    <div v-else-if="page==='feedback'" class="feedback">
+                        <!-- <iframe src="https://jinshuju.net/f/rP1a9p" frameborder="0"></iframe> -->
+                        <!-- <p id="feedback">反馈页面还未开放</p> -->
+                    </div>
+                    <div v-else>
+                        我也不知道您从哪里来的呢……
+                    </div>
 
-            <div v-if="page!=='feedback'" class="btns">
-                <input @click="saveSettings" type="button" value="保存设置">
-                <input @click="cancelSettings" type="button" value="取消">
+                    <div v-if="page!=='feedback'" class="btns">
+                        <input @click="saveSettings" type="button" value="保存设置">
+                        <input @click="cancelSettings" type="button" value="取消">
+                    </div>
+                </div>
+
+
             </div>
         </div>
+        <!-- <script src="scripts/utils.js"></script> -->
+        <script src="scripts/setting.js"></script>
+    </body>
 
-
-    </div>
-</div>
-<script src="scripts/utils.js"></script>
-<script src="scripts/setting.js"></script>
-</body>
 </html>

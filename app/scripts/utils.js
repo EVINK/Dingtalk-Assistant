@@ -19,7 +19,7 @@ class StorageArea {
         });
     }
 }
-// this is sendMessage to current page
+// this will sendMessage to current page
 const sendMessage = (msg, callback) => {
     return new Promise((solve, reject) => __awaiter(void 0, void 0, void 0, function* () {
         const thisPage = yield getCurrentPage();

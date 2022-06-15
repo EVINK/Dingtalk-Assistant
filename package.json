@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "tsc": "./node_modules/typescript/bin/tsc --watch -p ."
+  },
   "dependencies": {
     "minimist": "^1.2.2"
   },

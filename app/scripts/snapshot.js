@@ -186,9 +186,11 @@ class Snapshot {
           }
           ul#tools-of-toolsBar-EvinK li {
             cursor: pointer;
+            margin: 0 5px;
           }
           ul#tools-of-toolsBar-EvinK li img{
             width: 30px;
+            height: 30px;
           }
         </style>
         `;
@@ -202,7 +204,7 @@ class Snapshot {
         toolsList.appendChild(li);
         let img = new Image();
         li.appendChild(img);
-        img.src = chrome.extension.getURL('assets/imgs/close-white.svg');
+        img.src = chrome.runtime.getURL('assets/imgs/close-white.svg');
         // img.setAttribute('style', `
         // width: 20px;
         // padding-right: 4px;
@@ -215,7 +217,7 @@ class Snapshot {
         toolsList.appendChild(li);
         img = new Image();
         li.appendChild(img);
-        img.src = chrome.extension.getURL('assets/imgs/download.svg');
+        img.src = chrome.runtime.getURL('assets/imgs/download.svg');
         li.onclick = () => {
             const startX = parseInt(this.previewBox.getAttribute('startX'));
             const startY = parseInt(this.previewBox.getAttribute('startY'));
@@ -238,7 +240,7 @@ class Snapshot {
         toolsList.appendChild(li);
         img = new Image();
         li.appendChild(img);
-        img.src = chrome.extension.getURL('assets/imgs/ok.svg');
+        img.src = chrome.runtime.getURL('assets/imgs/ok.svg');
         li.onclick = () => {
             const startX = parseInt(this.previewBox.getAttribute('startX'));
             const startY = parseInt(this.previewBox.getAttribute('startY'));

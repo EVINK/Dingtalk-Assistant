@@ -1,17 +1,24 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "钉钉助手",
   "description": "网页版钉钉增强插件",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "short_name": "dingding",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": "icon.png",
     "default_popup": "popup.html"
+  },
+  "sandbox": {
+    "pages": [
+      "sandbox.html",
+      "setting.html",
+      "https://jinshuju.net/f/rP1a9p"
+    ]
   },
   "content_scripts": [
     {
@@ -45,23 +52,39 @@
     }
   ],
   "web_accessible_resources": [
-    "assets/imgs/*"
+    {
+      "resources": [
+        "assets/imgs/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    },
+    {
+      "resources": [
+        "scripts/inject.js"
+      ],
+      "matches": [
+        "http://im.dingtalk.com/*",
+        "https://im.dingtalk.com/*"
+      ]
+    }
   ],
   "background": {
-    "persistent": true,
-    "scripts": [
-      "scripts/utils.js",
-      "scripts/background.js"
-    ]
+    "service_worker": "scripts/background.js"
   },
+  "host_permissions": [
+    "<all_urls>"
+  ],
   "permissions": [
-    "<all_urls>",
     "activeTab",
     "storage",
     "tabs",
     "background",
-    "desktopCapture",
-    "notifications"
+    "notifications",
+    "scripting"
   ],
-  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
+  "content_security_policy": {
+    "extension_pages": "script-src 'self'; object-src 'self'"
+  }
 }

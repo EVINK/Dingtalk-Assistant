@@ -13,7 +13,7 @@ export class StorageArea {
     }
 }
 
-// this is sendMessage to current page
+// this will sendMessage to current page
 export const sendMessage = (msg: object, callback?: () => {}) => {
     return new Promise(async (solve, reject) => {
         const thisPage = await getCurrentPage()

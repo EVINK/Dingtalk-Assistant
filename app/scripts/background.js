@@ -1,3 +1,4 @@
+// import { sendMessage, StorageArea } from "./utils"
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,6 +8,34 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class StorageArea {
+    static set(data) {
+        chrome.storage.local.set(data);
+    }
+    static get(key) {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(null, (result) => {
+                resolve(result[key]);
+            });
+        });
+    }
+}
+// this will sendMessage to current page
+const sendMessage = (msg, callback) => {
+    return new Promise((solve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        const thisPage = yield getCurrentPage();
+        chrome.tabs.sendMessage(thisPage.id, { message: msg }, callback);
+    }));
+};
+function getCurrentPage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // @ts-ignore
+        return new Promise(resolve => chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            const tab = tabs[0];
+            resolve(tab);
+        }));
+    });
+}
 chrome.tabs.onActivated.addListener((activeInfo) => __awaiter(void 0, void 0, void 0, function* () {
     const dtId = yield StorageArea.get('dtId');
     const theme = (yield StorageArea.get('theme')) || 'original';
@@ -47,7 +76,7 @@ class Notify {
             if (!data.type)
                 data.type = 'basic';
             if (!data.iconUrl)
-                data.iconUrl = chrome.extension.getURL('icon.png');
+                data.iconUrl = chrome.runtime.getURL('icon.png');
             return new Promise((resolve) => {
                 chrome.notifications.create(null, Object.assign({}, data), (nid) => {
                     if (chrome.runtime.lastError)

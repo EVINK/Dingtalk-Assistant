@@ -98,30 +98,31 @@ class DingTalkContent {
         if (!await StorageArea.get('loginStatusPersistence')) return
         const scriptID = 'LSPScript-of-EVINK'
         if (document.querySelector(`#${scriptID}`)) return
-        const content = `
-            var loginStatusKeep = setInterval(function () {
-                if (window.sessionStorage.getItem('EvinK') === 'Handsome') {
-                    var element = document.createElement('div');
-                    element.id = 'LSPScript-finished-EvinK';
-                    document.body.appendChild(element);
-                    return clearInterval(loginStatusKeep);
-                }
-                var wkToken = window.sessionStorage.getItem('wk_token');
-                if (!wkToken) return;
-                wkToken = JSON.parse(wkToken);
-                // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);
-                if (wkToken.isAutoLogin) {
-                    window.sessionStorage.setItem('EvinK', 'Handsome');
-                    return location.reload();
-                }
-                wkToken.isAutoLogin = true;
-                // console.log(JSON.stringify(wkToken));
-                window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));
-            }, 1000)
-        `
+        // const content = `
+        //     var loginStatusKeep = setInterval(function () {
+        //         if (window.sessionStorage.getItem('EvinK') === 'Handsome') {
+        //             var element = document.createElement('div');
+        //             element.id = 'LSPScript-finished-EvinK';
+        //             document.body.appendChild(element);
+        //             return clearInterval(loginStatusKeep);
+        //         }
+        //         var wkToken = window.sessionStorage.getItem('wk_token');
+        //         if (!wkToken) return;
+        //         wkToken = JSON.parse(wkToken);
+        //         // if (wkToken.isAutoLogin) return clearInterval(loginStatusKeep);
+        //         if (wkToken.isAutoLogin) {
+        //             window.sessionStorage.setItem('EvinK', 'Handsome');
+        //             return location.reload();
+        //         }
+        //         wkToken.isAutoLogin = true;
+        //         // console.log(JSON.stringify(wkToken));
+        //         window.sessionStorage.setItem('wk_token', JSON.stringify(wkToken));
+        //     }, 1000)
+        // `
         const script = document.createElement('script')
         script.id = scriptID
-        script.innerHTML += content
+        script.setAttribute('src', chrome.runtime.getURL('scripts/inject.js'))
+        // script.innerHTML += content
         document.body.appendChild(script)
         // notification
         if (await StorageArea.get('loginStatusPersistence')) {
@@ -279,7 +280,7 @@ class DingTalkContent {
         }
         .contact-cover-box-hover-EVINK::after {
         top: 100%;
-        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-red.svg')}");
+        background: no-repeat center/100% url("${chrome.runtime.getURL('assets/imgs/notification-disable-red.svg')}");
         }
         .contact-cover-box-hover-EVINK::before {
         top: 100%;
@@ -293,7 +294,7 @@ class DingTalkContent {
         }
         .contact-cover-box-permanent-EVINK::after {
         top: 0;
-        background: no-repeat center/100% url("${chrome.extension.getURL('assets/imgs/notification-disable-white.svg')}");
+        background: no-repeat center/100% url("${chrome.runtime.getURL('assets/imgs/notification-disable-white.svg')}");
         }
         .contact-cover-box-permanent-EVINK::before {
         top: 9px;
@@ -309,7 +310,7 @@ class DingTalkContent {
         btn.style.alignItems = 'center'
         let img = new Image()
         btn.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/notification-setting.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/notification-setting.svg')
         img.style.width = '18px'
         const label = document.createElement('span')
         btn.appendChild(label)
@@ -318,13 +319,13 @@ class DingTalkContent {
         const finishBtn = document.createElement('a')
         img = new Image()
         finishBtn.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/finish.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/finish.svg')
         img.style.width = '26px'
 
         const cancelBtn = document.createElement('a')
         img = new Image()
         cancelBtn.appendChild(img)
-        img.src = chrome.extension.getURL('assets/imgs/cancel.svg')
+        img.src = chrome.runtime.getURL('assets/imgs/cancel.svg')
         img.style.width = '26px'
 
         let banList: string[] = []

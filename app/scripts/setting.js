@@ -7,6 +7,40 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+class MessageHub {
+    static getMsgId() {
+        if (this.seed > 1000 * 1000) {
+            this.seed = 0;
+        }
+        this.seed++;
+        return this.seed;
+    }
+    static sendMessage(id, message, fn) {
+        if (id in this.map) {
+            throw Error('MessageHub id conflict');
+        }
+        this.map[id] = fn;
+        window.top.postMessage(Object.assign(Object.assign({}, message), { id }), '*');
+    }
+}
+MessageHub.map = {};
+MessageHub.seed = 0;
+window.addEventListener('message', function (event) {
+    const data = event.data;
+    const fn = MessageHub.map[data.id];
+    if (fn) {
+        fn(data);
+    }
+    delete MessageHub.map[data.id];
+});
+class StorageArea {
+    static set(data) {
+        return new Promise((resolve) => MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageSet', data }, () => resolve(null)));
+    }
+    static get(key) {
+        return new Promise((resolve) => MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageGet', key }, (data) => resolve(data.data)));
+    }
+}
 new Vue({
     el: '#app',
     data: {
