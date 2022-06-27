@@ -1,28 +1,40 @@
 var gulp = require('gulp'),
     less = require('gulp-less'),
     notify = require('gulp-notify'),
-    plumber = require('gulp-plumber'),
-    uglify = require('gulp-uglify');
+    plumber = require('gulp-plumber')
 
-gulp.task('jsMinify', function () {
-    gulp.src(['src/js/*.js'])
-        .pipe(uglify({
-            mangle: true,//是否修改变量名
-            compress: true,//是否完全压缩
-            sourceMap: true,
-        }))
+const typescript = require('gulp-typescript')
+const stripImportExport = require('gulp-strip-import-export')
+const sourcemaps = require('gulp-sourcemaps')
+
+// copy from tsconfig.json
+const tsproject = typescript.createProject({
+    module: 'es6',
+    noImplicitAny: true,
+    target: 'es2016',
+});
+
+gulp.task('compileTs', function () {
+    gulp.src(['src/ts/**/*.ts'])
+        // 去掉 ts export 和 import
+        .pipe(tsproject()).js
+        .pipe(stripImportExport())
+        .pipe(sourcemaps.write())
         .pipe(gulp.dest('app/scripts/'));
 });
-gulp.task('wacthJs', function () {
-    gulp.watch('src/js/*.js').on('change', gulp.series('jsMinify'))
+
+gulp.task('wacthTs', function () {
+    // gulp.watch('src/js/*.js').on('change', gulp.series('jsMinify'))
+    gulp.watch('src/ts/**/*.ts').on('change', gulp.series('compileTs'))
 })
 
 gulp.task('compileLess', function () {
     gulp.src('src/less/*.less')
-        .pipe(plumber({errorHandler: notify.onError('Error: <%= error.message %>')}))
-        .pipe(less({compress: true}))
+        .pipe(plumber({ errorHandler: notify.onError('Error: <%= error.message %>') }))
+        .pipe(less({ compress: true }))
         .pipe(gulp.dest('app/styles/'))
 })
+
 gulp.task('watchLess', function () {
     gulp.watch('src/less/*.less').on('change', gulp.series('compileLess'));
 })

@@ -1,1 +1,37 @@
-var __awaiter=this&&this.__awaiter||function(e,a,u,c){return new(u=u||Promise)(function(n,t){function r(e){try{i(c.next(e))}catch(e){t(e)}}function o(e){try{i(c.throw(e))}catch(e){t(e)}}function i(e){e.done?n(e.value):function(n){return n instanceof u?n:new u(function(e){e(n)})}(e.value).then(r,o)}i((c=c.apply(e,a||[])).next())})},__generator=this&&this.__generator||function(t,r){var o,i,a,e,u={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]};return e={next:n(0),throw:n(1),return:n(2)},"function"==typeof Symbol&&(e[Symbol.iterator]=function(){return this}),e;function n(n){return function(e){return function(n){if(o)throw new TypeError("Generator is already executing.");for(;u;)try{if(o=1,i&&(a=2&n[0]?i.return:n[0]?i.throw||((a=i.return)&&a.call(i),0):i.next)&&!(a=a.call(i,n[1])).done)return a;switch(i=0,a&&(n=[2&n[0],a.value]),n[0]){case 0:case 1:a=n;break;case 4:return u.label++,{value:n[1],done:!1};case 5:u.label++,i=n[1],n=[0];continue;case 7:n=u.ops.pop(),u.trys.pop();continue;default:if(!(a=0<(a=u.trys).length&&a[a.length-1])&&(6===n[0]||2===n[0])){u=0;continue}if(3===n[0]&&(!a||n[1]>a[0]&&n[1]<a[3])){u.label=n[1];break}if(6===n[0]&&u.label<a[1]){u.label=a[1],a=n;break}if(a&&u.label<a[2]){u.label=a[2],u.ops.push(n);break}a[2]&&u.ops.pop(),u.trys.pop();continue}n=r.call(t,u)}catch(e){n=[6,e],i=0}finally{o=a=0}if(5&n[0])throw n[1];return{value:n[0]?n[1]:void 0,done:!0}}([n,e])}}},StorageArea=function(){function e(){}return e.set=function(e){chrome.storage.local.set(e)},e.get=function(t){return new Promise(function(n){chrome.storage.local.get(null,function(e){n(e[t])})})},e}(),sendMessage=function(t,r){var o=this;return new Promise(function(e,n){return __awaiter(o,void 0,void 0,function(){var n;return __generator(this,function(e){switch(e.label){case 0:return[4,getCurrentPage()];case 1:return n=e.sent(),chrome.tabs.sendMessage(n.id,{message:t},r),[2]}})})})};function getCurrentPage(){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(e){return[2,new Promise(function(t){return chrome.tabs.query({currentWindow:!0,active:!0},function(e){var n=e[0];t(n)})})]})})}
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class StorageArea {
+    static set(data) {
+        chrome.storage.local.set(data);
+    }
+    static get(key) {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(null, (result) => {
+                resolve(result[key]);
+            });
+        });
+    }
+}
+// this will sendMessage to current page
+const sendMessage = (msg, callback) => {
+    return new Promise((solve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        const thisPage = yield getCurrentPage();
+        chrome.tabs.sendMessage(thisPage.id, { message: msg }, callback);
+    }));
+};
+function getCurrentPage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // @ts-ignore
+        return new Promise(resolve => chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            const tab = tabs[0];
+            resolve(tab);
+        }));
+    });
+}

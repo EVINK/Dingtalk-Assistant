@@ -19,8 +19,8 @@ tmux new-session -d -s $sessionName -n "DingTalk-Dev-Session" "$SHELL"
 t=$sessionName:"DingTalk-Dev-Session"
 # tmux split-window -vb -t $t "trap '' 2;node main.js;$SHELL"
 # watch server ts
-tmux split-window -h -t $t "trap '' 2;./node_modules/typescript/bin/tsc --watch -p ./ -w;$SHELL"
+# tmux split-window -h -t $t "trap '' 2;./node_modules/typescript/bin/tsc --watch -p ./ -w;$SHELL"
 # watch views less
-tmux split-window -h -t $t "trap '' 2;./node_modules/gulp/bin/gulp.js jsMinify compileLess watchLess wacthJs;$SHELL"
+tmux split-window -h -t $t "trap '' 2;./node_modules/gulp/bin/gulp.js compileTs compileLess watchLess wacthTs;$SHELL"
 
 tmux attach -t $sessionName

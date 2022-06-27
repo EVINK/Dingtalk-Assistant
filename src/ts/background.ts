@@ -1,3 +1,41 @@
+// import { sendMessage, StorageArea } from "./utils"
+
+export class StorageArea {
+
+    public static set(data: object) {
+        chrome.storage.local.set(data)
+    }
+
+    public static get(key: string) {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(null, (result) => {
+                resolve(result[key])
+            })
+        })
+    }
+}
+
+// this will sendMessage to current page
+export const sendMessage = (msg: object, callback?: () => {}) => {
+    return new Promise(async (solve, reject) => {
+        const thisPage = await getCurrentPage()
+        chrome.tabs.sendMessage(thisPage.id, {message: msg}, callback);
+    })
+}
+
+
+export async function getCurrentPage(): Promise<chrome.tabs.Tab> {
+    // @ts-ignore
+    return new Promise(resolve =>
+        chrome.tabs.query({currentWindow: true, active: true}, function (tabs) {
+            const tab = tabs[0]
+            resolve(tab)
+        })
+    )
+
+}
+
+
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
     const dtId = await StorageArea.get('dtId')
     const theme = await StorageArea.get('theme') as string | null || 'original'
@@ -39,7 +77,7 @@ class Notify {
     public static async sendChromeNotification(data: chromeNotificationOptions): Promise<string> {
         if (Notify.lastNotificationId) await this.clearChromeNotification()
         if (!data.type) data.type = 'basic'
-        if (!data.iconUrl) data.iconUrl = chrome.extension.getURL('icon.png')
+        if (!data.iconUrl) data.iconUrl = chrome.runtime.getURL('icon.png')
         return new Promise((resolve) => {
             chrome.notifications.create(null, {...data,}, (nid: string) => {
                 if (chrome.runtime.lastError)

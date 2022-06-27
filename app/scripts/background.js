@@ -1,1 +1,114 @@
-var __assign=this&&this.__assign||function(){return(__assign=Object.assign||function(t){for(var e,n=1,r=arguments.length;n<r;n++)for(var i in e=arguments[n])Object.prototype.hasOwnProperty.call(e,i)&&(t[i]=e[i]);return t}).apply(this,arguments)},__awaiter=this&&this.__awaiter||function(t,a,s,c){return new(s=s||Promise)(function(e,n){function r(t){try{o(c.next(t))}catch(t){n(t)}}function i(t){try{o(c.throw(t))}catch(t){n(t)}}function o(t){t.done?e(t.value):function(e){return e instanceof s?e:new s(function(t){t(e)})}(t.value).then(r,i)}o((c=c.apply(t,a||[])).next())})},__generator=this&&this.__generator||function(n,r){var i,o,a,t,s={label:0,sent:function(){if(1&a[0])throw a[1];return a[1]},trys:[],ops:[]};return t={next:e(0),throw:e(1),return:e(2)},"function"==typeof Symbol&&(t[Symbol.iterator]=function(){return this}),t;function e(e){return function(t){return function(e){if(i)throw new TypeError("Generator is already executing.");for(;s;)try{if(i=1,o&&(a=2&e[0]?o.return:e[0]?o.throw||((a=o.return)&&a.call(o),0):o.next)&&!(a=a.call(o,e[1])).done)return a;switch(o=0,a&&(e=[2&e[0],a.value]),e[0]){case 0:case 1:a=e;break;case 4:return s.label++,{value:e[1],done:!1};case 5:s.label++,o=e[1],e=[0];continue;case 7:e=s.ops.pop(),s.trys.pop();continue;default:if(!(a=0<(a=s.trys).length&&a[a.length-1])&&(6===e[0]||2===e[0])){s=0;continue}if(3===e[0]&&(!a||e[1]>a[0]&&e[1]<a[3])){s.label=e[1];break}if(6===e[0]&&s.label<a[1]){s.label=a[1],a=e;break}if(a&&s.label<a[2]){s.label=a[2],s.ops.push(e);break}a[2]&&s.ops.pop(),s.trys.pop();continue}e=r.call(n,s)}catch(t){e=[6,t],o=0}finally{i=a=0}if(5&e[0])throw e[1];return{value:e[0]?e[1]:void 0,done:!0}}([e,t])}}},_this=this;chrome.tabs.onActivated.addListener(function(r){return __awaiter(_this,void 0,void 0,function(){var e,n;return __generator(this,function(t){switch(t.label){case 0:return[4,StorageArea.get("dtId")];case 1:return e=t.sent(),[4,StorageArea.get("theme")];case 2:return n=t.sent()||"original",e===r.tabId&&(sendMessage({initDingTalkStyle:!0}),sendMessage({checkLSPStatus:!0}),sendMessage({theme:n})),[2]}})})}),chrome.runtime.onMessage.addListener(function(e,n,r){return __awaiter(_this,void 0,void 0,function(){return __generator(this,function(t){return e.storeDtId?(StorageArea.set({dtId:n.tab.id}),chrome.windows.getCurrent({},function(t){StorageArea.set({dtWindowId:t.id})})):e.snapshot?chrome.tabs.captureVisibleTab(null,{},function(t){sendMessage({snapshot:t})}):e.chromeNotification&&(Notify.sendChromeNotification(e.chromeNotification),StorageArea.set({lastMsgSender:e.sender})),r({result:"success"}),[2]})})});var Notify=function(){function i(){this.event()}return i.sendChromeNotification=function(n){return __awaiter(this,void 0,void 0,function(){return __generator(this,function(t){switch(t.label){case 0:return i.lastNotificationId?[4,this.clearChromeNotification()]:[3,2];case 1:t.sent(),t.label=2;case 2:return n.type||(n.type="basic"),n.iconUrl||(n.iconUrl=chrome.extension.getURL("icon.png")),[2,new Promise(function(e){chrome.notifications.create(null,__assign({},n),function(t){if(chrome.runtime.lastError)return console.log(chrome.runtime.lastError.message);e(i.lastNotificationId=t)})})]}})})},i.clearChromeNotification=function(){var t=this;return new Promise(function(n){chrome.notifications.clear(i.lastNotificationId,function(e){return __awaiter(t,void 0,void 0,function(){return __generator(this,function(t){return n(e),[2]})})})})},i.prototype.event=function(){var e=this;chrome.notifications.onClicked.addListener(function(t){return __awaiter(e,void 0,void 0,function(){var e,n,r;return __generator(this,function(t){switch(t.label){case 0:return[4,StorageArea.get("settings")];case 1:return(e=t.sent())&&"close"===e.msgClickedAction?[2,i.clearChromeNotification()]:[4,StorageArea.get("dtId")];case 2:return n=t.sent(),[4,StorageArea.get("dtWindowId")];case 3:return r=t.sent(),n&&r?(chrome.windows.update(r,{focused:!0}),chrome.tabs.update(n,{active:!0}),sendMessage({clickNotification:!0}),[2]):[2]}})})})},i.lastNotificationId=void 0,i}();new Notify;
+// import { sendMessage, StorageArea } from "./utils"
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+class StorageArea {
+    static set(data) {
+        chrome.storage.local.set(data);
+    }
+    static get(key) {
+        return new Promise((resolve) => {
+            chrome.storage.local.get(null, (result) => {
+                resolve(result[key]);
+            });
+        });
+    }
+}
+// this will sendMessage to current page
+const sendMessage = (msg, callback) => {
+    return new Promise((solve, reject) => __awaiter(void 0, void 0, void 0, function* () {
+        const thisPage = yield getCurrentPage();
+        chrome.tabs.sendMessage(thisPage.id, { message: msg }, callback);
+    }));
+};
+function getCurrentPage() {
+    return __awaiter(this, void 0, void 0, function* () {
+        // @ts-ignore
+        return new Promise(resolve => chrome.tabs.query({ currentWindow: true, active: true }, function (tabs) {
+            const tab = tabs[0];
+            resolve(tab);
+        }));
+    });
+}
+chrome.tabs.onActivated.addListener((activeInfo) => __awaiter(void 0, void 0, void 0, function* () {
+    const dtId = yield StorageArea.get('dtId');
+    const theme = (yield StorageArea.get('theme')) || 'original';
+    if (dtId === activeInfo.tabId) {
+        sendMessage({ initDingTalkStyle: true });
+        sendMessage({ checkLSPStatus: true });
+        sendMessage({ theme });
+    }
+}));
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => __awaiter(void 0, void 0, void 0, function* () {
+    if (message.storeDtId) {
+        StorageArea.set({ dtId: sender.tab.id });
+        chrome.windows.getCurrent({}, (window) => {
+            StorageArea.set({ dtWindowId: window.id });
+        });
+    }
+    else if (message.snapshot) {
+        chrome.tabs.captureVisibleTab(null, {}, function (image) {
+            sendMessage({ snapshot: image });
+        });
+    }
+    else if (message.chromeNotification) {
+        Notify.sendChromeNotification(message.chromeNotification);
+        StorageArea.set({ lastMsgSender: message.sender });
+    }
+    sendResponse({
+        result: 'success'
+    });
+}));
+class Notify {
+    constructor() {
+        this.event();
+    }
+    static sendChromeNotification(data) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (Notify.lastNotificationId)
+                yield this.clearChromeNotification();
+            if (!data.type)
+                data.type = 'basic';
+            if (!data.iconUrl)
+                data.iconUrl = chrome.runtime.getURL('icon.png');
+            return new Promise((resolve) => {
+                chrome.notifications.create(null, Object.assign({}, data), (nid) => {
+                    if (chrome.runtime.lastError)
+                        return console.log(chrome.runtime.lastError.message);
+                    Notify.lastNotificationId = nid;
+                    resolve(nid);
+                });
+            });
+        });
+    }
+    static clearChromeNotification() {
+        return new Promise((resolve) => {
+            chrome.notifications.clear(Notify.lastNotificationId, (wasCleared) => __awaiter(this, void 0, void 0, function* () {
+                resolve(wasCleared);
+            }));
+        });
+    }
+    event() {
+        chrome.notifications.onClicked.addListener((notificationId) => __awaiter(this, void 0, void 0, function* () {
+            const settings = yield StorageArea.get('settings');
+            if (settings && settings.msgClickedAction === 'close') {
+                return Notify.clearChromeNotification();
+            }
+            const dtId = yield StorageArea.get('dtId');
+            const windowId = yield StorageArea.get('dtWindowId');
+            if (!dtId || !windowId)
+                return;
+            chrome.windows.update(windowId, { focused: true });
+            chrome.tabs.update(dtId, { active: true });
+            sendMessage({ clickNotification: true });
+        }));
+    }
+}
+Notify.lastNotificationId = undefined;
+new Notify();

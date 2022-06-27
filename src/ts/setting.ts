@@ -1,8 +1,56 @@
-import Vue from 'vue'
-import { StorageArea, sendMessage, getCurrentPage } from './utils'
+import Vue from "../../node_modules/vue/types/index"
+// import { StorageArea, sendMessage, getCurrentPage } from './utils'
 
+interface MessageHubData {
+    id: number
+    data: any
+}
 
-// tslint:disable-next-line:no-unused-expression
+class MessageHub {
+    static map = {} as { [key: number]: (data?: MessageHubData) => void }
+
+    static seed = 0
+
+    static getMsgId() {
+        if (this.seed > 1000 * 1000) {
+            this.seed = 0
+        }
+        this.seed++
+        return this.seed
+    }
+
+    static sendMessage(id: number, message: { [key: string]: any }, fn?: (data?: MessageHubData) => void) {
+        if (id in this.map) {
+            throw Error('MessageHub id conflict')
+        }
+        this.map[id] = fn
+        window.top.postMessage({ ...message, id }, '*')
+    }
+}
+
+window.addEventListener('message', function (event) {
+    const data = event.data as MessageHubData
+    const fn = MessageHub.map[data.id]
+    if (fn) {
+        fn(data)
+    }
+    delete MessageHub.map[data.id]
+})
+
+class StorageArea {
+    static set(data: object) {
+        return new Promise((resolve) =>
+            MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageSet', data }, () => resolve(null))
+        )
+    }
+
+    static get(key: string) {
+        return new Promise((resolve) =>
+            MessageHub.sendMessage(MessageHub.getMsgId(), { fn: 'storageGet', key }, (data) => resolve(data.data))
+        )
+    }
+}
+
 new Vue({
     el: '#app',
     data: {
@@ -26,7 +74,7 @@ new Vue({
             } else {
                 this.settings = {
                     banGlobalStyle: true,
-                    banSnapshotShortcut: false,
+                    banSnapshotShortcut: true,
                     snapshotShortcut: ['Ctrl', 'Alt', 'a'],
                     msgClickedAction: 'focus',
                 }
@@ -37,12 +85,16 @@ new Vue({
             // else this.versionCheck = versionCheck
         },
         saveSettings() {
-            if (!this.settings.banSnapshotShortcut && this.settings.snapshotShortcut.length <= 0) {
-                this.genBubbleMsg('设置未保存')
-                setTimeout(() => this.genBubbleMsg('截图快捷键不是一个合法值'), 300)
-                setTimeout(() => this.genBubbleMsg('如无需使用快捷键，建议直接禁用'), 600)
-                return
-            }
+            // 禁止全局样式
+            this.settings.banGlobalStyle = true
+            // 禁止截图快捷键（截图现在太粗糙了，等稍微做好点在放出来，但保留了手动按钮）
+            this.settings.banSnapshotShortcut = true
+            // if (!this.settings.banSnapshotShortcut && this.settings.snapshotShortcut.length <= 0) {
+            //     this.genBubbleMsg('设置未保存')
+            //     setTimeout(() => this.genBubbleMsg('截图快捷键不是一个合法值'), 300)
+            //     setTimeout(() => this.genBubbleMsg('如无需使用快捷键，建议直接禁用'), 600)
+            //     return
+            // }
             StorageArea.set({ settings: this.settings })
             StorageArea.set({ notificationLock: this.notificationLock })
             // StorageArea.set({versionCheck: this.versionCheck})
